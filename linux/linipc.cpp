@@ -222,5 +222,54 @@ void delete_ipc_object(ipc_handle_t h)
     free(h);
 }
 
+//-----------------------------------------------------------------------------
+
+bool is_ok_remove(ipc_handle_t h)
+{
+    if(!h)
+        return false;
+
+    if((h->ipc_type != IPC_typeSemaphore) ||
+       (h->ipc_type != IPC_typeMutex) ||
+       (h->ipc_type != IPC_typeEvent))
+        return false;
+
+    int semid = h->ipc_descr.ipc_sem;
+#ifdef __VERBOSE__
+    char *fname = h->ipc_name;
+#endif
+    union semun arg = {0};
+    int semncnt, semzcnt, semval;
+
+    if( (semval = semctl(semid, 0, GETVAL, arg)) == -1 ) {
+        DEBUG_PRINT( "%s(): semctl(getval) error %s\n", __FUNCTION__, fname );
+        DEBUG_PRINT( "%s(): %s\n", __FUNCTION__, strerror(errno) );
+        return false;
+    }
+
+    DEBUG_PRINT( "%s(): %s - semval = %d\n", __FUNCTION__, fname, semval );
+
+    if( (semncnt = semctl(semid, 0, GETNCNT, arg)) == -1 ) {
+        DEBUG_PRINT( "%s(): semctl(getncnt) error %s\n", __FUNCTION__, fname );
+        DEBUG_PRINT( "%s(): %s\n", __FUNCTION__, strerror(errno) );
+        return false;
+    }
+
+    DEBUG_PRINT( "%s(): %s - semncnt = %d\n", __FUNCTION__, fname, semncnt );
+
+    if( (semzcnt = semctl(semid, 0, GETZCNT, arg)) == -1 ) {
+        DEBUG_PRINT( "%s(): semctl(getzcnt) error %s\n", __FUNCTION__, fname );
+        DEBUG_PRINT( "%s(): %s\n", __FUNCTION__, strerror(errno) );
+        return false;
+    }
+
+    DEBUG_PRINT( "%s(): %s - semzcnt = %d\n", __FUNCTION__, fname, semzcnt );
+
+    if( (semncnt == 0) && (semzcnt == 0) && (semval == 1) ) {
+        return true;
+    }
+
+    return false;
+}
 
 #endif //__IPC_LINUX__

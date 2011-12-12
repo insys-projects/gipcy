@@ -21,6 +21,8 @@
 #include <sys/mman.h>
 #include <sys/sem.h>
 
+//-----------------------------------------------------------------------------
+
 union ipc {
     int          ipc_file;      //!< Используется если IPC файл в ФС
     int          ipc_dev;       //!< Используется если IPC файл устройства
@@ -29,6 +31,8 @@ union ipc {
     pthread_t    ipc_thread;    //!< Используется если IPC поток выполнения
     void*        ipc_lib;       //!< Используется если IPC разделяемая библиотека
 };
+
+//-----------------------------------------------------------------------------
 
 //! Структура описывает внутренний тип struct ipc_t используемый библиотекой IPC
 /*!
@@ -45,6 +49,8 @@ struct ipc_t {
     size_t           ipc_size;          //!< Размер блока данных объекта IPC (опционально)
 };
 
+//-----------------------------------------------------------------------------
+
 //! Тип дескриптора объекта IPC
 /*!
     ipc_handle_t есть указатель на структуру struct ipc_t
@@ -53,62 +59,47 @@ struct ipc_t {
 */
 typedef struct ipc_t* ipc_handle_t;
 
+//-----------------------------------------------------------------------------
+
 #ifdef __VERBOSE__
 #define DEBUG_PRINT(fmt, args...)    fprintf(stderr, fmt, ## args)
 #else
 #define DEBUG_PRINT(fmt, args...)
 #endif
 
-#if 0
+//-----------------------------------------------------------------------------
 
-//! Функция возвращает имя объекта IPC
-/*!
-    Функция возвращает имя объекта IPC с префиксом /tmp/ipclib.
-    \param name - имя объекта IPC
-*/
-char* create_ipc_name(const char *name);
-
-//! Функция удаляет имя объекта IPC
-/*!
-    Функция освобождает память выделенную для имени объекта IPC
-    \param name - имя объекта IPC
-*/
-void delete_ipc_name(char *name);
-
-//! Функция создает файл объекта IPC
-/*!
-    Функция создает файл в файловой системе, для которого будем получать ключ key_t
-    и возвращает имя созданного файла
-    \param name - имя объекта IPC
-*/
-int create_ipc_file(const char *name);
-
-//! Функция удаляет файл объекта IPC
-/*!
-    Функция удаляет файл из файловой системы
-    и освобождает памть для имени файла
-    \param name - имя объекта IPC
-*/
-int delete_ipc_file(const char *name);
-
-//! Функция возвращает ключ key_t для указанного имени
-/*!
-    Функция создает файл в файловой системе, а затем для этого
-    пути получает ключ key_t
-    \param name - имя объекта IPC
-*/
-key_t get_ipc_key( const char *name );
-
-//! Функция удаляет ключ key_t и временный файл
-/*!
-    Функция создает файл в файловой системе, а затем для этого
-    пути получает ключ key_t
-    \param ipc_key - ключ объекта IPC
-    \param name - имя объекта IPC
-*/
-int free_ipc_key( key_t ipc_key, const char *name );
-
+#if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
+/* union semun is defined by including <sys/sem.h> */
+#else
+/* according to X/OPEN we have to define it ourselves */
+//! Аргумент используемый в качестве команды для вызова semctl. Передается по значению.
+union semun {
+        int val;                  //!< Используется командой SETVAL
+        struct semid_ds *buf;     //!< Используется командами IPC_SET и IPC_STAT
+        unsigned short  *array;   //!< Используется командами GETALL и SETALL
+        struct seminfo  *__buf;   //!< Специфичный для Linux команды IPC_INFO
+};
 #endif
+
+#ifndef SEMVMX
+#define SEMVMX 32768
+#endif
+
+#ifndef SEM_R
+#define SEM_R 0x100
+#endif
+
+#ifndef SEM_A
+#define SEM_A 0x80
+#endif
+
+#define SVSEM_MODE ( SEM_R | SEM_A | SEM_R>>3 | SEM_R>>6 )
+
+//! Определяет флаги доступа к семафорам SYSTEM V
+#define IPC_SVSEM_MODE   (SEM_R | SEM_A | SEM_R >> 3 | SEM_R >> 6)
+
+//-----------------------------------------------------------------------------
 
 //! Функция создает дескриптор объекта IPC c заданным именем
 /*!
@@ -121,5 +112,11 @@ ipc_handle_t allocate_ipc_object(const char *name, IPC_type type);
     \param h - дескриптор объекта IPC
 */
 void delete_ipc_object(ipc_handle_t h);
+
+//! Функция проверяет, можно ли удалить объект IPC (семафор, событие, мьютекс)
+/*!
+    \param h - дескриптор объекта IPC
+*/
+bool is_ok_remove(ipc_handle_t h);
 
 #endif //__LINIPC_H__

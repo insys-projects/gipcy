@@ -4,8 +4,11 @@
 #ifndef __LINIPC_H__
 #include "linipc.h"
 #endif
-#ifndef __SEMIPC_H__
-#include "semipc.h"
+#ifndef __MUTEXIPC_H__
+#include "mutexipc.h"
+#endif
+#ifndef __SYSIPC_H__
+#include "sysipc.h"
 #endif
 
 #include <stdio.h>
@@ -19,9 +22,9 @@
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
+IPC_handle IPC_createMutex(const IPC_str *name, bool value)
 {
-    ipc_handle_t h = allocate_ipc_object(name, IPC_typeSemaphore);
+    ipc_handle_t h = allocate_ipc_object(name, IPC_typeMutex);
     if(!h)
         return NULL;
 
@@ -38,7 +41,7 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
 
         int res = semctl(h->ipc_descr.ipc_sem, 0, SETVAL, semarg);
         if(res < 0) {
-            DEBUG_PRINT("%s(): semaphore - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
+            DEBUG_PRINT("%s(): mutex - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
             delete_ipc_object(h);
             return NULL;
         }
@@ -54,25 +57,25 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
             int res = semctl(h->ipc_descr.ipc_sem, 0, IPC_STAT, semarg);
             if(res < 0) continue;
             if(semarg.buf->sem_otime != 0) {
-                DEBUG_PRINT("%s(): semaphore - %s opened\n", __FUNCTION__, h->ipc_name);
+                DEBUG_PRINT("%s(): mutex - %s opened\n", __FUNCTION__, h->ipc_name);
                 return h;
             }
             usleep(100);
         }
 
-        DEBUG_PRINT("%s(): semaphore - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
+        DEBUG_PRINT("%s(): mutex - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
         delete_ipc_object(h);
         return NULL;
     }
 
-    DEBUG_PRINT("%s(): semaphore - %s created\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): mutex - %s created\n", __FUNCTION__, h->ipc_name);
 
     return h;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
+int IPC_captureMutex(const  IPC_handle handle, int timeout)
 {
     if(!handle)
         return IPC_invalidHandle;
@@ -96,7 +99,7 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
 
         //DEBUG_PRINT("%s(): ts.tv_sec = %d\n", __FUNCTION__, (int)ts.tv_sec);
         //DEBUG_PRINT("%s(): ts.tv_nsec = %d\n", __FUNCTION__, (int)ts.tv_nsec);
-        //DEBUG_PRINT("%s(): Try lock semaphore - %s\n", __FUNCTION__, h->ipc_name);
+        //DEBUG_PRINT("%s(): Try lock mutex - %s\n", __FUNCTION__, h->ipc_name);
 
         int res = semtimedop(h->ipc_descr.ipc_sem, &ops, 1, &ts);
         if(res < 0) {
@@ -125,14 +128,14 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
         }
     }
 
-    DEBUG_PRINT("%s(): semaphore - %s locked\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): mutex - %s locked\n", __FUNCTION__, h->ipc_name);
 
     return IPC_ok;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_unlockSemaphore(const  IPC_handle handle)
+int IPC_releaseMutex(const  IPC_handle handle)
 {
     if(!handle)
         return IPC_invalidHandle;
@@ -155,71 +158,21 @@ int IPC_unlockSemaphore(const  IPC_handle handle)
         return IPC_generalError;
     }
 
-    DEBUG_PRINT("%s(): semaphore - %s unlocked\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): mutex - %s unlocked\n", __FUNCTION__, h->ipc_name);
 
     return IPC_ok;
 }
 
 //-----------------------------------------------------------------------------
-/*
-static bool is_ok_remove(IPC_handle handle)
-{
-    if(!handle)
-        return false;
 
-    ipc_handle_t h = (ipc_handle_t)handle;
-
-    if(h->ipc_type != IPC_typeSemaphore)
-        return false;
-
-    int semid = h->ipc_descr.ipc_sem;
-#ifdef __VERBOSE__
-    char *fname = h->ipc_name;
-#endif
-    union semun arg = {0};
-    int semncnt, semzcnt, semval;
-
-    if( (semval = semctl(semid, 0, GETVAL, arg)) == -1 ) {
-        DEBUG_PRINT( "%s(): semctl(getval) error %s\n", __FUNCTION__, fname );
-        DEBUG_PRINT( "%s(): %s\n", __FUNCTION__, strerror(errno) );
-        return false;
-    }
-
-    DEBUG_PRINT( "%s(): %s - semval = %d\n", __FUNCTION__, fname, semval );
-
-    if( (semncnt = semctl(semid, 0, GETNCNT, arg)) == -1 ) {
-        DEBUG_PRINT( "%s(): semctl(getncnt) error %s\n", __FUNCTION__, fname );
-        DEBUG_PRINT( "%s(): %s\n", __FUNCTION__, strerror(errno) );
-        return false;
-    }
-
-    DEBUG_PRINT( "%s(): %s - semncnt = %d\n", __FUNCTION__, fname, semncnt );
-
-    if( (semzcnt = semctl(semid, 0, GETZCNT, arg)) == -1 ) {
-        DEBUG_PRINT( "%s(): semctl(getzcnt) error %s\n", __FUNCTION__, fname );
-        DEBUG_PRINT( "%s(): %s\n", __FUNCTION__, strerror(errno) );
-        return false;
-    }
-
-    DEBUG_PRINT( "%s(): %s - semzcnt = %d\n", __FUNCTION__, fname, semzcnt );
-
-    if( (semncnt == 0) && (semzcnt == 0) && (semval == 1) ) {
-        return true;
-    }
-
-    return false;
-}
-*/
-//-----------------------------------------------------------------------------
-
-int IPC_deleteSemaphore(IPC_handle handle)
+int IPC_deleteMutex(IPC_handle handle)
 {
     if(!handle)
         return IPC_invalidHandle;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
-    if(h->ipc_type != IPC_typeSemaphore)
+    if(h->ipc_type != IPC_typeMutex)
         return IPC_invalidHandle;
 
     if( is_ok_remove(h) ) {
@@ -231,7 +184,7 @@ int IPC_deleteSemaphore(IPC_handle handle)
         }
     }
 
-    DEBUG_PRINT("%s(): semaphore - %s deleted\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): mutex - %s deleted\n", __FUNCTION__, h->ipc_name);
 
     delete_ipc_object((ipc_handle_t)handle);
 

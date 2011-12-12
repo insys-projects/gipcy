@@ -8,7 +8,14 @@
     #include "sysipc.h"
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <unistd.h>
 #include <errno.h>
+#include <error.h>
+#include <time.h>
 #include <sys/ioctl.h>
 
 //-----------------------------------------------------------------------------
@@ -107,11 +114,11 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum);
+IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum)
 {
     DEBUG_PRINT("%s(%s)\n", __FUNCTION__, mainname);
 
-    if(!mainname) return NULL;
+    if(!mainname || !devname) return NULL;
 
     snprintf( devname, 128, "%s%s%d", "/dev/", mainname, devnum);
     ipc_handle_t h = allocate_ipc_object(devname, IPC_typeFile);

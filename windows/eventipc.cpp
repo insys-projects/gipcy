@@ -28,7 +28,7 @@ IPC_handle IPC_createEvent(const wchar_t *name, bool manual, bool value)
 }
 #else
 //	manual = TRUE - manual reset, FALSE - autoreset
-//  value = TRUE - начальное состояние Signaled
+//  value = TRUE - РЅР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ Signaled
 IPC_handle IPC_createEvent(const char *name, bool manual, bool value)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeEvent);
