@@ -48,12 +48,12 @@ extern "C" {
 
     //! Функция открывает устройство
     /*!
-    \param name - имя устройства
-    \param flags - флаги
-    \param mode - режим
+    \param devname - полное имя устройства в данной ОС (возвращаемый параметр)
+    \param mainname - основная часть имени устройства
+    \param devnum - номер устройства
     \return дескриптор IPC или NULL
     */
-    IPC_handle IPC_openDevice(const IPC_str *name, int flags, int mode);
+    IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum);
 
     //! Функция закрывает устройство
     /*!

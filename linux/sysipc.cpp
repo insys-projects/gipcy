@@ -107,25 +107,26 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_openDevice(const IPC_str *name, int flags, int mode)
+IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum);
 {
-    DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
+    DEBUG_PRINT("%s(%s)\n", __FUNCTION__, mainname);
 
-    if(!name) return NULL;
+    if(!mainname) return NULL;
 
-    ipc_handle_t h = allocate_ipc_object(name, IPC_typeFile);
+    snprintf( devname, 128, "%s%s%d", "/dev/", mainname, devnum);
+    ipc_handle_t h = allocate_ipc_object(devname, IPC_typeFile);
     if(!h) return NULL;
 
     h->ipc_size = 0;
 
-    h->ipc_descr.ipc_file = open(name, flags, mode);
+    h->ipc_descr.ipc_file = open(devname, S_IROTH | S_IWOTH );
     if(h->ipc_descr.ipc_file < 0) {
 
             DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
             return NULL;
     }
 
-    DEBUG_PRINT("%s(): open file - %s\n", __FUNCTION__, name );
+    DEBUG_PRINT("%s(): open file - %s\n", __FUNCTION__, devname );
 
     return h;
 }
