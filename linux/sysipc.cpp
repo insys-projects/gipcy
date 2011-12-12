@@ -37,7 +37,36 @@ int IPC_sysError()
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_openFile(const IPC_str *name, int flags, int mode)
+static int convert_ipc_flags(IPC_flags ipc_flags)
+{
+    int flags = 0;
+
+    if(ipc_flags & IPC_CREATE_FILE) {
+        flags |= (O_CREAT | O_TRUNC);
+    }
+
+    if(ipc_flags & IPC_OPEN_FILE) {
+        flags |= O_RDONLY;
+    }
+
+    if(ipc_flags & IPC_OPEN_RDONLY) {
+        flags |= O_RDONLY;
+    }
+
+    if(ipc_flags & IPC_OPEN_WRONLY) {
+        flags |= O_WRONLY;
+    }
+
+    if(ipc_flags & IPC_OPEN_RDWR) {
+        flags |= O_RDWR;
+    }
+
+    return flags;
+}
+
+//-----------------------------------------------------------------------------
+
+IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
 {
     DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
 
@@ -48,7 +77,36 @@ IPC_handle IPC_openFile(const IPC_str *name, int flags, int mode)
 
     h->ipc_size = 0;
 
-    h->ipc_descr.ipc_file = open(name, flags, mode);
+    int sysflag = convert_ipc_flags(flags);
+
+    h->ipc_descr.ipc_file = open(name, sysflag, 0666);
+    if(h->ipc_descr.ipc_file < 0) {
+
+            DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
+            return NULL;
+    }
+
+    DEBUG_PRINT("%s(): open file - %s\n", __FUNCTION__, name );
+
+    return h;
+}
+
+//-----------------------------------------------------------------------------
+
+IPC_handle IPC_openFileEx(const IPC_str *name, IPC_flags flags, ...)
+{
+    DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
+
+    if(!name) return NULL;
+
+    ipc_handle_t h = allocate_ipc_object(name, IPC_typeFile);
+    if(!h) return NULL;
+
+    h->ipc_size = 0;
+
+    int sysflag = convert_ipc_flags(flags);
+
+    h->ipc_descr.ipc_file = open(name, sysflag, 0666);
     if(h->ipc_descr.ipc_file < 0) {
 
             DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
