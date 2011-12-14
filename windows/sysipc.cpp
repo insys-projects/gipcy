@@ -27,14 +27,16 @@ int IPC_sysError()
 //-----------------------------------------------------------------------------
 // открыть устройство
 #ifdef _WIN64
-IPC_handle IPC_openDevice(const wchar_t *name, int devnum)
+IPC_handle IPC_openDevice(wchar_t *devname, const wchar_t *mainname, int devnum)
 {
-    ipc_handle_t h = allocate_ipc_object(name, IPC_typeFile);
+    if(!mainname) return NULL;
+
+	swprintf(devname, L"\\\\.\\%s%d", mainname, devnum);
+    ipc_handle_t h = allocate_ipc_object(devname, IPC_typeFile);
     if(!h) return NULL;
 
     h->ipc_size = 0;
 
-	swprintf(devname, L"\\\\.\\%s%d", AmbDeviceName, devnum);
 	h->ipc_descr = CreateFile(devname,
 							GENERIC_READ | GENERIC_WRITE,
 							FILE_SHARE_READ | FILE_SHARE_WRITE,
