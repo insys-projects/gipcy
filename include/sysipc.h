@@ -104,10 +104,16 @@ extern "C" {
     /*!
     \param handle - дескриптор IPC
     \param cmd - код команды
-    \param param - параметры команды
+    \param srcBuf - буфер с данными для устройства (через него передаются данные В драйвер нулевого кольца)
+    \param srcSize - размер буфера с данными для устройства
+    \param dstBuf - буфер с данными от устройства  (через него передаются данные ИЗ драйвера нулевого кольца)
+    \param srcSize - размер буфера с данными от устройства
     \return код ошибки
     */
-    int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *param);
+	int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize);
+
+    //! Устаревшая функция управления устройством
+	int IPC_ioctlDev(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap);
 
     //! Выполняет задержку в миллисекундах
     /*!
