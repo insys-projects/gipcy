@@ -115,7 +115,7 @@ IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyC
 
 //-----------------------------------------------------------------------------
 
-void* IPC_mapSharedMemory(const  IPC_handle handle, unsigned size)
+void* IPC_mapSharedMemory(const  IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return NULL;
@@ -134,7 +134,7 @@ void* IPC_mapSharedMemory(const  IPC_handle handle, unsigned size)
 
 //-----------------------------------------------------------------------------
 
-int IPC_unmapSharedMemory(const  IPC_handle handle, unsigned size)
+int IPC_unmapSharedMemory(const  IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
 

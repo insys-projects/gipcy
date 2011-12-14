@@ -68,7 +68,7 @@ IPC_handle IPC_createSharedMemoryEx(const char *name, int size, int *alreadyCrea
 #endif
 
 //-----------------------------------------------------------------------------
-void* IPC_mapSharedMemory(const  IPC_handle handle, unsigned size)
+void* IPC_mapSharedMemory(const  IPC_handle handle)
 {
     if(!handle)
         return (void*)IPC_invalidHandle;
@@ -82,7 +82,7 @@ void* IPC_mapSharedMemory(const  IPC_handle handle, unsigned size)
 }
 
 //-----------------------------------------------------------------------------
-int IPC_unmapSharedMemory(const  IPC_handle handle, unsigned size)
+int IPC_unmapSharedMemory(const  IPC_handle handle)
 {
     if(!handle)
         return IPC_invalidHandle;

@@ -32,14 +32,14 @@ extern "C" {
     \param handle - дескриптор разделяемой памяти
     \param size - размер отображения
     */
-    void* IPC_mapSharedMemory(const IPC_handle handle, unsigned size);
+    void* IPC_mapSharedMemory(const IPC_handle handle);
 
     //! Функция удаляет отображение разделяемой памяти
     /*!
     \param handle - дескриптор разделяемой памяти
     \param size - размер отображения
     */
-    int IPC_unmapSharedMemory(const IPC_handle handle, unsigned size);
+    int IPC_unmapSharedMemory(const IPC_handle handle);
 
     //! Функция удаляет именованный объект разделяемой памяти
     /*!
