@@ -31,6 +31,12 @@ IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
 
     h->ipc_data = NULL;
 
+    if(manual) {
+        h->ipc_size = 1;
+    } else {
+        h->ipc_size = 0;
+    }
+
     union semun semarg;
     struct semid_ds seminfo;
 
@@ -38,13 +44,28 @@ IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
 
     if(h->ipc_descr.ipc_sem > 0) {
 
-        semarg.val = value;
+        semarg.val = 1;
 
         int res = semctl(h->ipc_descr.ipc_sem, 0, SETVAL, semarg);
         if(res < 0) {
-            DEBUG_PRINT("%s(): event - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
+            DEBUG_PRINT("%s(): event - %s created but not initialized. %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
             delete_ipc_object(h);
             return NULL;
+        }
+
+        if(!value) {
+
+            struct sembuf ops;
+            ops.sem_num = 0;
+            ops.sem_flg = SEM_UNDO;
+            ops.sem_op = -1;
+
+            res = semtimedop(h->ipc_descr.ipc_sem, &ops, 1, NULL);
+            if(res < 0) {
+                delete_ipc_object(h);
+                DEBUG_PRINT("%s(): %s - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
+                return NULL;
+            }
         }
 
     } else if(errno == EEXIST) {
@@ -86,7 +107,7 @@ int IPC_waitEvent(const  IPC_handle handle, int timeout)
     struct sembuf ops;
 
     ops.sem_num = 0;
-    ops.sem_op = 0;
+    ops.sem_op = -1;
     ops.sem_flg = SEM_UNDO;
 
     if(timeout > 0) {
@@ -127,6 +148,18 @@ int IPC_waitEvent(const  IPC_handle handle, int timeout)
             DEBUG_PRINT("%s(): %s - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
             return IPC_generalError;
         }
+    }
+
+    if(!h->ipc_size) {
+
+        // так как событие с автосбросом, то
+        // мы увеличим значение счетчика сами
+        // чтобы был возможен повторный вход
+        ops.sem_num = 0;
+        ops.sem_op = 1;
+        ops.sem_flg = SEM_UNDO;
+
+        semop(h->ipc_descr.ipc_sem, &ops, 1);
     }
 
     DEBUG_PRINT("%s(): event - %s locked\n", __FUNCTION__, h->ipc_name);
@@ -176,7 +209,7 @@ int IPC_resetEvent(const  IPC_handle handle)
     struct sembuf ops;
 
     ops.sem_num = 0;
-    ops.sem_op = -1;
+    ops.sem_op = -1; // возможно отрицательное значение счетчика, нужно как-то это обойти
     ops.sem_flg = SEM_UNDO;
 
     int res = semop(h->ipc_descr.ipc_sem,&ops,1);
