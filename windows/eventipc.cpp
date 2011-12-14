@@ -79,7 +79,7 @@ int IPC_setEvent(const  IPC_handle handle)
 
 //-----------------------------------------------------------------------------
 
-int IPC_resetEvent(const  IPC_handle handle, int value)
+int IPC_resetEvent(const  IPC_handle handle)
 {
     if(!handle)
         return IPC_invalidHandle;

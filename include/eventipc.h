@@ -28,13 +28,13 @@
     /*!
     \param handle - дескриптор события
     */
-    extern "C" int IPC_setEvent(const  IPC_handle handle, int value);
+    extern "C" int IPC_setEvent(const  IPC_handle handle);
 
     //! Функция переводит событие в несигнальное состояние
     /*!
     \param handle - дескриптор события
     */
-    extern "C" int IPC_resetEvent(const  IPC_handle handle, int value);
+    extern "C" int IPC_resetEvent(const  IPC_handle handle);
 
     //! Функция удаляет объект события
     /*!
