@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
     std::cout << "Ok" << endl;
 
     std::cout << "Map shared memory..." << ends;
-    unsigned long *pmem = (unsigned long *)IPC_mapSharedMemory(shm, MEM_SIZE);
+    unsigned long *pmem = (unsigned long *)IPC_mapSharedMemory(shm);
     if(!pmem) {
         std::cout << "IPC_mapSharedMemory() failed" << endl;
         IPC_deleteSemaphore(lockSem);
@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
     IPC_handle threadW = IPC_createThread("thread_w", writing_thread, &tp);
     if(!threadW) {
         std::cout << "IPC_createThread() failed create writing thread" << endl;
-        IPC_unmapSharedMemory(shm,MEM_SIZE);
+        IPC_unmapSharedMemory(shm);
         IPC_deleteSemaphore(lockSem);
         //IPC_deleteMutex(captMutex);
         IPC_deleteSharedMemory(shm);
@@ -185,7 +185,7 @@ int main(int argc, char* argv[])
     if(!threadR) {
         std::cout << "IPC_createThread() failed create reading thread" << endl;
         IPC_deleteThread(threadW);
-        IPC_unmapSharedMemory(shm,MEM_SIZE);
+        IPC_unmapSharedMemory(shm);
         IPC_deleteSemaphore(lockSem);
         //IPC_deleteMutex(captMutex);
         IPC_deleteSharedMemory(shm);
@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
     std::cout << "Write counter: " << tp.write_counter << " Read counter: " << tp.read_counter  << endl;
 
     std::cout << "Unmap shared memory..." << ends;
-    IPC_unmapSharedMemory(shm,MEM_SIZE);
+    IPC_unmapSharedMemory(shm);
     std::cout << "Ok" << endl;
 
     std::cout << "Delete shared memory..." << ends;
