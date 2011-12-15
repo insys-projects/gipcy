@@ -1,12 +1,41 @@
 
 #
+# Detect operation system
+#
+
+ifeq "$(findstring QNX, $(shell uname -a))" "QNX"
+    OS := DZY_QNX
+    DEF_TYPES := __QNX__
+else
+    OS := DZY_LINUX
+    DEF_TYPES := __LINUX__
+endif
+
+#
+# Detect kernel version
+#
+ifneq   "$(findstring 2.4,$(shell uname -a))" ""
+     DZY_VER := -DDZYTOOLS_2_4_X
+endif
+
+#
+# Select apropriate IPC methods
+#
+
+IPC := _BARDY_USE_SYSTEMV_IPC_
+#IPC := _BARDY_USE_POSIX_IPC_
+#IPC := _BARDY_USE_PTHREADS_IPC_
+
+#GPROF := -pg
+
+#
 # Setup common Makefile rules and defines
 #
 
 CC := $(CSTOOL_PREFIX)g++
 LD := $(CSTOOL_PREFIX)g++
 
-CFLAGS += -fPIC -Wall -g
+CFLAGS += -fPIC -Wall -g -D$(OS) -D$(IPC) -D$(DEF_TYPES) $(GPROF) $(DZY_VER)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c -MD $<
@@ -25,9 +54,8 @@ distclean:
 clean:
 	rm -f *.o *~ core
 	rm -f *.d *~ core
-	rm -f *.so.*
+	rm -f *.so
 	rm -f *.0
-	rm -f ../lib/*
 
 SYSLIBDIR := /usr/local/lib/bardy
 
@@ -47,3 +75,4 @@ install:
 	ln -sf $(SYSLIBDIR)/$(SONAME) $(SYSLIBDIR)/$(BASENAME)
 	echo '/usr/local/lib/bardy' > /etc/ld.so.conf.d/bardy.conf
 	/sbin/ldconfig
+
