@@ -1,0 +1,66 @@
+#!/bin/sh
+
+#
+# Скрипт иписпользуется для удаления 
+# семафоров и разделяемой памяти SYSTEM V
+# с помощью утилит: 
+#  ../TESTS/RMSEMSV/rmsemsv,
+#  ../TESTS/RMSHMSV/rmshmsv
+
+#
+# Проверим наличие утилиты rmsemsv
+#
+
+if [ -e rmsemsv ]
+then
+    echo Удаление неиспользуемых IPC
+else
+    echo Скомпилируйте утилиту rmsemsv
+    exit
+fi
+
+#
+# Проверим наличие утилиты rmshmsv
+#
+
+if [ -e rmshmsv ]
+then
+    echo
+else
+    echo Скомпилируйте утилиту rmshmsv
+    exit
+fi
+
+#
+# Получение SHM KEY пользователя
+#
+
+ipcs -m | cut -c 1-10 | grep [0123456789] > shmkey.dat
+
+#
+# Получение SEM KEY пользователя
+#
+
+echo Remove shared memory objects
+ipcs -s | cut -c 1-10 | grep [0123456789] > semkey.dat
+
+for PID in $(cut -d: -f1 shmkey.dat)
+    do
+	#echo Remove semaphore with ID = $PID
+	status=`./rmshmsv $PID`
+done
+
+echo Remove semaphore objects
+for PID in $(cut -d: -f1 semkey.dat)
+    do
+	#echo Remove semaphore with ID = $PID
+	status=`./rmsemsv $PID`
+done
+
+echo Clean /tmp/bardy directory
+rm -fv /tmp/bardy/*
+
+echo Clean temporary files
+rm -fv ./*.dat
+
+exit 0
