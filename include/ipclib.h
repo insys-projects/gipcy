@@ -19,6 +19,17 @@
 
 //----------------------------------------------------------------------
 
+#ifdef __IPC_LINUX__
+#endif
+
+#ifdef __IPC_WIN__
+#define _WINDOWS
+#include <windows.h>
+#include <winioctl.h>
+#endif
+
+//----------------------------------------------------------------------
+
 //! IPC_handle - внешний тип данных используемый для работы с объектами IPC
 typedef void* IPC_handle;
 
