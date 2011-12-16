@@ -266,4 +266,19 @@ int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *param)
 
 //-----------------------------------------------------------------------------
 
+int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
+                             IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName )
+{
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+bool IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName )
+{
+    return false;
+}
+
+//-----------------------------------------------------------------------------
+
 #endif //__IPC_LINUX__

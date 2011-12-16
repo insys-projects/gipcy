@@ -284,5 +284,22 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
     return res;
 }
 
+//-----------------------------------------------------------------------------
+
+int IPC_getPrivateProfileString(const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
+                                IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName)
+{
+    return GetPrivateProfileString(lpAppName, lpKeyName, lpDefault, lpReturnedString, size_t nSize, lpFileName);
+}
+
+//-----------------------------------------------------------------------------
+
+bool IPC_writePrivateProfileString(const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName)
+{
+    return WritePrivateProfileString( lpAppName, lpKeyName, lpString, lpFileName );
+}
+
+//-----------------------------------------------------------------------------
+
 #endif //__IPC_WIN__
 
