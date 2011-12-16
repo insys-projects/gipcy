@@ -6,7 +6,7 @@
 #ifndef __MUTEXIPC_H__
     #include "mutexipc.h"
 #endif
-
+/*
 //-----------------------------------------------------------------------------
 #ifdef _WIN64
 IPC_handle IPC_createMutex(const wchar_t *name, bool value)
@@ -45,7 +45,24 @@ IPC_handle IPC_createMutex(const char *name, bool value)
     return h;
 }
 #endif
+*/
+IPC_handle IPC_createMutex(const IPC_str *name, bool value)
+{
+    ipc_handle_t h = allocate_ipc_object(name, IPC_typeMutex);
+    if(!h)
+        return NULL;
 
+    h->ipc_data = NULL;
+
+    h->ipc_descr = CreateMutex(NULL, value, name);
+    if(h->ipc_descr == INVALID_HANDLE_VALUE)
+	{
+        delete_ipc_object(h);
+        return NULL;
+    }
+
+    return h;
+}
 //-----------------------------------------------------------------------------
 
 int IPC_captureMutex(const  IPC_handle handle, int timeout)

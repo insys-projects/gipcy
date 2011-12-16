@@ -127,7 +127,7 @@ extern "C" {
     int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
                                      IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName );
 
-    bool IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName );
+    int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName );
 }
 
 #endif //__SYSIPC_H__

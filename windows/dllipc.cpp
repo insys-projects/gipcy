@@ -8,8 +8,7 @@
     #include "dllipc.h"
 #endif
 
-#ifdef _WIN64
-IPC_handle IPC_openLibrary(const wchar_t *name, unsigned param)
+IPC_handle IPC_openLibrary(const IPC_str *name, unsigned param)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeLibrary);
     if(!h)
@@ -20,19 +19,6 @@ IPC_handle IPC_openLibrary(const wchar_t *name, unsigned param)
 
     return h;
 }
-#else
-IPC_handle IPC_openLibrary(const char *name, unsigned param)
-{
-    ipc_handle_t h = allocate_ipc_object(name, IPC_typeLibrary);
-    if(!h)
-        return NULL;
-
-    //! TODO insert code here
-	h->ipc_descr = LoadLibrary(name);
-
-    return h;
-}
-#endif
 
 void* IPC_getEntry(IPC_handle handle, const char *entryName)
 {

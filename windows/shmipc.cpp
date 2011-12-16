@@ -8,8 +8,8 @@
     #include "shmipc.h"
 #endif
 
-#ifdef _WIN64
-IPC_handle IPC_createSharedMemory(const wchar_t *name, int size)
+//-----------------------------------------------------------------------------
+IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeSharedMem);
     if(!h)
@@ -23,7 +23,7 @@ IPC_handle IPC_createSharedMemory(const wchar_t *name, int size)
 }
 
 //-----------------------------------------------------------------------------
-IPC_handle IPC_createSharedMemoryEx(const wchar_t *name, int size, int *alreadyCreated)
+IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyCreated)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeSharedMem);
     if(!h)
@@ -36,36 +36,6 @@ IPC_handle IPC_createSharedMemoryEx(const wchar_t *name, int size, int *alreadyC
 
     return h;
 }
-#else
-//-----------------------------------------------------------------------------
-IPC_handle IPC_createSharedMemory(const char *name, int size)
-{
-    ipc_handle_t h = allocate_ipc_object(name, IPC_typeSharedMem);
-    if(!h)
-        return NULL;
-
-	h->ipc_size = size;
-
-	h->ipc_descr = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, size, name);
-
-    return h;
-}
-
-//-----------------------------------------------------------------------------
-IPC_handle IPC_createSharedMemoryEx(const char *name, int size, int *alreadyCreated)
-{
-    ipc_handle_t h = allocate_ipc_object(name, IPC_typeSharedMem);
-    if(!h)
-        return NULL;
-
-    h->ipc_size = size;
-
-	h->ipc_descr = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, size, name);
-	*alreadyCreated = ( GetLastError() == ERROR_ALREADY_EXISTS ) ? 1 : 0;
-
-    return h;
-}
-#endif
 
 //-----------------------------------------------------------------------------
 void* IPC_mapSharedMemory(const  IPC_handle handle)

@@ -274,9 +274,9 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
 
 //-----------------------------------------------------------------------------
 
-bool IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName )
+int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName )
 {
-    return false;
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
