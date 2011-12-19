@@ -284,7 +284,7 @@ int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKe
 int IPC_interlockedDecrement( int *val )
 {
     int tmp = *val;
-    *val--;
+    *val = --tmp;
     return tmp;
 }
 
@@ -293,7 +293,7 @@ int IPC_interlockedDecrement( int *val )
 int IPC_interlockedIncrement( int *val )
 {
     int tmp = *val;
-    *val++;
+    *val = ++tmp;
     return tmp;
 }
 
