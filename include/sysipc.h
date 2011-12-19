@@ -129,13 +129,13 @@ extern "C" {
 
     int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName );
 
-    int IPC_interlockedDecrement( int *val );
-    int IPC_interlockedIncrement( int *val );
-    int IPC_interlockedCompareExchange( int *dst, int val, int param );
-    int IPC_interlockedExchange( int *dst, int val );
-    int IPC_interlockedExchangeAdd( int *dst, int val );
+    int IPC_interlockedDecrement(volatile long *val );
+    int IPC_interlockedIncrement(volatile long *val );
+    int IPC_interlockedCompareExchange(volatile long *dst, long val, long param );
+    int IPC_interlockedExchange(volatile long *dst, long val );
+    int IPC_interlockedExchangeAdd(volatile long *dst, long val );
 
-#ifdef _WINDWS
+#ifdef _WINDOWS
     typedef int IPC_tls_key;
 #else
     typedef pthread_key_t IPC_tls_key;

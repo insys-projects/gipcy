@@ -91,6 +91,16 @@ int IPC_resetEvent(const  IPC_handle handle)
 }
 
 //-----------------------------------------------------------------------------
+//HANDLE IPC_getEvent(const  IPC_handle handle)
+//{
+//    if(!handle)
+//        return IPC_invalidHandle;
+//
+//    ipc_handle_t h = (ipc_handle_t)handle;
+//
+//    return h->ipc_descr;
+//}
+//-----------------------------------------------------------------------------
 
 int IPC_deleteEvent(IPC_handle handle)
 {

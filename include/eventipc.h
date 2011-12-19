@@ -36,6 +36,12 @@
     */
     extern "C" int IPC_resetEvent(const  IPC_handle handle);
 
+    //! Функция возвращает win-дескриптор события
+    /*!
+    \param handle - дескриптор события
+    */
+	//extern "C" HANDLE IPC_getEvent(const  IPC_handle handle);
+
     //! Функция удаляет объект события
     /*!
     \param handle - дескриптор события
