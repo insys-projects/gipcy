@@ -11,21 +11,21 @@
 #endif
 
 //-----------------------------------------------------------------------------
-// выполнить задержку при выполнении программы
+// РІС‹РїРѕР»РЅРёС‚СЊ Р·Р°РґРµСЂР¶РєСѓ РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё РїСЂРѕРіСЂР°РјРјС‹
 void IPC_delay(int ms)
 {
     Sleep(ms);
 }
 
 //-----------------------------------------------------------------------------
-// получить последнюю ошибку системной функции
+// РїРѕР»СѓС‡РёС‚СЊ РїРѕСЃР»РµРґРЅСЋСЋ РѕС€РёР±РєСѓ СЃРёСЃС‚РµРјРЅРѕР№ С„СѓРЅРєС†РёРё
 int IPC_sysError()
 {
 	return GetLastError();
 }
 
 //-----------------------------------------------------------------------------
-// открыть устройство
+// РѕС‚РєСЂС‹С‚СЊ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ
 #ifdef _WIN64
 IPC_handle IPC_openDevice(wchar_t *devname, const wchar_t *mainname, int devnum)
 {
@@ -149,10 +149,10 @@ int IPC_ioctlDev(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize
 }
 
 
-// открыть файл
+// РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»
 // amode (access_mode) = GENERIC_READ, GENERIC_WRITE
-// smode (share_mode) = 0 (запрет), FILE_SHARE_READ, FILE_SHARE_WRITE
-//                   можно всегда устанавливать FILE_SHARE_WRITE | FILE_SHARE_READ (_SH_DENYNO)
+// smode (share_mode) = 0 (Р·Р°РїСЂРµС‚), FILE_SHARE_READ, FILE_SHARE_WRITE
+//                   РјРѕР¶РЅРѕ РІСЃРµРіРґР° СѓСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ FILE_SHARE_WRITE | FILE_SHARE_READ (_SH_DENYNO)
 // cmode (exist_mode) = CREATE_ALWAYS, OPEN_EXISTING
 // flag = FILE_ATTRIBUTE_NORMAL, FILE_FLAG_NO_BUFFERING
 IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
@@ -180,7 +180,7 @@ IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
    	return h;
 }
 /*
-	// открытие файла для прямой записи на диск
+	// РѕС‚РєСЂС‹С‚РёРµ С„Р°Р№Р»Р° РґР»СЏ РїСЂСЏРјРѕР№ Р·Р°РїРёСЃРё РЅР° РґРёСЃРє
 	HANDLE hfile = CreateFile(	fileName,
 								GENERIC_WRITE,
 //								FILE_SHARE_WRITE | FILE_SHARE_READ,
@@ -192,7 +192,7 @@ IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
 								NULL);
 	if(hfile == INVALID_HANDLE_VALUE)
 		
-	// открытие файла для записи собранных данных
+	// РѕС‚РєСЂС‹С‚РёРµ С„Р°Р№Р»Р° РґР»СЏ Р·Р°РїРёСЃРё СЃРѕР±СЂР°РЅРЅС‹С… РґР°РЅРЅС‹С…
 	HANDLE hfile = CreateFile(	fileName,
 								GENERIC_WRITE,
 								FILE_SHARE_WRITE | FILE_SHARE_READ,
@@ -202,7 +202,7 @@ IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
 								NULL);
 	if(hfile == INVALID_HANDLE_VALUE)
 
-	// открытие файла для дозаписи собранных данных в конец файла
+	// РѕС‚РєСЂС‹С‚РёРµ С„Р°Р№Р»Р° РґР»СЏ РґРѕР·Р°РїРёСЃРё СЃРѕР±СЂР°РЅРЅС‹С… РґР°РЅРЅС‹С… РІ РєРѕРЅРµС† С„Р°Р№Р»Р°
 		hfile = CreateFile(	fileName,
 								GENERIC_WRITE,
 								FILE_SHARE_WRITE | FILE_SHARE_READ,
@@ -213,7 +213,7 @@ IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
 		LONG HiPart = 0;
 		SetFilePointer(hfile, 0, &HiPart, FILE_END);
 
-	// дозапись хвоста в конец файла с данными
+	// РґРѕР·Р°РїРёСЃСЊ С…РІРѕСЃС‚Р° РІ РєРѕРЅРµС† С„Р°Р№Р»Р° СЃ РґР°РЅРЅС‹РјРё
 	HANDLE hfile = CreateFile(	fileName,
 								GENERIC_READ | GENERIC_WRITE,
 								FILE_SHARE_WRITE | FILE_SHARE_READ,
@@ -231,17 +231,17 @@ IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
 	ULONG BytesNum = SetFilePointer(hfile, lDistanceToMoveLow, &lDistanceToMoveHigh, FILE_END);
 
 ////////////////////////////////////////////
-	// эти функции есть в LINUX, они входят в стандарт языка
+	// СЌС‚Рё С„СѓРЅРєС†РёРё РµСЃС‚СЊ РІ LINUX, РѕРЅРё РІС…РѕРґСЏС‚ РІ СЃС‚Р°РЅРґР°СЂС‚ СЏР·С‹РєР°
 	// fopen(), fclose(), fputs(), fgets()
-	// открытие лог-файла в brdshell
+	// РѕС‚РєСЂС‹С‚РёРµ Р»РѕРі-С„Р°Р№Р»Р° РІ brdshell
 	flog = BRDC_fopen( logFile, _BRDC("wt") );	
-	// открытие ini-файла в brdshell
+	// РѕС‚РєСЂС‹С‚РёРµ ini-С„Р°Р№Р»Р° РІ brdshell
 	fin = BRDC_fopen( REG_FILENAME, _BRDC("rt") );
 ////////////////////////////////////////////
 
-	// запись флагового файла
+	// Р·Р°РїРёСЃСЊ С„Р»Р°РіРѕРІРѕРіРѕ С„Р°Р№Р»Р°
 	fs = BRDC_sopen(fileName, _O_WRONLY|_O_BINARY|_O_CREAT|_O_TRUNC, _SH_DENYNO, _S_IWRITE);
-	// чтение флагового файла
+	// С‡С‚РµРЅРёРµ С„Р»Р°РіРѕРІРѕРіРѕ С„Р°Р№Р»Р°
     fs = BRDC_sopen(fileName, _O_RDONLY|_O_BINARY, _SH_DENYNO, _S_IREAD);
 
 }
@@ -300,6 +300,42 @@ int IPC_writePrivateProfileString(const IPC_str *lpAppName, const IPC_str *lpKey
 }
 
 //-----------------------------------------------------------------------------
+
+int IPC_interlockedDecrement( int *val )
+{
+    return InterlockedDecrement(val);
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_interlockedIncrement( int *val )
+{
+    return InterlockedIncrement(val);
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_interlockedCompareExchange( int *dst, int val, int param )
+{
+    return IPC_interlockedCompareExchange(dst, val, param);
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_interlockedExchange( int *dst, int val )
+{
+    return InterlockedExchange(dst, val);
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_interlockedExchangeAdd( int *dst, int val )
+{
+    return InterlockedExchangeAdd(dst, val);
+}
+
+//-----------------------------------------------------------------------------
+
 
 #endif //__IPC_WIN__
 

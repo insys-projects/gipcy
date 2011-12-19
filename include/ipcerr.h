@@ -11,7 +11,8 @@ enum IPC_error {
     IPC_noMemory,
     IPC_timeout,
     IPC_interrupted,
-    IPC_overflow
+    IPC_overflow,
+    IPC_abandoned
 };
 
 //----------------------------------------------------------------------

@@ -128,6 +128,12 @@ extern "C" {
                                      IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName );
 
     int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName );
+
+    int IPC_interlockedDecrement( int *val );
+    int IPC_interlockedIncrement( int *val );
+    int IPC_interlockedCompareExchange( int *dst, int val, int param );
+    int IPC_interlockedExchange( int *dst, int val );
+    int IPC_interlockedExchangeAdd( int *dst, int val );
 }
 
 #endif //__SYSIPC_H__

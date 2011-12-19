@@ -281,4 +281,53 @@ int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKe
 
 //-----------------------------------------------------------------------------
 
+int IPC_interlockedDecrement( int *val )
+{
+    int tmp = *val;
+    *val--;
+    return tmp;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_interlockedIncrement( int *val )
+{
+    int tmp = *val;
+    *val++;
+    return tmp;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_interlockedCompareExchange( int *dst, int val, int param )
+{
+    int tmp = *dst;
+
+    if(*dst == param) {
+        *dst = val;
+    }
+
+    return tmp;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_interlockedExchange( int *dst, int val )
+{
+    int tmp = *dst;
+    *dst = val;
+    return tmp;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_interlockedExchangeAdd( int *dst, int val )
+{
+    int tmp = *dst;
+    *dst += val;
+    return tmp;
+}
+
+//-----------------------------------------------------------------------------
+
 #endif //__IPC_LINUX__
