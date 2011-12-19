@@ -26,6 +26,7 @@
 #define _WINDOWS
 #include <windows.h>
 #include <winioctl.h>
+#include <conio.h>
 #endif
 
 //----------------------------------------------------------------------

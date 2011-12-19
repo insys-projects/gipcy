@@ -134,6 +134,16 @@ extern "C" {
     int IPC_interlockedCompareExchange( int *dst, int val, int param );
     int IPC_interlockedExchange( int *dst, int val );
     int IPC_interlockedExchangeAdd( int *dst, int val );
+
+#ifdef _WINDWS
+    typedef int IPC_tls_key;
+#else
+    typedef pthread_key_t IPC_tls_key;
+#endif
+    IPC_tls_key IPC_createTlsKey(void);
+    void* IPC_tlsGetValue(IPC_tls_key key);
+    int IPC_tlsSetValue(IPC_tls_key key, void *ptr);
+    int IPC_deleteTlsKey(IPC_tls_key key);
 }
 
 #endif //__SYSIPC_H__

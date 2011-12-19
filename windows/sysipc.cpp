@@ -336,6 +336,33 @@ int IPC_interlockedExchangeAdd( int *dst, int val )
 
 //-----------------------------------------------------------------------------
 
+IPC_tls_key IPC_createTlsKey(void)
+{
+    return TlsAlloc();
+}
+
+//-----------------------------------------------------------------------------
+
+void* IPC_tlsGetValue(IPC_tls_key key)
+{
+    return TlsGetValue(key);
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_tlsSetValue(IPC_tls_key key, void *ptr)
+{
+    return TlsSetValue(key, ptr);
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_deleteTlsKey(IPC_tls_key key)
+{
+     return TlsFree(key);
+}
+
+//-----------------------------------------------------------------------------
 
 #endif //__IPC_WIN__
 
