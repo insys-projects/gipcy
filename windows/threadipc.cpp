@@ -59,6 +59,17 @@ IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int 
 }
 
 //-----------------------------------------------------------------------------
+int IPC_stopThread(const IPC_handle handle)
+{
+    ipc_handle_t h = (ipc_handle_t)handle;
+    if(!h || h->ipc_type != IPC_typeThread) return IPC_invalidHandle;
+
+	TerminateThread(h->ipc_descr, 0);
+
+    return IPC_ok;
+}
+
+//-----------------------------------------------------------------------------
 int IPC_waitThread(const IPC_handle handle, int timeout)
 {
     if(!handle)
