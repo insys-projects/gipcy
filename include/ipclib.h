@@ -24,11 +24,10 @@
 #endif
 
 #ifdef __IPC_WIN__
-#define _WINDOWS
 #include <windows.h>
 #include <winioctl.h>
+//#include <dos.h>
 #include <conio.h>
-#include <dos.h>
 #include <crtdbg.h>
 #endif
 
