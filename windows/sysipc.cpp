@@ -170,6 +170,8 @@ IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
 	if(IPC_OPEN_FILE == flags)
 		cmode = OPEN_EXISTING;
 
+	if(GENERIC_READ == 
+
 	h->ipc_descr = CreateFile(name,
 							  amode,
 							  FILE_SHARE_WRITE | FILE_SHARE_READ,
