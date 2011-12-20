@@ -29,6 +29,7 @@
 #include <winioctl.h>
 #include <conio.h>
 #include <dos.h>
+#include <crtdbg.h>
 #endif
 
 //----------------------------------------------------------------------
