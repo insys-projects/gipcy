@@ -121,7 +121,7 @@ int IPC_stopThread(const IPC_handle handle)
 
 //-----------------------------------------------------------------------------
 
-int IPC_waitThread(const IPC_handle handle)
+int IPC_waitThread(const IPC_handle handle, int timeout)
 {
     if(!handle) {
         int res = pthread_join(0,NULL);

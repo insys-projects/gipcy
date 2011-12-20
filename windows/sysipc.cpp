@@ -301,35 +301,35 @@ int IPC_writePrivateProfileString(const IPC_str *lpAppName, const IPC_str *lpKey
 
 //-----------------------------------------------------------------------------
 
-int IPC_interlockedDecrement(volatile long *val )
+long IPC_interlockedDecrement(volatile long *val )
 {
     return InterlockedDecrement(val);
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_interlockedIncrement(volatile long *val )
+long IPC_interlockedIncrement(volatile long *val )
 {
     return InterlockedIncrement(val);
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_interlockedCompareExchange(volatile long *dst, long val, long param )
+long IPC_interlockedCompareExchange(volatile long *dst, long val, long param )
 {
     return InterlockedCompareExchange(dst, val, param);
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_interlockedExchange(volatile long *dst, long val )
+long IPC_interlockedExchange(volatile long *dst, long val )
 {
     return InterlockedExchange(dst, val);
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_interlockedExchangeAdd(volatile long *dst, long val )
+long IPC_interlockedExchangeAdd(volatile long *dst, long val )
 {
     return InterlockedExchangeAdd(dst, val);
 }

@@ -20,6 +20,7 @@
 //----------------------------------------------------------------------
 
 #ifdef __IPC_LINUX__
+#include <pthread.h>
 #endif
 
 #ifdef __IPC_WIN__
@@ -27,6 +28,7 @@
 #include <windows.h>
 #include <winioctl.h>
 #include <conio.h>
+#include <dos.h>
 #endif
 
 //----------------------------------------------------------------------

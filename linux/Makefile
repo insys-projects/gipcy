@@ -11,7 +11,7 @@ DIRS := ../include .
 
 INC := $(addprefix  -I, $(DIRS))
 
-CFLAGS += -D__IPC_LINUX__
+#CFLAGS += -D__IPC_LINUX__
 #CFLAGS += -D__VERBOSE__
 CFLAGS += $(INC)
 

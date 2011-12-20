@@ -77,8 +77,9 @@ extern "C" {
     //! Функция ожидает завершения потока
     /*!
     \param handle - дескриптор потока
+    \param timeout - время ожидания в мс
     */
-    int IPC_waitThread(const IPC_handle handle);
+    int IPC_waitThread(const IPC_handle handle, int timeout);
 
     //! Функция останавливает поток и удаляет дескриптор потока
     /*!

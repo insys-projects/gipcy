@@ -59,13 +59,13 @@ IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int 
 }
 
 //-----------------------------------------------------------------------------
-int IPC_waitThread(const IPC_handle handle)
+int IPC_waitThread(const IPC_handle handle, int timeout)
 {
     if(!handle)
         return IPC_invalidHandle;
 	ipc_handle_t h = (ipc_handle_t)handle;
 
-    WaitForSingleObject(h->ipc_descr, INFINITE );
+    WaitForSingleObject(h->ipc_descr, timeout );
 
     return IPC_ok;
 }

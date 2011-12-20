@@ -21,10 +21,7 @@ endif
 #
 # Select apropriate IPC methods
 #
-
-IPC := _BARDY_USE_SYSTEMV_IPC_
-#IPC := _BARDY_USE_POSIX_IPC_
-#IPC := _BARDY_USE_PTHREADS_IPC_
+IPC := __IPC_LINUX__
 
 #GPROF := -pg
 
@@ -35,7 +32,7 @@ IPC := _BARDY_USE_SYSTEMV_IPC_
 CC := $(CSTOOL_PREFIX)g++
 LD := $(CSTOOL_PREFIX)g++
 
-CFLAGS += -fPIC -Wall -g -D$(OS) -D$(IPC) -D$(DEF_TYPES) $(GPROF) $(DZY_VER)
+CFLAGS += -fPIC -Wall -g -D$(IPC) -D$(OS) -D$(DEF_TYPES) $(GPROF) $(DZY_VER)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c -MD $<

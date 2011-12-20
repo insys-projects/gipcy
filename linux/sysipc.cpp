@@ -281,27 +281,27 @@ int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKe
 
 //-----------------------------------------------------------------------------
 
-int IPC_interlockedDecrement( int *val )
+long IPC_interlockedDecrement( int *val )
 {
-    int tmp = *val;
+    long tmp = *val;
     *val = --tmp;
     return tmp;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_interlockedIncrement( int *val )
+long IPC_interlockedIncrement( volatile long *val )
 {
-    int tmp = *val;
+    long tmp = *val;
     *val = ++tmp;
     return tmp;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_interlockedCompareExchange( int *dst, int val, int param )
+long IPC_interlockedCompareExchange( int *dst, int val, int param )
 {
-    int tmp = *dst;
+    long tmp = *dst;
 
     if(*dst == param) {
         *dst = val;
@@ -312,18 +312,18 @@ int IPC_interlockedCompareExchange( int *dst, int val, int param )
 
 //-----------------------------------------------------------------------------
 
-int IPC_interlockedExchange( int *dst, int val )
+long IPC_interlockedExchange( int *dst, int val )
 {
-    int tmp = *dst;
+    long tmp = *dst;
     *dst = val;
     return tmp;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_interlockedExchangeAdd( int *dst, int val )
+long IPC_interlockedExchangeAdd( int *dst, int val )
 {
-    int tmp = *dst;
+    long tmp = *dst;
     *dst += val;
     return tmp;
 }

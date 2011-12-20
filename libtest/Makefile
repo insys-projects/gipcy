@@ -17,7 +17,7 @@ INC := $(addprefix  -I, $(DIRS))
 CC = g++
 LD = g++
 
-CFLAGS = -g -Wall $(INC)
+CFLAGS = -g -Wall -D__IPC_LINUX__ $(INC)
 LFLAGS = -Wl,-rpath $(LIBPATH) -L"$(LIBPATH)" -lgipcy
 
 $(TARGET_NAME1): $(patsubst %.cpp,%.o, sem_test.cpp)
