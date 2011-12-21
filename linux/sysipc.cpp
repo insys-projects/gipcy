@@ -36,6 +36,15 @@ int IPC_sysError()
 }
 
 //-----------------------------------------------------------------------------
+int IPC_getFullPath(const IPC_str *name, IPC_str *path)
+{
+	char* retpath = realpath(name, path);
+	if(!retpath)
+		return errno;
+    return res;
+}
+
+//-----------------------------------------------------------------------------
 
 static int convert_ipc_flags(IPC_flags ipc_flags)
 {

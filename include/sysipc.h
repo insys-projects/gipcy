@@ -124,7 +124,16 @@ extern "C" {
     //! Возвращает код последней ошибки
     int IPC_sysError();
 
-    int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
+    //! Функция определяет полный путь у указанному файлу
+    /*!
+    \param name - имя файла
+    \param path - полный путь
+    \return код ошибки
+    */
+    int IPC_getFullPath(const IPC_str *name, IPC_str *path);
+
+	//
+	int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
                                      IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName );
 
     int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName );

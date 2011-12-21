@@ -25,6 +25,14 @@ int IPC_sysError()
 }
 
 //-----------------------------------------------------------------------------
+int IPC_getFullPath(const IPC_str *name, IPC_str *path)
+{
+	IPC_str *FirsChar;
+	int res = GetFullPathName(name, MAX_PATH, path, &FirsChar);
+    return res;
+}
+
+//-----------------------------------------------------------------------------
 // открыть устройство
 #ifdef _WIN64
 IPC_handle IPC_openDevice(wchar_t *devname, const wchar_t *mainname, int devnum)
