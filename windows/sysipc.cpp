@@ -155,7 +155,7 @@ int IPC_ioctlDev(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize
 //                   можно всегда устанавливать FILE_SHARE_WRITE | FILE_SHARE_READ (_SH_DENYNO)
 // cmode (exist_mode) = CREATE_ALWAYS, OPEN_EXISTING
 // flag = FILE_ATTRIBUTE_NORMAL, FILE_FLAG_NO_BUFFERING
-IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
+IPC_handle IPC_openFile(const IPC_str *name, int flags)
 {
     if(!name) return NULL;
 	ipc_handle_t h = allocate_ipc_object(name, IPC_typeFile);
@@ -165,12 +165,17 @@ IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
 
 	unsigned long amode = 0;
 	unsigned long cmode = 0;
-	if(IPC_CREATE_FILE == flags)
+	if(IPC_CREATE_FILE && (flags & 0xf))
 		cmode = CREATE_ALWAYS;
-	if(IPC_OPEN_FILE == flags)
+	if(IPC_OPEN_FILE && (flags & 0xf))
 		cmode = OPEN_EXISTING;
 
-	if(GENERIC_READ == 
+	if(IPC_FILE_RDONLY && (flags & 0xf0))
+		amode = GENERIC_READ;
+	if(IPC_FILE_WRONLY && (flags & 0xf0))
+		amode |= GENERIC_WRITE;
+	if(IPC_FILE_RDWR && (flags & 0xf0))
+		amode = GENERIC_READ | GENERIC_WRITE;
 
 	h->ipc_descr = CreateFile(name,
 							  amode,

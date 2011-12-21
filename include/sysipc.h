@@ -31,7 +31,7 @@ extern "C" {
     \param flags - флаги
     \return дескриптор IPC или NULL
     */
-    IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags);
+    IPC_handle IPC_openFile(const IPC_str *name, int flags);
 
     //! Функция открывает файл с дополнительными параметрами
     /*!
