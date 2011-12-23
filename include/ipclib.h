@@ -21,6 +21,7 @@
 
 #ifdef __IPC_LINUX__
 #include <pthread.h>
+#include <errno.h>
 #endif
 
 #ifdef __IPC_WIN__
