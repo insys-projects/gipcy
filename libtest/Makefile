@@ -6,8 +6,9 @@ PHONY = clean
 TARGET_NAME1 := sem_test
 TARGET_NAME2 := mutex_test
 TARGET_NAME3 := event_test
+TARGET_NAME4 := dll_test
 
-all: $(TARGET_NAME1) $(TARGET_NAME2) $(TARGET_NAME3)
+all: $(TARGET_NAME1) $(TARGET_NAME2) $(TARGET_NAME3) $(TARGET_NAME4)
 
 LIBPATH := ../lib
 DIRS := ../include
@@ -29,6 +30,9 @@ $(TARGET_NAME2): $(patsubst %.cpp,%.o, mutex_test.cpp)
 $(TARGET_NAME3): $(patsubst %.cpp,%.o, event_test.cpp)
 	$(LD) -o $(TARGET_NAME3) $(notdir $^) $(LFLAGS)
 
+$(TARGET_NAME4): $(patsubst %.cpp,%.o, dll_test.cpp)
+	$(LD) -o $(TARGET_NAME4) $(notdir $^) $(LFLAGS)
+
 	rm -f *.o *~ core
 
 %.o: %.cpp
@@ -40,9 +44,9 @@ include $(wildcard *.d)
 clean:
 	rm -f *.o *~ core
 	rm -f *.d *~ core
-	rm -f $(TARGET_NAME1) $(TARGET_NAME2) $(TARGET_NAME3)
+	rm -f $(TARGET_NAME1) $(TARGET_NAME2) $(TARGET_NAME3) $(TARGET_NAME4)
 	
 distclean:
 	rm -f *.o *~ core
 	rm -f *.d *~ core
-	rm -f $(TARGET_NAME1) $(TARGET_NAME2) $(TARGET_NAME3)
+	rm -f $(TARGET_NAME1) $(TARGET_NAME2) $(TARGET_NAME3) $(TARGET_NAME4)
