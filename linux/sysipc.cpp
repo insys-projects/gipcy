@@ -38,10 +38,10 @@ int IPC_sysError()
 //-----------------------------------------------------------------------------
 int IPC_getFullPath(const IPC_str *name, IPC_str *path)
 {
-	char* retpath = realpath(name, path);
-	if(!retpath)
-		return errno;
-    return res;
+    char* retpath = realpath(name, path);
+    if(!retpath)
+        return errno;
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -58,15 +58,16 @@ static int convert_ipc_flags(IPC_flags ipc_flags)
         flags |= O_RDONLY;
     }
 
-    if(ipc_flags & IPC_OPEN_RDONLY) {
+
+    if(ipc_flags & IPC_FILE_RDONLY) {
         flags |= O_RDONLY;
     }
 
-    if(ipc_flags & IPC_OPEN_WRONLY) {
+    if(ipc_flags & IPC_FILE_WRONLY) {
         flags |= O_WRONLY;
     }
 
-    if(ipc_flags & IPC_OPEN_RDWR) {
+    if(ipc_flags & IPC_FILE_RDWR) {
         flags |= O_RDWR;
     }
 
