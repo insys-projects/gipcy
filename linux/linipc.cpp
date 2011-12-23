@@ -27,7 +27,7 @@ static char* create_ipc_name(const char *name)
 {
     size_t prefix_len = strlen("/tmp/ipclib/");
     size_t name_len = name ? strlen(name) : strlen("ipc_XXXXXXXX");
-    size_t len = prefix_len + name_len + 1;
+    size_t len = prefix_len + name_len + 2;
 
     char *ipc_name = (char*)malloc(len);
     if(!ipc_name) {
@@ -57,7 +57,7 @@ static char* create_ipc_name(const char *name)
 
 static char* create_raw_name(const char *name)
 {
-    size_t len = strlen(name);
+    size_t len = strlen(name)+1;
 
     if(!name)
         return NULL;
@@ -70,7 +70,7 @@ static char* create_raw_name(const char *name)
 
     memset(ipc_name, 0, len);
 
-    snprintf(ipc_name, len, "%s%s", "/tmp/ipclib/", name);
+    snprintf(ipc_name, len, "%s", name);
 
     return ipc_name;
 }
@@ -165,6 +165,7 @@ ipc_handle_t allocate_ipc_object(const char *name, IPC_type type)
        (type == IPC_typeDevice))
     {
         h->ipc_name = create_raw_name(name);
+        return h;
 
     } else {
 

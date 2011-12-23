@@ -37,7 +37,7 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
 
     if(h->ipc_descr.ipc_sem > 0) {
 
-        semarg.val = value;
+        semarg.val = !value;
 
         int res = semctl(h->ipc_descr.ipc_sem, 0, SETVAL, semarg);
         if(res < 0) {

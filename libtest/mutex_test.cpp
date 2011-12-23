@@ -47,7 +47,7 @@ thread_value __IPC_API writing_thread(void* param)
 
 	int res = IPC_captureMutex(tp->lock, -1);
 	if(res != IPC_ok)
-	    continue;
+            break;
 	//std::cout << "writing_tread(): lock" << endl;
 	//std::cout << "writing_tread(): write data" << endl;
 	tp->write_counter++;
@@ -59,7 +59,7 @@ thread_value __IPC_API writing_thread(void* param)
 	//std::cout << "writing_tread(): unlock" << endl;
 	res = IPC_releaseMutex(tp->lock);
 	if(res != IPC_ok)
-	    continue;
+            break;
     }
 
     //std::cout << "Writing thread stoped" << endl;
@@ -82,7 +82,7 @@ thread_value __IPC_API reading_thread(void* param)
     while(!tp->exit_flag) {
 	int res = IPC_captureMutex(tp->lock, -1);
 	if(res != IPC_ok)
-	    continue;
+            break;
 	//std::cout << "reading_tread(): lock" << endl;
 	//std::cout << "reading_tread(): read data" << endl;
 	tp->read_counter++;
@@ -95,7 +95,7 @@ thread_value __IPC_API reading_thread(void* param)
 	//std::cout << "reading_tread(): unlock" << endl;
 	res = IPC_releaseMutex(tp->lock);
 	if(res != IPC_ok)
-	    continue;
+            break;
     }
 
     //std::cout << "Reading thread stoped" << endl;
@@ -154,6 +154,7 @@ int main(int argc, char* argv[])
     tp.lock = captMutex;
     tp.mem_addr = pmem;
     tp.mem_size = MEM_SIZE;
+    tp.exit_flag = 0;
 
     std::cout << "Create writing thread..." << ends;
     IPC_handle threadW = IPC_createThread("thread_w", writing_thread, &tp);

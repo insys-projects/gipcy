@@ -29,7 +29,7 @@ IPC_handle IPC_openLibrary(const IPC_str *name, unsigned param)
 
     h->ipc_descr.ipc_lib = dlopen(name, RTLD_LAZY);
     if(!h->ipc_descr.ipc_lib) {
-        DEBUG_PRINT( "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());
+        fprintf( stderr, "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());//DEBUG_PRINT( "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());
         return NULL;
     }
 
@@ -70,6 +70,13 @@ int IPC_closeLibrary(IPC_handle handle)
     delete_ipc_object(h);
 
     return IPC_ok;
+}
+
+//-----------------------------------------------------------------------------
+
+char* IPC_libraryError(void)
+{
+    return dlerror();
 }
 
 //-----------------------------------------------------------------------------
