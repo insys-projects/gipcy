@@ -21,15 +21,22 @@ SRC_DIR := 	$(DIRS)
 SRC_FILES := 	$(addsuffix /*.cpp, $(SRC_DIR))
 SRC := 		$(wildcard $(SRC_FILES))
 OBJ := 		$(patsubst %.cpp,%.o, $(SRC) $(EXTFILES))
-LIB := ../lib
+LIBDIR := ../lib
 
 $(LIBNAME): $(OBJ)
 	$(LD) -g -shared -rdynamic -Wl,-soname,$(SONAME) \
 	-o $(LIBNAME) $(notdir $(OBJ)) -ldl -lpthread -lc -lrt
 	chmod 666 $(LIBNAME)
-	cp $(LIBNAME) $(LIB)
-	ln -svf $(LIB)/$(LIBNAME) $(LIB)/$(BASENAME)
-	ln -svf $(LIB)/$(LIBNAME) $(LIB)/$(SONAME)
+	ln -sf $(LIBNAME) $(SONAME)
+	ln -sf $(SONAME) $(BASENAME)
+	
+	cp -d $(LIBNAME) $(LIBDIR)
+	cp -d $(SONAME) $(LIBDIR)
+	cp -d $(BASENAME) $(LIBDIR)
+	
+	cp -d $(LIBNAME) ../../bin
+	cp -d $(SONAME) ../../bin
+	cp -d $(BASENAME) ../../bin
 
 include ./Mk.Rules
 
