@@ -23,6 +23,8 @@
 #include <pthread.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <termios.h>
+#include <unistd.h>
 #endif
 
 #ifdef __IPC_WIN__

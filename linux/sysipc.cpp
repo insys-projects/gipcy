@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <limits.h>
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
@@ -276,9 +277,144 @@ int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *param)
 
 //-----------------------------------------------------------------------------
 
+static int FindSection(const char* src, const char* section)
+{
+    int key_size = strlen(section);
+
+    for(uint i = 0; i < (strlen(src) - key_size); i++)
+    {
+        const char *psubstr = &src[i];
+
+        if(psubstr[i] == ';')
+            return -1;
+        if(psubstr[i] == '\0')
+            return -2;
+
+        if(psubstr[i] == '[') //begin section
+        {
+            char name[PATH_MAX] = {0};
+            snprintf(name, key_size+1, "%s\n", &psubstr[i+1] );
+
+            if(!strcmp(name, section))
+            {
+                DEBUG_PRINT("Section: < %s > was found in the string < %s >\n", section, src);
+                return 0;
+            }
+            else
+            {
+                DEBUG_PRINT("Section: < %s > was not found\n", section);
+                return -3;
+            }
+        }
+    }
+    return -4;
+}
+
+//-----------------------------------------------------------------------------
+
+static int FindOption(const char* src, const char* option, char *Buffer, int BufferSize, int *set_default)
+{
+    int key_size = strlen(option);
+
+    if(!set_default)
+        return -1;
+
+    *set_default = 1;
+
+    for(uint i = 0; i < (strlen(src) - key_size); i++)
+    {
+        const char *psubstr = &src[i];
+
+        if(psubstr[i] == ';')
+            return -1;
+        if(psubstr[i] == '\0')
+            return -2;
+
+        if(psubstr[i] == '[')
+            return -3;
+
+        char name[128] = {0};
+        snprintf(name, key_size+1, "%s\n", &psubstr[i] );
+
+        if(!strcmp(name, option))
+        {
+            DEBUG_PRINT("Option: < %s > was found in the string < %s >\n", option, src);
+
+            char *val = (char*)strstr(src, "=");
+
+            val++;
+/*
+            if( strstr(val, ".") ) {
+                DEBUG_PRINT(stderr, "Val = %f\n", atof(val));
+            } else {
+                DEBUG_PRINT(stderr, "Val = %d\n", atoi(val));
+            }
+*/
+            if(BufferSize >= (int)(strlen(val)+1)) {
+                strcpy( Buffer, val);
+            } else {
+                DEBUG_PRINT("Option: < %s > was found in the string < %s >. But buffer to small\n", option, src);
+                return -3;
+            }
+
+            *set_default = 0;
+
+            return 0;
+        }
+        else
+        {
+            DEBUG_PRINT("Option: < %s > was not found\n", option);
+            return -4;
+        }
+    }
+    return -5;
+}
+
+//-----------------------------------------------------------------------------
+#include <fstream>
+using namespace std;
+//-----------------------------------------------------------------------------
+//const char *Section, const char *Option, const char *Default,
+//char *Buffer, int BufferSize, const char *FileName
+
 int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
                              IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName )
 {
+    char str[PATH_MAX];
+    ifstream ifs;
+    int set_default = 1;
+
+    ifs.open(lpFileName, ios::in);
+    if( !ifs.is_open() ) {
+        DEBUG_PRINT("Can't open file: %s. %s\n", FileName, strerror(errno));
+        return -1;
+    }
+
+    while( !ifs.eof() ) {
+
+        ifs.getline(str, sizeof(str), '\n');
+
+        if( FindSection(str, lpAppName) == 0 ) {
+
+            //DEBUG_PRINT("inside cycle\n");
+
+            while( !ifs.eof() ) {
+
+                ifs.getline(str, sizeof(str), '\n');
+
+                if( FindOption(str, lpKeyName, lpReturnedString, nSize, &set_default) == 0) {
+                    break;
+                }
+            }
+
+            if(set_default) {
+                memcpy(lpReturnedString, lpDefault, strlen(lpDefault)+1);
+            }
+        }
+    }
+
+    ifs.close();
+
     return 0;
 }
 
@@ -291,7 +427,7 @@ int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKe
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedDecrement( int *val )
+long IPC_interlockedDecrement( volatile long *val )
 {
     long tmp = *val;
     *val = --tmp;
@@ -309,7 +445,7 @@ long IPC_interlockedIncrement( volatile long *val )
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedCompareExchange( int *dst, int val, int param )
+long IPC_interlockedCompareExchange( volatile long *dst, long val, long param )
 {
     long tmp = *dst;
 
@@ -322,7 +458,7 @@ long IPC_interlockedCompareExchange( int *dst, int val, int param )
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedExchange( int *dst, int val )
+long IPC_interlockedExchange( volatile long *dst, long val )
 {
     long tmp = *dst;
     *dst = val;
@@ -331,7 +467,7 @@ long IPC_interlockedExchange( int *dst, int val )
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedExchangeAdd( int *dst, int val )
+long IPC_interlockedExchangeAdd( volatile long *dst, long val )
 {
     long tmp = *dst;
     *dst += val;
@@ -371,6 +507,13 @@ int IPC_tlsSetValue(IPC_tls_key key, void *ptr)
 int IPC_deleteTlsKey(IPC_tls_key key)
 {
      return pthread_key_delete(key);
+}
+
+//-----------------------------------------------------------------------------
+
+const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size)
+{
+    return getcwd(buf, size);
 }
 
 //-----------------------------------------------------------------------------

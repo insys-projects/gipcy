@@ -110,10 +110,10 @@ extern "C" {
     \param srcSize - размер буфера с данными от устройства
     \return код ошибки
     */
-	int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize);
+    int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize);
 
     //! Устаревшая функция управления устройством
-	int IPC_ioctlDev(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap);
+    int IPC_ioctlDev(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap);
 
     //! Выполняет задержку в миллисекундах
     /*!
@@ -132,8 +132,15 @@ extern "C" {
     */
     int IPC_getFullPath(const IPC_str *name, IPC_str *path);
 
-	//
-	int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
+    //! Функция определяет текущий рабочий каталог
+    /*!
+    \param buf - буфер для сохранения пути к текущему каталогу
+    \param size - размер буфера
+    \return путь к текущей директории
+    */
+    const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size);
+
+    int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
                                      IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName );
 
     int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName );
