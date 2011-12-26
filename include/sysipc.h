@@ -144,7 +144,7 @@ extern "C" {
     long IPC_interlockedExchange(volatile long *dst, long val );
     long IPC_interlockedExchangeAdd(volatile long *dst, long val );
 
-#ifdef _WINDOWS
+#ifdef _WIN32
     typedef int IPC_tls_key;
 #else
     typedef pthread_key_t IPC_tls_key;
