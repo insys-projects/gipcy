@@ -33,6 +33,14 @@ int IPC_getFullPath(const IPC_str *name, IPC_str *path)
 }
 
 //-----------------------------------------------------------------------------
+const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size)
+{
+	GetCurrentDirectory(size, buf);
+	return buf;
+
+}
+
+//-----------------------------------------------------------------------------
 // открыть устройство
 #ifdef _WIN64
 IPC_handle IPC_openDevice(wchar_t *devname, const wchar_t *mainname, int devnum)
