@@ -100,6 +100,14 @@ extern "C" {
     */
     int IPC_writeDevice(IPC_handle handle, void *data, int size);
 
+    //! Описывает параметры для команд управления устройством
+    struct ioctl_param {
+        void *srcBuf;       //!< буфер с данными для устройства (через него передаются данные В драйвер нулевого кольца)
+        int srcSize;        //!< размер буфера с данными для устройства
+        void *dstBuf;       //!< буфер с данными от устройства  (через него передаются данные ИЗ драйвера нулевого кольца)
+        int dstSize;        //!< dstSize - размер буфера с данными от устройства
+    };
+
     //! Функция управления устройством
     /*!
     \param handle - дескриптор IPC
@@ -107,7 +115,7 @@ extern "C" {
     \param srcBuf - буфер с данными для устройства (через него передаются данные В драйвер нулевого кольца)
     \param srcSize - размер буфера с данными для устройства
     \param dstBuf - буфер с данными от устройства  (через него передаются данные ИЗ драйвера нулевого кольца)
-    \param srcSize - размер буфера с данными от устройства
+    \param dstSize - размер буфера с данными от устройства
     \return код ошибки
     */
     int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize);
@@ -160,6 +168,12 @@ extern "C" {
     void* IPC_tlsGetValue(IPC_tls_key key);
     int IPC_tlsSetValue(IPC_tls_key key, void *ptr);
     int IPC_deleteTlsKey(IPC_tls_key key);
+
+    //! Конвертирует дескриптор IPC в файловый дескриптор
+    int IPC_handleToFile(IPC_handle handle);
+
+    //! Конвертирует дескриптор IPC в файловый дескриптор устройства
+    int IPC_handleToDevice(IPC_handle handle);
 }
 
 #endif //__SYSIPC_H__

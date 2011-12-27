@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/mman.h>
 #endif
 
 #ifdef __IPC_WIN__

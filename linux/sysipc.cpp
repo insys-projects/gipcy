@@ -209,6 +209,22 @@ IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum)
 
 //-----------------------------------------------------------------------------
 
+int IPC_handleToFile(IPC_handle handle)
+{
+    ipc_handle_t h = (ipc_handle_t)handle;
+    if(!h) return -1;
+    return h->ipc_descr.ipc_file;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_handleToDevice(IPC_handle handle)
+{
+    return IPC_handleToFile(handle);
+}
+
+//-----------------------------------------------------------------------------
+
 int IPC_closeDevice(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
@@ -261,18 +277,32 @@ int IPC_writeDevice(IPC_handle handle, void *data, int size)
 
 //-----------------------------------------------------------------------------
 
-int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *param)
+int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return IPC_invalidHandle;
 
-    int res = ioctl(h->ipc_descr.ipc_file,cmd,param);
+    struct ioctl_param param;
+
+    param.srcBuf = srcBuf;
+    param.srcSize = srcSize;
+    param.dstBuf = dstBuf;
+    param.dstSize = dstSize;
+
+    int res = ioctl(h->ipc_descr.ipc_file,cmd,&param);
     if(res < 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
         return -1;
     }
 
     return res;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_ioctlDev(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap)
+{
+    return IPC_ioctlDevice(handle, cmd, srcBuf, srcSize, dstBuf, dstSize);
 }
 
 //-----------------------------------------------------------------------------
