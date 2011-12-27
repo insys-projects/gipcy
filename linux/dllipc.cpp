@@ -22,6 +22,31 @@
 
 //-----------------------------------------------------------------------------
 
+IPC_handle IPC_openLibraryEx(const IPC_str *baseName, unsigned param)
+{
+    ipc_handle_t h = allocate_ipc_object(baseName, IPC_typeLibrary);
+    if(!h) return NULL;
+
+    int namelen = strlen(baseName) + 1;
+    int prefixlen = strlen("/usr/local/lib/bardy/lib.so") + 1;
+
+	char libNameBuffer[MAX_PATH];
+	int BufferSize = sizeof(libNameBuffer);
+
+	snprintf(libNameBuffer, BufferSize, "%s%s%s", "/usr/local/lib/bardy/lib", baseName, ".so");
+
+	h->ipc_descr.ipc_lib = dlopen(libNameBuffer, RTLD_LAZY);
+    if(!h->ipc_descr.ipc_lib) {
+        fprintf( stderr, "%s(): Error load library %s. %s\n", __FUNCTION__, libNameBuffer, dlerror());
+		//DEBUG_PRINT( "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());
+        return NULL;
+    }
+
+    return h;
+}
+
+//-----------------------------------------------------------------------------
+
 IPC_handle IPC_openLibrary(const IPC_str *name, unsigned param)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeLibrary);
@@ -29,7 +54,8 @@ IPC_handle IPC_openLibrary(const IPC_str *name, unsigned param)
 
     h->ipc_descr.ipc_lib = dlopen(name, RTLD_LAZY);
     if(!h->ipc_descr.ipc_lib) {
-        fprintf( stderr, "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());//DEBUG_PRINT( "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());
+        fprintf( stderr, "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());
+		//DEBUG_PRINT( "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());
         return NULL;
     }
 
