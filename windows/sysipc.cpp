@@ -200,6 +200,8 @@ IPC_handle IPC_openFile(const IPC_str *name, int flags)
 							  cmode,
 							  FILE_ATTRIBUTE_NORMAL,
 							  NULL);
+	if(h->ipc_descr == INVALID_HANDLE_VALUE)
+	   	return NULL;
    	return h;
 }
 /*
