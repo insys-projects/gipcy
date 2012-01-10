@@ -76,7 +76,9 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
         return IPC_invalidHandle;
 	ipc_handle_t h = (ipc_handle_t)handle;
 
-    WaitForSingleObject(h->ipc_descr, timeout );
+    ULONG ret = WaitForSingleObject(h->ipc_descr, timeout );
+	if(ret == WAIT_TIMEOUT)
+		return -1;
 
     return IPC_ok;
 }
