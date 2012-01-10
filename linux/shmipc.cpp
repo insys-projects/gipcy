@@ -163,6 +163,10 @@ int IPC_deleteSharedMemory(IPC_handle handle)
 
     DEBUG_PRINT("%s(%s)\n", __FUNCTION__, h->ipc_name);
 
+    if(h->ipc_data) {
+       IPC_unmapSharedMemory(handle);
+    }
+
     struct shmid_ds id;
 
     if(shmctl(h->ipc_descr.ipc_shm,IPC_STAT,&id) < 0) {

@@ -230,8 +230,8 @@ bool is_ok_remove(ipc_handle_t h)
     if(!h)
         return false;
 
-    if((h->ipc_type != IPC_typeSemaphore) ||
-       (h->ipc_type != IPC_typeMutex) ||
+    if((h->ipc_type != IPC_typeSemaphore) &&
+       (h->ipc_type != IPC_typeMutex) &&
        (h->ipc_type != IPC_typeEvent))
         return false;
 
