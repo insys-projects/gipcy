@@ -77,7 +77,7 @@ static int convert_ipc_flags(IPC_flags ipc_flags)
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
+IPC_handle IPC_openFile(const IPC_str *name, int flags)
 {
     DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
 
@@ -104,7 +104,7 @@ IPC_handle IPC_openFile(const IPC_str *name, IPC_flags flags)
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_openFileEx(const IPC_str *name, IPC_flags flags, ...)
+IPC_handle IPC_openFileEx(const IPC_str *name, int flags, ...)
 {
     DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
 
