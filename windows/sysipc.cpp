@@ -181,16 +181,16 @@ IPC_handle IPC_openFile(const IPC_str *name, int flags)
 
 	unsigned long amode = 0;
 	unsigned long cmode = 0;
-	if(IPC_CREATE_FILE && (flags & 0xf))
+	if(IPC_CREATE_FILE & (flags & 0xf))
 		cmode = CREATE_ALWAYS;
-	if(IPC_OPEN_FILE && (flags & 0xf))
+	if(IPC_OPEN_FILE & (flags & 0xf))
 		cmode = OPEN_EXISTING;
 
-	if(IPC_FILE_RDONLY && (flags & 0xf0))
+	if(IPC_FILE_RDONLY & (flags & 0xf0))
 		amode = GENERIC_READ;
-	if(IPC_FILE_WRONLY && (flags & 0xf0))
+	if(IPC_FILE_WRONLY & (flags & 0xf0))
 		amode |= GENERIC_WRITE;
-	if(IPC_FILE_RDWR && (flags & 0xf0))
+	if(IPC_FILE_RDWR & (flags & 0xf0))
 		amode = GENERIC_READ | GENERIC_WRITE;
 
 	h->ipc_descr = CreateFile(name,
