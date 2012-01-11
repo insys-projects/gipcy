@@ -311,6 +311,21 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
 
 //-----------------------------------------------------------------------------
 
+int IPC_setPosFile(IPC_handle handle, int pos, int method)
+{
+    ipc_handle_t h = (ipc_handle_t)handle;
+    if(!h) return IPC_invalidHandle;
+
+	LONG HiPart = 0;
+	int res = SetFilePointer(h->ipc_descr, pos, &HiPart, method);
+	if(HiPart)
+		res = -1;
+
+    return res;
+}
+
+//-----------------------------------------------------------------------------
+
 int IPC_getPrivateProfileString(const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
                                 IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName)
 {
