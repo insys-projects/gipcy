@@ -183,6 +183,18 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
 
 //-----------------------------------------------------------------------------
 
+int IPC_setPosFile(IPC_handle handle, int pos, int method)
+{
+    ipc_handle_t h = (ipc_handle_t)handle;
+    if(!h) return IPC_invalidHandle;
+
+	int res = lseek(h->ipc_descr.ipc_file,pos,method);
+
+    return res;
+}
+
+//-----------------------------------------------------------------------------
+
 IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum)
 {
     DEBUG_PRINT("%s(%s)\n", __FUNCTION__, mainname);
