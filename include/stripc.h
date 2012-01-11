@@ -12,11 +12,14 @@
 
 #ifdef __linux__
     typedef char           IPC_str;
+    #define DIR_DELIMITER "/"
 #else
     #ifdef _WIN64
         typedef wchar_t    IPC_str;
+        #define DIR_DELIMITER L"\\"
     #else
         typedef char       IPC_str;
+        #define DIR_DELIMITER "\\"
     #endif
 #endif
 
