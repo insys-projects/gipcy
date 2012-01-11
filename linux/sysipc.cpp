@@ -47,7 +47,7 @@ int IPC_getFullPath(const IPC_str *name, IPC_str *path)
 
 //-----------------------------------------------------------------------------
 
-static int convert_ipc_flags(IPC_flags ipc_flags)
+static int convert_ipc_flags(int ipc_flags)
 {
     int flags = 0;
 
