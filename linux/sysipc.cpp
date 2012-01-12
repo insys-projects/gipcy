@@ -104,7 +104,7 @@ IPC_handle IPC_openFile(const IPC_str *name, int flags)
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_openFileEx(const IPC_str *name, int flags, ...)
+IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
 {
     DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
 

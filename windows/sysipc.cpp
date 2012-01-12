@@ -204,6 +204,48 @@ IPC_handle IPC_openFile(const IPC_str *name, int flags)
 	   	return NULL;
    	return h;
 }
+
+IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
+{
+    if(!name) return NULL;
+	ipc_handle_t h = allocate_ipc_object(name, IPC_typeFile);
+    if(!h) return NULL;
+
+    h->ipc_size = 0;
+
+	unsigned long amode = 0;
+	unsigned long cmode = 0;
+	unsigned long fattr = 0;
+	if(IPC_CREATE_FILE & (flags & 0xf))
+		cmode = CREATE_ALWAYS;
+	if(IPC_OPEN_FILE & (flags & 0xf))
+		cmode = OPEN_EXISTING;
+
+	if(IPC_FILE_RDONLY & (flags & 0xf0))
+		amode = GENERIC_READ;
+	if(IPC_FILE_WRONLY & (flags & 0xf0))
+		amode |= GENERIC_WRITE;
+	if(IPC_FILE_RDWR & (flags & 0xf0))
+		amode = GENERIC_READ | GENERIC_WRITE;
+
+	if(attr == IPC_FILE_NORMAL)
+		fattr = FILE_ATTRIBUTE_NORMAL;
+	if(attr == IPC_FILE_NOBUFFER)
+		fattr = FILE_FLAG_NO_BUFFERING;
+	if(attr == IPC_FILE_WRTHROUGH)
+		fattr = FILE_FLAG_WRITE_THROUGH;
+
+	h->ipc_descr = CreateFile(name,
+							  amode,
+							  FILE_SHARE_WRITE | FILE_SHARE_READ,
+							  NULL,
+							  cmode,
+							  fattr,
+							  NULL);
+	if(h->ipc_descr == INVALID_HANDLE_VALUE)
+	   	return NULL;
+   	return h;
+}
 /*
 	// открытие файла для прямой записи на диск
 	HANDLE hfile = CreateFile(	fileName,

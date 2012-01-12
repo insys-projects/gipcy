@@ -26,6 +26,13 @@ enum IPC_posMethod {
     IPC_FILE_END =	2    //!< позиция файла от конца файла
 };
 
+enum IPC_Attribute {
+
+    IPC_FILE_NORMAL		=	0,    //!< for WINDOWS - FILE_ATTRIBUTE_NORMAL
+    IPC_FILE_NOBUFFER	=	1,    //!< for WINDOWS - FILE_FLAG_NO_BUFFERING
+    IPC_FILE_WRTHROUGH	=	2    //!< for WINDOWS - FILE_FLAG_WRITE_THROUGH
+};
+
 //----------------------------------------------------------------------
 // Функции для работы с системными вызовами
 //----------------------------------------------------------------------
@@ -46,7 +53,7 @@ extern "C" {
     \param flags - флаги
     \return дескриптор IPC или NULL
     */
-    IPC_handle IPC_openFileEx(const IPC_str *name, int flags, ...);
+    IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr);
 
     //! Функция закрывает файл
     /*!
