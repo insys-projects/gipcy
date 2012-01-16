@@ -8,28 +8,10 @@
 #endif
 
 //-----------------------------------------------------------------------------
-#ifdef _WIN64
-IPC_handle IPC_createEvent(const wchar_t *name, bool manual, bool value)
-{
-    ipc_handle_t h = allocate_ipc_object(name, IPC_typeEvent);
-    if(!h)
-        return NULL;
 
-    h->ipc_data = NULL;
-
-	h->ipc_descr = CreateEvent(NULL, manual, value, name);
-    if(h->ipc_descr == INVALID_HANDLE_VALUE)
-	{
-        delete_ipc_object(h);
-        return NULL;
-    }
-
-    return h;
-}
-#else
 //	manual = TRUE - manual reset, FALSE - autoreset
 //  value = TRUE - начальное состояние Signaled
-IPC_handle IPC_createEvent(const char *name, bool manual, bool value)
+IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeEvent);
     if(!h)
@@ -46,7 +28,6 @@ IPC_handle IPC_createEvent(const char *name, bool manual, bool value)
 
     return h;
 }
-#endif
 
 //-----------------------------------------------------------------------------
 
