@@ -52,7 +52,7 @@ IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
             delete_ipc_object(h);
             return NULL;
         } else {
-            h->ipc_descr.ipc_sem = sem_open(name, IPC_CREAT, IPC_SVSEM_MODE, value);
+            h->ipc_descr.ipc_sem = sem_open(name, O_CREAT, 0666, (value) ? 1 : 0);
             if(h->ipc_descr.ipc_sem == SEM_FAILED) {
                 DEBUG_PRINT("%s(): error open event - %s. %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
                 delete_ipc_object(h);

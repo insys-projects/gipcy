@@ -34,7 +34,7 @@ static char* create_raw_name(const char *name)
 
     char *ipc_name = (char*)malloc(len);
     if(!ipc_name) {
-        fprintf(stderr, "%s(): %s", __FUNCTION__, strerror(errno));
+        fprintf(stderr, "%s(): %s\n", __FUNCTION__, strerror(errno));
         return NULL;
     }
 
@@ -42,7 +42,7 @@ static char* create_raw_name(const char *name)
 
     snprintf(ipc_name, len, "%s", name);
 
-    fprintf(stderr, "%s(): %s", __FUNCTION__, ipc_name);
+    //fprintf(stderr, "%s(): %s\n", __FUNCTION__, ipc_name);
 
     return ipc_name;
 }
@@ -82,7 +82,7 @@ ipc_handle_t allocate_ipc_object(const char *name, IPC_type type)
 
         snprintf(h->ipc_name, len, "%s", tmpName);
 
-        fprintf(stderr, "%s(): %s\n", __FUNCTION__, h->ipc_name);
+        //fprintf(stderr, "%s(): %s\n", __FUNCTION__, h->ipc_name);
 
     } else {
         h->ipc_name = create_raw_name(name);
@@ -117,5 +117,15 @@ void delete_ipc_object(ipc_handle_t h)
 }
 
 //-----------------------------------------------------------------------------
+
+bool chechk_handle(ipc_handle_t h, int h_type)
+{
+    if(!h) return false;
+
+    if(h->ipc_type != h_type)
+        return false;
+
+    return true;
+}
 
 #endif //__IPC_LINUX__

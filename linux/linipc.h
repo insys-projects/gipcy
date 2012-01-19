@@ -128,4 +128,11 @@ void delete_ipc_object(ipc_handle_t h);
 */
 bool is_ok_remove(ipc_handle_t h);
 
+//! Функция проверяет правильность дескриптора IPC
+/*!
+    \param h - дескриптор объекта IPC
+    \param h - тип дескриптора объекта IPC
+*/
+bool chechk_handle(ipc_handle_t h, int h_type);
+
 #endif //__LINIPC_H__

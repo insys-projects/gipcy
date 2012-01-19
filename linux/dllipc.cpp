@@ -66,7 +66,7 @@ IPC_handle IPC_openLibrary(const IPC_str *name, unsigned param)
 
 void* IPC_getEntry(IPC_handle handle, const char *entryName)
 {
-    DEBUG_PRINT("%s()\n", __FUNCTION__);
+    //DEBUG_PRINT("%s()\n", __FUNCTION__);
 
     if(!handle || !entryName)
         return NULL;

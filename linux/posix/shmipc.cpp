@@ -39,7 +39,7 @@
 
 IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
 {
-    DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
+    //DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
 
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeSharedMem);
     if(!h) return NULL;
@@ -81,15 +81,14 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
     if(res < 0)
         goto do_free_ipc_object;
 
-do_return_ipc_object:
-
-    h->ipc_size = size;
     DEBUG_PRINT("%s(): create shared memory - %s\n", __FUNCTION__, name);
+
+do_return_ipc_object:
+    h->ipc_size = size;
 
     return h;
 
 do_free_ipc_object:
-
     delete_ipc_object(h);
     DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
 
@@ -100,7 +99,7 @@ do_free_ipc_object:
 
 IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyCreated)
 {
-    DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
+    //DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
 
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeSharedMem);
     if(!h) return NULL;
@@ -168,7 +167,7 @@ void* IPC_mapSharedMemory(const  IPC_handle handle)
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return NULL;
 
-    DEBUG_PRINT("%s(): map shared memory %s\n", __FUNCTION__, h->ipc_name);
+    //DEBUG_PRINT("%s(): map shared memory %s\n", __FUNCTION__, h->ipc_name);
 
     if(h->ipc_size == 0) {
         DEBUG_PRINT("%s(): map shared memory failed %s. Size = %d bytes\n", __FUNCTION__, h->ipc_name, h->ipc_size);
@@ -195,7 +194,7 @@ int IPC_unmapSharedMemory(const  IPC_handle handle)
     if(!h) return IPC_invalidHandle;
     if(!h->ipc_data) return IPC_generalError;
 
-    DEBUG_PRINT("%s(): %s\n", __FUNCTION__, h->ipc_name);
+    //DEBUG_PRINT("%s(): %s\n", __FUNCTION__, h->ipc_name);
 
     int res = munmap(h->ipc_data, h->ipc_size);
     if(res < 0) {
@@ -215,6 +214,9 @@ int IPC_deleteSharedMemory(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return -1;
+
+    if(h->ipc_type != IPC_typeSharedMem)
+        return IPC_invalidHandle;
 
     DEBUG_PRINT("%s(): %s\n", __FUNCTION__, h->ipc_name);
 

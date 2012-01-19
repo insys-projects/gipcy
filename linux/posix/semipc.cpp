@@ -30,7 +30,7 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
     h->ipc_descr.ipc_sem = sem_open(name, IPC_CREAT | IPC_EXCL, 0666, value);
     if(h->ipc_descr.ipc_sem == SEM_FAILED) {
 
-        h->ipc_descr.ipc_sem = sem_open(name, IPC_CREAT, IPC_SVSEM_MODE, value);
+        h->ipc_descr.ipc_sem = sem_open(name, O_CREAT, 0666, value);
         if(h->ipc_descr.ipc_sem == SEM_FAILED) {
             DEBUG_PRINT("%s(): error open semaphore - %s. %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
             delete_ipc_object(h);
