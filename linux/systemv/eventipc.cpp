@@ -4,8 +4,8 @@
 #ifndef __LINIPC_H__
 #include "linipc.h"
 #endif
-#ifndef __MUTEXIPC_H__
-#include "mutexipc.h"
+#ifndef __EVENTIPC_H__
+#include "eventipc.h"
 #endif
 #ifndef __SYSIPC_H__
 #include "sysipc.h"
@@ -21,14 +21,21 @@
 #include <time.h>
 
 //-----------------------------------------------------------------------------
-
-IPC_handle IPC_createMutex(const IPC_str *name, bool value)
+//  manual = TRUE - manual reset, FALSE - autoreset
+//  value = TRUE - начальное состояние Signaled
+IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
 {
-    ipc_handle_t h = allocate_ipc_object(name, IPC_typeMutex);
+    ipc_handle_t h = allocate_ipc_object(name, IPC_typeEvent);
     if(!h)
         return NULL;
 
     h->ipc_data = NULL;
+
+    if(manual) {
+        h->ipc_size = 1;
+    } else {
+        h->ipc_size = 0;
+    }
 
     union semun semarg;
     struct semid_ds seminfo;
@@ -37,13 +44,28 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
 
     if(h->ipc_descr.ipc_sem > 0) {
 
-        semarg.val = !value;
+        semarg.val = 1;
 
         int res = semctl(h->ipc_descr.ipc_sem, 0, SETVAL, semarg);
         if(res < 0) {
-            DEBUG_PRINT("%s(): mutex - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
+            DEBUG_PRINT("%s(): event - %s created but not initialized. %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
             delete_ipc_object(h);
             return NULL;
+        }
+
+        if(!value) {
+
+            struct sembuf ops;
+            ops.sem_num = 0;
+            ops.sem_flg = SEM_UNDO;
+            ops.sem_op = -1;
+
+            res = semtimedop(h->ipc_descr.ipc_sem, &ops, 1, NULL);
+            if(res < 0) {
+                delete_ipc_object(h);
+                DEBUG_PRINT("%s(): %s - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
+                return NULL;
+            }
         }
 
     } else if(errno == EEXIST) {
@@ -57,25 +79,25 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
             int res = semctl(h->ipc_descr.ipc_sem, 0, IPC_STAT, semarg);
             if(res < 0) continue;
             if(semarg.buf->sem_otime != 0) {
-                DEBUG_PRINT("%s(): mutex - %s opened\n", __FUNCTION__, h->ipc_name);
+                DEBUG_PRINT("%s(): event - %s opened\n", __FUNCTION__, h->ipc_name);
                 return h;
             }
-            usleep(100);
+            IPC_delay(10);
         }
 
-        DEBUG_PRINT("%s(): mutex - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
-        delete_ipc_object(h);
-        return NULL;
+        DEBUG_PRINT("%s(): event - %s opened but not initialized\n", __FUNCTION__, h->ipc_name);
+        //delete_ipc_object(h);
+        //return h;
     }
 
-    DEBUG_PRINT("%s(): mutex - %s created\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): event - %s created\n", __FUNCTION__, h->ipc_name);
 
     return h;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_captureMutex(const  IPC_handle handle, int timeout)
+int IPC_waitEvent(const  IPC_handle handle, int timeout)
 {
     if(!handle)
         return IPC_invalidHandle;
@@ -99,7 +121,7 @@ int IPC_captureMutex(const  IPC_handle handle, int timeout)
 
         //DEBUG_PRINT("%s(): ts.tv_sec = %d\n", __FUNCTION__, (int)ts.tv_sec);
         //DEBUG_PRINT("%s(): ts.tv_nsec = %d\n", __FUNCTION__, (int)ts.tv_nsec);
-        //DEBUG_PRINT("%s(): Try lock mutex - %s\n", __FUNCTION__, h->ipc_name);
+        //DEBUG_PRINT("%s(): Try wait event - %s\n", __FUNCTION__, h->ipc_name);
 
         int res = semtimedop(h->ipc_descr.ipc_sem, &ops, 1, &ts);
         if(res < 0) {
@@ -128,14 +150,26 @@ int IPC_captureMutex(const  IPC_handle handle, int timeout)
         }
     }
 
-    DEBUG_PRINT("%s(): mutex - %s locked\n", __FUNCTION__, h->ipc_name);
+    if(!h->ipc_size) {
+
+        // так как событие с автосбросом, то
+        // мы увеличим значение счетчика сами
+        // чтобы был возможен повторный вход
+        ops.sem_num = 0;
+        ops.sem_op = 1;
+        ops.sem_flg = SEM_UNDO;
+
+        semop(h->ipc_descr.ipc_sem, &ops, 1);
+    }
+
+    DEBUG_PRINT("%s(): event - %s locked\n", __FUNCTION__, h->ipc_name);
 
     return IPC_ok;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_releaseMutex(const  IPC_handle handle)
+int IPC_setEvent(const  IPC_handle handle)
 {
     if(!handle)
         return IPC_invalidHandle;
@@ -158,21 +192,45 @@ int IPC_releaseMutex(const  IPC_handle handle)
         return IPC_generalError;
     }
 
-    DEBUG_PRINT("%s(): mutex - %s unlocked\n", __FUNCTION__, h->ipc_name);
+    //DEBUG_PRINT("%s(): event - %s unlocked\n", __FUNCTION__, h->ipc_name);
 
     return IPC_ok;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_deleteMutex(IPC_handle handle)
+int IPC_resetEvent(const  IPC_handle handle)
 {
     if(!handle)
         return IPC_invalidHandle;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
-    if(h->ipc_type != IPC_typeMutex)
+    union semun semarg;
+
+    semarg.val = 0;
+
+    int res = semctl(h->ipc_descr.ipc_sem, 0, SETVAL, semarg);
+    if(res < 0) {
+        DEBUG_PRINT("%s(): event - %s was not reseted. %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
+        return IPC_generalError;
+    }
+
+    //DEBUG_PRINT("%s(): event - %s reseted\n", __FUNCTION__, h->ipc_name);
+
+    return IPC_ok;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_deleteEvent(IPC_handle handle)
+{
+    if(!handle)
+        return IPC_invalidHandle;
+
+    ipc_handle_t h = (ipc_handle_t)handle;
+
+    if(h->ipc_type != IPC_typeEvent)
         return IPC_invalidHandle;
 
     if( is_ok_remove(h) ) {
@@ -184,7 +242,7 @@ int IPC_deleteMutex(IPC_handle handle)
         }
     }
 
-    DEBUG_PRINT("%s(): mutex - %s deleted\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): semaphore - %s deleted\n", __FUNCTION__, h->ipc_name);
 
     delete_ipc_object((ipc_handle_t)handle);
 

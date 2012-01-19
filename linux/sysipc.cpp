@@ -339,12 +339,12 @@ static int FindSection(const char* src, const char* section)
 
             if(!strcmp(name, section))
             {
-                DEBUG_PRINT("Section: < %s > was found in the string < %s >\n", section, src);
+                //DEBUG_PRINT("Section: < %s > was found in the string < %s >\n", section, src);
                 return 0;
             }
             else
             {
-                DEBUG_PRINT("Section: < %s > was not found\n", section);
+                //DEBUG_PRINT("Section: < %s > was not found\n", section);
                 return -3;
             }
         }
@@ -380,7 +380,7 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
 
         if(!strcmp(name, option))
         {
-            DEBUG_PRINT("Option: < %s > was found in the string < %s >\n", option, src);
+            //DEBUG_PRINT("Option: < %s > was found in the string < %s >\n", option, src);
 
             char *val = (char*)strstr(src, "=");
 
@@ -395,7 +395,7 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
             if(BufferSize >= (int)(strlen(val)+1)) {
                 strcpy( Buffer, val);
             } else {
-                DEBUG_PRINT("Option: < %s > was found in the string < %s >. But buffer to small\n", option, src);
+                //DEBUG_PRINT("Option: < %s > was found in the string < %s >. But buffer to small\n", option, src);
                 return -3;
             }
 
@@ -405,7 +405,7 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
         }
         else
         {
-            DEBUG_PRINT("Option: < %s > was not found\n", option);
+            //DEBUG_PRINT("Option: < %s > was not found\n", option);
             return -4;
         }
     }
@@ -428,7 +428,7 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
 
     ifs.open(lpFileName, ios::in);
     if( !ifs.is_open() ) {
-        DEBUG_PRINT("Can't open file: %s. %s\n", FileName, strerror(errno));
+        DEBUG_PRINT("Can't open file: %s. %s\n", lpFileName, strerror(errno));
         return -1;
     }
 

@@ -7,12 +7,17 @@ SONAME   = $(BASENAME).0
 
 all: $(LIBNAME)
 
-DIRS := ../include .
+include ./Mk.Rules
+
+ifeq ($(IPC_TYPE),_SYSTEMV_IPC_)
+    DIRS := . ./systemv ../include
+else
+    DIRS := . ./posix ../include
+endif
 
 INC := $(addprefix  -I, $(DIRS))
 
-#CFLAGS += -D__IPC_LINUX__
-#CFLAGS += -D__VERBOSE__
+CFLAGS += -D__VERBOSE__
 CFLAGS += $(INC)
 
 EXTFILES :=
@@ -25,7 +30,7 @@ LIBDIR := ../lib
 
 $(LIBNAME): $(OBJ)
 	$(LD) -g -shared -rdynamic -Wl,-soname,$(SONAME) \
-	-o $(LIBNAME) $(notdir $(OBJ)) -ldl -lpthread -lc -lrt
+        -o $(LIBNAME) $(notdir $(OBJ)) -ldl -lrt -lpthread
 	chmod 666 $(LIBNAME)
 	ln -sf $(LIBNAME) $(SONAME)
 	ln -sf $(SONAME) $(BASENAME)
@@ -37,8 +42,6 @@ $(LIBNAME): $(OBJ)
 	cp -d $(LIBNAME) ../../bin
 	cp -d $(SONAME) ../../bin
 	cp -d $(BASENAME) ../../bin
-
-include ./Mk.Rules
 
 test:
 	@echo $(SRC_DIR)

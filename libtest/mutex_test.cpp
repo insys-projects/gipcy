@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
     
     signal(SIGINT, exit_application);
 
-    std::cout << "Create synchronize mutex..." << ends;
+    std::cout << "Create synchronize mutex..." << endl;
     IPC_handle captMutex = IPC_createMutex("captMutex", false);
     if(!captMutex) {
         std::cout << "IPC_createMutex() failed" << endl;
@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
     }
     std::cout << "Ok" << endl;
 
-    std::cout << "Create shared memory..." << ends;
+    std::cout << "Create shared memory..." << endl;
     int wasCreated = 0;
     IPC_handle shm = IPC_createSharedMemoryEx("sharedMemory", MEM_SIZE, &wasCreated);
     if(!shm) {
@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
     }
     std::cout << "Ok" << endl;
 
-    std::cout << "Map shared memory..." << ends;
+    std::cout << "Map shared memory..." << endl;
     unsigned long *pmem = (unsigned long *)IPC_mapSharedMemory(shm);
     if(!pmem) {
         std::cout << "IPC_mapSharedMemory() failed" << endl;
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
     tp.mem_size = MEM_SIZE;
     tp.exit_flag = 0;
 
-    std::cout << "Create writing thread..." << ends;
+    std::cout << "Create writing thread..." << endl;
     IPC_handle threadW = IPC_createThread("thread_w", writing_thread, &tp);
     if(!threadW) {
         std::cout << "IPC_createThread() failed create writing thread" << endl;
@@ -167,7 +167,7 @@ int main(int argc, char* argv[])
     }
     std::cout << "Ok" << endl;
 
-    std::cout << "Create reading thread..." << ends;
+    std::cout << "Create reading thread..." << endl;
     IPC_handle threadR = IPC_createThread("thread_r", reading_thread, &tp);
     if(!threadR) {
         std::cout << "IPC_createThread() failed create reading thread" << endl;
@@ -189,25 +189,25 @@ int main(int argc, char* argv[])
 	}
     std::cout << endl;
 
-    std::cout << "Delete reading thread..." << ends;
+    std::cout << "Delete reading thread..." << endl;
     IPC_deleteThread(threadR);
     std::cout << "Ok" << endl;
     
-    std::cout << "Delete writing thread..." << ends;
+    std::cout << "Delete writing thread..." << endl;
     IPC_deleteThread(threadW);
     std::cout << "Ok" << endl;
     
     std::cout << "Write counter: " << tp.write_counter << " Read counter: " << tp.read_counter  << endl;
 
-    std::cout << "Unmap shared memory..." << ends;
+    std::cout << "Unmap shared memory..." << endl;
     IPC_unmapSharedMemory(shm);
     std::cout << "Ok" << endl;
 
-    std::cout << "Delete shared memory..." << ends;
+    std::cout << "Delete shared memory..." << endl;
     IPC_deleteSharedMemory(shm);
     std::cout << "Ok" << endl;
 
-    std::cout << "Delete mutex..." << ends;
+    std::cout << "Delete mutex..." << endl;
     IPC_deleteMutex(captMutex);
     std::cout << "Ok" << endl;
     

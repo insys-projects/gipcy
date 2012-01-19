@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
     
     signal(SIGINT, exit_application);
 
-    std::cout << "Create synchronize event..." << ends;
+    std::cout << "Create synchronize event..." << endl;
     IPC_handle lockEv = IPC_createEvent("lockEv", true, true);
     if(!lockEv) {
         std::cout << "IPC_createSemaphore() failed" << endl;
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
     }
     std::cout << "Ok" << endl;
 
-    std::cout << "Create shared memory..." << ends;
+    std::cout << "Create shared memory..." << endl;
     int wasCreated = 0;
     IPC_handle shm = IPC_createSharedMemoryEx("sharedMemory", MEM_SIZE, &wasCreated);
     if(!shm) {
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
     }
     std::cout << "Ok" << endl;
 
-    std::cout << "Map shared memory..." << ends;
+    std::cout << "Map shared memory..." << endl;
     unsigned long *pmem = (unsigned long *)IPC_mapSharedMemory(shm);
     if(!pmem) {
         std::cout << "IPC_mapSharedMemory() failed" << endl;
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
     tp.mem_addr = pmem;
     tp.mem_size = MEM_SIZE;
 
-    std::cout << "Create reading thread..." << ends;
+    std::cout << "Create reading thread..." << endl;
     IPC_handle threadR = IPC_createThread("thread_r", reading_thread, &tp);
     if(!threadR) {
         std::cout << "IPC_createThread() failed create reading thread" << endl;
@@ -141,19 +141,19 @@ int main(int argc, char* argv[])
 	}
     std::cout << endl;
 
-    std::cout << "Delete reading thread..." << ends;
+    std::cout << "Delete reading thread..." << endl;
     IPC_deleteThread(threadR);
     std::cout << "Ok" << endl;
     
-    std::cout << "Unmap shared memory..." << ends;
+    std::cout << "Unmap shared memory..." << endl;
     IPC_unmapSharedMemory(shm);
     std::cout << "Ok" << endl;
 
-    std::cout << "Delete shared memory..." << ends;
+    std::cout << "Delete shared memory..." << endl;
     IPC_deleteSharedMemory(shm);
     std::cout << "Ok" << endl;
 
-    std::cout << "Delete event..." << ends;
+    std::cout << "Delete event..." << endl;
     IPC_deleteEvent(lockEv);
     std::cout << "Ok" << endl;
     

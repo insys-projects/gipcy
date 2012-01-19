@@ -11,7 +11,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
-#include <semaphore.h>
 #include <fcntl.h>
 #include <sys/times.h>
 #include <sys/types.h>
@@ -19,14 +18,24 @@
 #include <sys/stat.h>
 #include <sys/shm.h>
 #include <sys/mman.h>
+#ifdef _SYSTEMV_IPC_
 #include <sys/sem.h>
+#endif
+#ifdef _POSIX_IPC_
+#include <semaphore.h>
+#endif
 
 //-----------------------------------------------------------------------------
 
 union ipc {
     int          ipc_file;      //!< Используется если IPC файл в ФС
     int          ipc_dev;       //!< Используется если IPC файл устройства
+#ifdef _SYSTEMV_IPC_
     int          ipc_sem;       //!< Используется если IPC семафор SYSTEM V
+#endif
+#ifdef _POSIX_IPC_
+    sem_t        *ipc_sem;    //!< Используется если IPC семафор POSIX
+#endif
     int          ipc_shm;       //!< Используется если IPC разделяемая память POSIX
     pthread_t    ipc_thread;    //!< Используется если IPC поток выполнения
     void*        ipc_lib;       //!< Используется если IPC разделяемая библиотека

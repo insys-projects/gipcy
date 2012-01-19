@@ -22,6 +22,8 @@ endif
 # Select apropriate IPC methods
 #
 IPC := __IPC_LINUX__
+IPC_TYPE := _SYSTEMV_IPC_
+#IPC_TYPE := _POSIX_IPC_
 
 #GPROF := -pg
 
@@ -32,7 +34,7 @@ IPC := __IPC_LINUX__
 CC := $(CSTOOL_PREFIX)g++
 LD := $(CSTOOL_PREFIX)g++
 
-CFLAGS += -fPIC -Wall -g -D$(IPC) -D$(OS) -D$(DEF_TYPES) $(GPROF) $(DZY_VER)
+CFLAGS += -fPIC -Wall -g -D$(IPC) -D$(IPC_TYPE) -D$(OS) -D$(DEF_TYPES) $(GPROF) $(DZY_VER)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c -MD $<

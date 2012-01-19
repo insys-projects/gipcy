@@ -120,7 +120,7 @@ void* IPC_mapSharedMemory(const  IPC_handle handle)
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return NULL;
 
-    DEBUG_PRINT("%s(%s)\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): %s\n", __FUNCTION__, h->ipc_name);
 
     void *mem = shmat(h->ipc_descr.ipc_shm, NULL, 0);
     if(mem == MAP_FAILED) {
@@ -141,7 +141,7 @@ int IPC_unmapSharedMemory(const  IPC_handle handle)
     if(!h) return -EINVAL;
     if(!h->ipc_data) return -EINVAL;
 
-    DEBUG_PRINT("%s(%s)\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): %s\n", __FUNCTION__, h->ipc_name);
 
     int res = shmdt(h->ipc_data);
     if(res < 0) {
@@ -161,7 +161,7 @@ int IPC_deleteSharedMemory(IPC_handle handle)
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return -1;
 
-    DEBUG_PRINT("%s(%s)\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): %s\n", __FUNCTION__, h->ipc_name);
 
     if(h->ipc_data) {
        IPC_unmapSharedMemory(handle);
