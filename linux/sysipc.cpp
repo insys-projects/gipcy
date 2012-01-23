@@ -157,12 +157,12 @@ int IPC_readFile(IPC_handle handle, void *data, int size)
     if(!h) return IPC_invalidHandle;
 
     int res = read(h->ipc_descr.ipc_file,data,size);
-    if(res < 0) {
+    if(res <= 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
         return -1;
     }
 
-    return res;
+    return IPC_ok;
 }
 
 //-----------------------------------------------------------------------------
@@ -173,12 +173,12 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
     if(!h) return IPC_invalidHandle;
 
     int res = write(h->ipc_descr.ipc_file,data,size);
-    if(res < 0) {
+    if(res <= 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
         return -1;
     }
 
-    return res;
+    return IPC_ok;
 }
 
 //-----------------------------------------------------------------------------
@@ -268,7 +268,7 @@ int IPC_readDevice(IPC_handle handle, void *data, int size)
         return -1;
     }
 
-    return res;
+    return IPC_ok;
 }
 
 //-----------------------------------------------------------------------------
@@ -284,7 +284,7 @@ int IPC_writeDevice(IPC_handle handle, void *data, int size)
         return -1;
     }
 
-    return res;
+    return IPC_ok;
 }
 
 //-----------------------------------------------------------------------------
@@ -416,8 +416,6 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
 #include <fstream>
 using namespace std;
 //-----------------------------------------------------------------------------
-//const char *Section, const char *Option, const char *Default,
-//char *Buffer, int BufferSize, const char *FileName
 
 int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
                              IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName )

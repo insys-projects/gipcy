@@ -17,7 +17,7 @@ endif
 
 INC := $(addprefix  -I, $(DIRS))
 
-CFLAGS += -D__VERBOSE__
+#CFLAGS += -D__VERBOSE__
 CFLAGS += $(INC)
 
 EXTFILES :=
