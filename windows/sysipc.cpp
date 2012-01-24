@@ -334,8 +334,10 @@ int IPC_readFile(IPC_handle handle, void *data, int size)
 
 	unsigned long readsize;
     int res = ReadFile(h->ipc_descr, data, size, &readsize, NULL);
-
-    return res;
+	if(res == TRUE)
+	    return IPC_ok;
+	else
+		return 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -347,6 +349,10 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
 
 	unsigned long writesize;
     int res = WriteFile(h->ipc_descr, data, size, &writesize, NULL);
+	if(res == TRUE)
+	    return IPC_ok;
+	else
+		return 1;
 
     return res;
 }
