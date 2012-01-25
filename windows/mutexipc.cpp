@@ -38,7 +38,7 @@ int IPC_captureMutex(const  IPC_handle handle, int timeout)
 
 	int status = WaitForSingleObject(h->ipc_descr, timeout);
 	if(status == WAIT_TIMEOUT) 
-		return IPC_generalError;
+		return IPC_timeout;
 
     return IPC_ok;
 }
