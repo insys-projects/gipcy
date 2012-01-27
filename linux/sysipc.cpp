@@ -49,7 +49,6 @@ int IPC_getch(void)
 
     ch = getchar();
 
-    //int nread = read(STDIN_FILENO, &ch, 1);
     DEBUG_PRINT("%s(): ch = %d\n", __FUNCTION__, ch );
 
     return ch;
