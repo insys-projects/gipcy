@@ -8,8 +8,9 @@ TARGET_NAME2 := mutex_test
 TARGET_NAME3 := event_test
 TARGET_NAME4 := dll_test
 TARGET_NAME5 := shm_test
+TARGET_NAME6 := kb_test
 
-all: $(TARGET_NAME1) $(TARGET_NAME2) $(TARGET_NAME3) $(TARGET_NAME4) $(TARGET_NAME5)
+all: $(TARGET_NAME1) $(TARGET_NAME2) $(TARGET_NAME3) $(TARGET_NAME4) $(TARGET_NAME5) $(TARGET_NAME6)
 
 LIBPATH := ../lib
 DIRS := ../include
@@ -37,6 +38,9 @@ $(TARGET_NAME4): $(patsubst %.cpp,%.o, dll_test.cpp)
 $(TARGET_NAME5): $(patsubst %.cpp,%.o, shm_test.cpp)
 	$(LD) -o $(TARGET_NAME5) $(notdir $^) $(LFLAGS)
 
+$(TARGET_NAME6): $(patsubst %.cpp,%.o, kb_test.cpp)
+	$(LD) -o $(TARGET_NAME6) $(notdir $^) $(LFLAGS)
+
 	rm -f *.o *~ core
 
 %.o: %.cpp
@@ -49,10 +53,10 @@ clean:
 	rm -f *.o *~ core
 	rm -f *.d *~ core
 	rm -f $(TARGET_NAME1) $(TARGET_NAME2) \
-	$(TARGET_NAME3) $(TARGET_NAME4) $(TARGET_NAME5)
+	$(TARGET_NAME3) $(TARGET_NAME4) $(TARGET_NAME5) $(TARGET_NAME6)
 	
 distclean:
 	rm -f *.o *~ core
 	rm -f *.d *~ core
 	rm -f $(TARGET_NAME1) $(TARGET_NAME2) \
-	$(TARGET_NAME3) $(TARGET_NAME4) $(TARGET_NAME5)
+	$(TARGET_NAME3) $(TARGET_NAME4) $(TARGET_NAME5) $(TARGET_NAME6)

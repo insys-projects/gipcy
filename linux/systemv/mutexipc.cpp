@@ -4,11 +4,8 @@
 #ifndef __LINIPC_H__
 #include "linipc.h"
 #endif
-#ifndef __MUTEXIPC_H__
-#include "mutexipc.h"
-#endif
-#ifndef __SYSIPC_H__
-#include "sysipc.h"
+#ifndef __GIPCY_H__
+    #include "gipcy.h"
 #endif
 
 #include <stdio.h>

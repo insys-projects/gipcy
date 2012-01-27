@@ -471,6 +471,12 @@ extern "C" {
     //! Конвертирует дескриптор IPC в файловый дескриптор устройства
     int IPC_handleToDevice(IPC_handle handle);
 
+    //! Инициализирует буфер клавиатуры в неканоническое состояние
+    void IPC_initKeyboard(void);
+
+    //! Восстанавливает буфер клавиатуры в каноническое состояние
+    void IPC_cleanupKeyboard(void);
+
     //! Ожидает нажатия клавиши
     int IPC_getch(void);
 

@@ -4,8 +4,8 @@
 #ifndef __LINIPC_H__
 #include "linipc.h"
 #endif
-#ifndef __SEMIPC_H__
-#include "semipc.h"
+#ifndef __GIPCY_H__
+    #include "gipcy.h"
 #endif
 
 #include <stdio.h>

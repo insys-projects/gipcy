@@ -2,8 +2,8 @@
 #ifndef __LINIPC_H__
 #define __LINIPC_H__
 
-#ifndef __IPCTYPE_H__
-    #include "ipctype.h"
+#ifndef __GIPCY_H__
+    #include "gipcy.h"
 #endif
 
 #include <stdint.h>

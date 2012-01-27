@@ -1,9 +1,6 @@
 
 #ifdef __IPC_LINUX__
 
-#ifndef __IPCLIB_H__
-#include "ipclib.h"
-#endif
 #ifndef __LINIPC_H__
 #include "linipc.h"
 #endif

@@ -4,9 +4,6 @@
 #ifndef __LINIPC_H__
     #include "linipc.h"
 #endif
-#ifndef __SYSIPC_H__
-    #include "sysipc.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +15,58 @@
 #include <error.h>
 #include <time.h>
 #include <sys/ioctl.h>
+
+//-----------------------------------------------------------------------------
+
+static struct termios oldt;
+static struct termios newt;
+
+//-----------------------------------------------------------------------------
+
+void IPC_initKeyboard(void)
+{
+    tcgetattr( STDIN_FILENO, &oldt );
+    newt = oldt;
+    newt.c_lflag &= ~( ICANON | ECHO | ISIG );
+    newt.c_cc[VMIN]=0;
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+}
+
+//-----------------------------------------------------------------------------
+
+void IPC_cleanupKeyboard(void)
+{
+    oldt.c_lflag |= ( ICANON | ECHO | ISIG );
+    oldt.c_cc[VMIN]=0;
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_getch(void)
+{
+    int ch;
+
+    ch = getchar();
+
+    //int nread = read(STDIN_FILENO, &ch, 1);
+    DEBUG_PRINT("%s(): ch = %d\n", __FUNCTION__, ch );
+
+    return ch;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_kbhit(void)
+{
+    size_t size = 0;
+    if (ioctl(STDIN_FILENO, FIONREAD, &size) == -1)
+        return 0;
+
+    DEBUG_PRINT("%s(): size = %d\n", __FUNCTION__, size );
+
+    return size;
+}
 
 //-----------------------------------------------------------------------------
 
