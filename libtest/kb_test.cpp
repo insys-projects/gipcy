@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
         if(IPC_kbhit()) {
             key_code = IPC_getch();
-            fprintf(stderr, "Pressed key code: %d\n", key_code);
+            fprintf(stdout, "Pressed key code: %d\n", key_code);
         }
 
         if(key_code == 27)
