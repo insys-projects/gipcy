@@ -132,7 +132,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 				DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
     			return -1;
 		}
-		return IPC_ok;
+		return IPC_OK;
     }
 
     ipc_handle_t h = (ipc_handle_t)handle;
