@@ -9,7 +9,7 @@
 #endif
 
 #ifdef _WIN64
-IPC_handle IPC_openLibraryEx(const IPC_str *baseName, unsigned param)
+GIPCY_API IPC_handle IPC_openLibraryEx(const IPC_str *baseName, unsigned param)
 {
     ipc_handle_t h = allocate_ipc_object(baseName, IPC_typeLibrary);
     if(!h)
@@ -28,15 +28,20 @@ IPC_handle IPC_openLibraryEx(const IPC_str *baseName, unsigned param)
 		wcscat(libname, L"64");
 		wcscat(libname0, L"-64");
 	}
-            h->ipc_descr = LoadLibrary(libname);
-            if( !h->ipc_descr )
+	h->ipc_descr = LoadLibrary(libname);
+    if( !h->ipc_descr )
 	{
-                    h->ipc_descr = LoadLibrary(libname0);
+		h->ipc_descr = LoadLibrary(libname0);
+		if(h->ipc_descr == NULL)
+		{
+			delete_ipc_object(h);
+			return NULL;
+		}
 	}
     return h;
 }
 #else
-IPC_handle IPC_openLibraryEx(const IPC_str *baseName, unsigned param)
+GIPCY_API	IPC_handle IPC_openLibraryEx(const IPC_str *baseName, unsigned param)
 {
     ipc_handle_t h = allocate_ipc_object(baseName, IPC_typeLibrary);
     if(!h)
@@ -44,12 +49,17 @@ IPC_handle IPC_openLibraryEx(const IPC_str *baseName, unsigned param)
 
     //! TODO insert code here
 	h->ipc_descr = LoadLibrary(baseName);
+    if(h->ipc_descr == NULL)
+	{
+        delete_ipc_object(h);
+        return NULL;
+    }
 
     return h;
 }
 #endif
 
-IPC_handle IPC_openLibrary(const IPC_str *name, unsigned param)
+GIPCY_API	IPC_handle IPC_openLibrary(const IPC_str *name, unsigned param)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeLibrary);
     if(!h)
@@ -57,14 +67,19 @@ IPC_handle IPC_openLibrary(const IPC_str *name, unsigned param)
 
     //! TODO insert code here
 	h->ipc_descr = LoadLibrary(name);
+    if(h->ipc_descr == NULL)
+	{
+        delete_ipc_object(h);
+        return NULL;
+    }
 
     return h;
 }
 
-void* IPC_getEntry(IPC_handle handle, const char *entryName)
+GIPCY_API void* IPC_getEntry(IPC_handle handle, const char *entryName)
 {
     if(!handle)
-        return (void*)IPC_invalidHandle;
+        return NULL;
 	ipc_handle_t h = (ipc_handle_t)handle;
 	
 	FARPROC pDlgFunc = GetProcAddress((HINSTANCE)(h->ipc_descr), entryName);
@@ -72,16 +87,18 @@ void* IPC_getEntry(IPC_handle handle, const char *entryName)
 	return pDlgFunc;
 }
 
-int IPC_closeLibrary(IPC_handle handle)
+GIPCY_API int IPC_closeLibrary(IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 	ipc_handle_t h = (ipc_handle_t)handle;
 
 	BOOL ret = FreeLibrary((HINSTANCE)(h->ipc_descr));
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
 
     delete_ipc_object(h);
-    return IPC_ok;
+    return IPC_OK;
 }
 
 #endif //__IPC_WIN__

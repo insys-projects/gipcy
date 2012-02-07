@@ -43,4 +43,11 @@ typedef void* IPC_handle;
 
 //----------------------------------------------------------------------
 
+#ifdef GIPCY_EXPORTS
+ #define GIPCY_API __declspec(dllexport)
+#else
+ #define GIPCY_API
+// #define GIPCY_API __declspec(dllimport)
+#endif // GIPCY_EXPORTS
+
 #endif // __IPCLIB_H__

@@ -9,7 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_createMutex(const IPC_str *name, bool value)
+GIPCY_API IPC_handle IPC_createMutex(const IPC_str *name, bool value)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeMutex);
     if(!h)
@@ -18,7 +18,7 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
     h->ipc_data = NULL;
 
     h->ipc_descr = CreateMutex(NULL, value, name);
-    if(h->ipc_descr == INVALID_HANDLE_VALUE)
+    if(h->ipc_descr == NULL)
 	{
         delete_ipc_object(h);
         return NULL;
@@ -29,49 +29,55 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
 
 //-----------------------------------------------------------------------------
 
-int IPC_captureMutex(const  IPC_handle handle, int timeout)
+GIPCY_API int IPC_captureMutex(const  IPC_handle handle, int timeout)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
 	int status = WaitForSingleObject(h->ipc_descr, timeout);
 	if(status == WAIT_TIMEOUT) 
-		return IPC_timeout;
+		return IPC_WAIT_TIMEOUT;
+	if(status == WAIT_ABANDONED) 
+		return IPC_WAIT_ABANDONED;
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_releaseMutex(const  IPC_handle handle)
+GIPCY_API int IPC_releaseMutex(const  IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
-	ReleaseMutex(h->ipc_descr);
-    return IPC_ok;
+	BOOL ret = ReleaseMutex(h->ipc_descr);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_deleteMutex(IPC_handle handle)
+GIPCY_API int IPC_deleteMutex(IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
     if(h->ipc_type != IPC_typeMutex)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
-	CloseHandle(h->ipc_descr);
+	BOOL ret = CloseHandle(h->ipc_descr);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
 	
     delete_ipc_object(h);
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

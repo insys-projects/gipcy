@@ -11,7 +11,7 @@
 #endif
 
 //-----------------------------------------------------------------------------
-IPC_handle IPC_createThread(const IPC_str *name, thread_func *function, void *param)
+GIPCY_API IPC_handle IPC_createThread(const IPC_str *name, thread_func *function, void *param)
 {
     if(!function)
         return NULL;
@@ -26,13 +26,17 @@ IPC_handle IPC_createThread(const IPC_str *name, thread_func *function, void *pa
 	unsigned int threadID;
 
 	h->ipc_descr = (HANDLE)_beginthreadex( NULL, 0, function, param, 0, &threadID );
-
+	if(h->ipc_descr == NULL)
+	{
+	    delete_ipc_object(h);
+		return NULL;
+	}
 
     return h;
 }
 
 //-----------------------------------------------------------------------------
-IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int flags)
+GIPCY_API IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int flags)
 {
     if(!tp)
         return NULL;
@@ -54,46 +58,58 @@ IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int 
 	unsigned int threadID;
 
 	h->ipc_descr = (HANDLE)_beginthreadex( NULL, 0, tp->threadFunction, tp, 0, &threadID );
+	if(h->ipc_descr == NULL)
+	{
+	    delete_ipc_object(h);
+		return NULL;
+	}
 
     return h;
 }
 
 //-----------------------------------------------------------------------------
-int IPC_stopThread(const IPC_handle handle)
+GIPCY_API int IPC_stopThread(const IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h || h->ipc_type != IPC_typeThread) return IPC_invalidHandle;
+    if(!h || h->ipc_type != IPC_typeThread)
+		return IPC_INVALID_HANDLE;
 
-	TerminateThread(h->ipc_descr, 0);
+	BOOL ret = TerminateThread(h->ipc_descr, 0);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
-int IPC_waitThread(const IPC_handle handle, int timeout)
+GIPCY_API int IPC_waitThread(const IPC_handle handle, int timeout)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 	ipc_handle_t h = (ipc_handle_t)handle;
 
-    ULONG ret = WaitForSingleObject(h->ipc_descr, timeout );
-	if(ret == WAIT_TIMEOUT)
-		return -1;
+    ULONG status = WaitForSingleObject(h->ipc_descr, timeout );
+	if(status == WAIT_TIMEOUT) 
+		return IPC_WAIT_TIMEOUT;
+	if(status == WAIT_ABANDONED) 
+		return IPC_WAIT_ABANDONED;
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
-int IPC_deleteThread(IPC_handle handle)
+GIPCY_API int IPC_deleteThread(IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
     ipc_handle_t h = (ipc_handle_t)handle;
 
-	CloseHandle(h->ipc_descr);
+	BOOL ret = CloseHandle(h->ipc_descr);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
 
     delete_ipc_object(h);
-	return IPC_ok;
+	return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

@@ -12,28 +12,30 @@
 
 //-----------------------------------------------------------------------------
 // выполнить задержку при выполнении программы
-void IPC_delay(int ms)
+GIPCY_API void IPC_delay(int ms)
 {
     Sleep(ms);
 }
 
 //-----------------------------------------------------------------------------
 // получить последнюю ошибку системной функции
-int IPC_sysError()
+GIPCY_API int IPC_sysError()
 {
 	return GetLastError();
 }
 
 //-----------------------------------------------------------------------------
-int IPC_getFullPath(const IPC_str *name, IPC_str *path)
+GIPCY_API int IPC_getFullPath(const IPC_str *name, IPC_str *path)
 {
 	IPC_str *FirsChar;
-	int res = GetFullPathName(name, MAX_PATH, path, &FirsChar);
-    return res;
+	ULONG res = GetFullPathName(name, MAX_PATH, path, &FirsChar);
+	if(!res)
+		return IPC_GENERAL_ERROR;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
-const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size)
+GIPCY_API const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size)
 {
 	GetCurrentDirectory(size, buf);
 	return buf;
@@ -43,7 +45,7 @@ const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size)
 //-----------------------------------------------------------------------------
 // открыть устройство
 #ifdef _WIN64
-IPC_handle IPC_openDevice(wchar_t *devname, const wchar_t *mainname, int devnum)
+GIPCY_API IPC_handle IPC_openDevice(wchar_t *devname, const wchar_t *mainname, int devnum)
 {
     if(!mainname) return NULL;
 
@@ -63,7 +65,7 @@ IPC_handle IPC_openDevice(wchar_t *devname, const wchar_t *mainname, int devnum)
 	return h;
 }
 #else
-IPC_handle IPC_openDevice(char *devname, const char *mainname, int devnum)
+GIPCY_API IPC_handle IPC_openDevice(char *devname, const char *mainname, int devnum)
 {
     if(!mainname) return NULL;
 
@@ -86,10 +88,10 @@ IPC_handle IPC_openDevice(char *devname, const char *mainname, int devnum)
 
 //-----------------------------------------------------------------------------
 
-int IPC_closeDevice(IPC_handle handle)
+GIPCY_API int IPC_closeDevice(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     int res = CloseHandle(h->ipc_descr);
     delete_ipc_object(h);
@@ -98,10 +100,10 @@ int IPC_closeDevice(IPC_handle handle)
 
 //-----------------------------------------------------------------------------
 
-int IPC_readDevice(IPC_handle handle, void *data, int size)
+GIPCY_API int IPC_readDevice(IPC_handle handle, void *data, int size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
 	unsigned long readsize;
     int res = ReadFile(h->ipc_descr, data, size, &readsize, NULL);
@@ -111,10 +113,10 @@ int IPC_readDevice(IPC_handle handle, void *data, int size)
 
 //-----------------------------------------------------------------------------
 
-int IPC_writeDevice(IPC_handle handle, void *data, int size)
+GIPCY_API int IPC_writeDevice(IPC_handle handle, void *data, int size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
 	unsigned long writesize;
     int res = WriteFile(h->ipc_descr, data, size, &writesize, NULL);
@@ -124,10 +126,10 @@ int IPC_writeDevice(IPC_handle handle, void *data, int size)
 
 //-----------------------------------------------------------------------------
 
-int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize)
+GIPCY_API int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     //int res = ioctl(h->ipc_descr, cmd, param);
 
@@ -144,10 +146,10 @@ int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcS
     return res;
 }
 
-int IPC_ioctlDev(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap)
+GIPCY_API int IPC_ioctlDeviceOvl(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     //int res = ioctl(h->ipc_descr, cmd, param);
 
@@ -171,7 +173,7 @@ int IPC_ioctlDev(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize
 //                   можно всегда устанавливать FILE_SHARE_WRITE | FILE_SHARE_READ (_SH_DENYNO)
 // cmode (exist_mode) = CREATE_ALWAYS, OPEN_EXISTING
 // flag = FILE_ATTRIBUTE_NORMAL, FILE_FLAG_NO_BUFFERING
-IPC_handle IPC_openFile(const IPC_str *name, int flags)
+GIPCY_API IPC_handle IPC_openFile(const IPC_str *name, int flags)
 {
     if(!name) return NULL;
 	ipc_handle_t h = allocate_ipc_object(name, IPC_typeFile);
@@ -205,7 +207,7 @@ IPC_handle IPC_openFile(const IPC_str *name, int flags)
    	return h;
 }
 
-IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
+GIPCY_API IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
 {
     if(!name) return NULL;
 	ipc_handle_t h = allocate_ipc_object(name, IPC_typeFile);
@@ -315,10 +317,10 @@ IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
 */
 //-----------------------------------------------------------------------------
 
-int IPC_closeFile(IPC_handle handle)
+GIPCY_API int IPC_closeFile(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     int res = CloseHandle(h->ipc_descr);
     delete_ipc_object(h);
@@ -327,30 +329,30 @@ int IPC_closeFile(IPC_handle handle)
 
 //-----------------------------------------------------------------------------
 
-int IPC_readFile(IPC_handle handle, void *data, int size)
+GIPCY_API int IPC_readFile(IPC_handle handle, void *data, int size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
 	unsigned long readsize;
     int res = ReadFile(h->ipc_descr, data, size, &readsize, NULL);
 	if(res == TRUE)
-	    return IPC_ok;
+	    return IPC_OK;
 	else
 		return 1;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_writeFile(IPC_handle handle, void *data, int size)
+GIPCY_API int IPC_writeFile(IPC_handle handle, void *data, int size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
 	unsigned long writesize;
     int res = WriteFile(h->ipc_descr, data, size, &writesize, NULL);
 	if(res == TRUE)
-	    return IPC_ok;
+	    return IPC_OK;
 	else
 		return 1;
 
@@ -359,10 +361,10 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
 
 //-----------------------------------------------------------------------------
 
-int IPC_setPosFile(IPC_handle handle, int pos, int method)
+GIPCY_API int IPC_setPosFile(IPC_handle handle, int pos, int method)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
 	LONG HiPart = 0;
 	int res = SetFilePointer(h->ipc_descr, pos, &HiPart, method);
@@ -374,7 +376,7 @@ int IPC_setPosFile(IPC_handle handle, int pos, int method)
 
 //-----------------------------------------------------------------------------
 
-int IPC_getPrivateProfileString(const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
+GIPCY_API int IPC_getPrivateProfileString(const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
                                 IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName)
 {
     return GetPrivateProfileString(lpAppName, lpKeyName, lpDefault, lpReturnedString, nSize, lpFileName);
@@ -382,70 +384,70 @@ int IPC_getPrivateProfileString(const IPC_str *lpAppName, const IPC_str *lpKeyNa
 
 //-----------------------------------------------------------------------------
 
-int IPC_writePrivateProfileString(const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName)
+GIPCY_API int IPC_writePrivateProfileString(const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName)
 {
     return WritePrivateProfileString( lpAppName, lpKeyName, lpString, lpFileName );
 }
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedDecrement(volatile long *val )
+GIPCY_API long IPC_interlockedDecrement(volatile long *val )
 {
     return InterlockedDecrement(val);
 }
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedIncrement(volatile long *val )
+GIPCY_API long IPC_interlockedIncrement(volatile long *val )
 {
     return InterlockedIncrement(val);
 }
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedCompareExchange(volatile long *dst, long val, long param )
+GIPCY_API long IPC_interlockedCompareExchange(volatile long *dst, long val, long param )
 {
     return InterlockedCompareExchange(dst, val, param);
 }
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedExchange(volatile long *dst, long val )
+GIPCY_API long IPC_interlockedExchange(volatile long *dst, long val )
 {
     return InterlockedExchange(dst, val);
 }
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedExchangeAdd(volatile long *dst, long val )
+GIPCY_API long IPC_interlockedExchangeAdd(volatile long *dst, long val )
 {
     return InterlockedExchangeAdd(dst, val);
 }
 
 //-----------------------------------------------------------------------------
 
-IPC_tls_key IPC_createTlsKey(void)
+GIPCY_API IPC_tls_key IPC_createTlsKey(void)
 {
     return TlsAlloc();
 }
 
 //-----------------------------------------------------------------------------
 
-void* IPC_tlsGetValue(IPC_tls_key key)
+GIPCY_API void* IPC_tlsGetValue(IPC_tls_key key)
 {
     return TlsGetValue(key);
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_tlsSetValue(IPC_tls_key key, void *ptr)
+GIPCY_API int IPC_tlsSetValue(IPC_tls_key key, void *ptr)
 {
     return TlsSetValue(key, ptr);
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_deleteTlsKey(IPC_tls_key key)
+GIPCY_API int IPC_deleteTlsKey(IPC_tls_key key)
 {
      return TlsFree(key);
 }

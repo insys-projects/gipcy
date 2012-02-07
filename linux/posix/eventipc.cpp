@@ -71,7 +71,7 @@ IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
 int IPC_waitEvent(const  IPC_handle handle, int timeout)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
@@ -90,16 +90,16 @@ int IPC_waitEvent(const  IPC_handle handle, int timeout)
     if(res < 0) {
         if(errno == ETIMEDOUT) {
             DEBUG_PRINT("%s(): wait event %s timeout\n", __FUNCTION__, h->ipc_name);
-            return IPC_timeout;
+            return IPC_WAIT_TIMEOUT;
         } else {
             DEBUG_PRINT("%s(): wait event %s error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-            return IPC_generalError;
+            return IPC_GENERAL_ERROR;
         }
     }
 
     DEBUG_PRINT("%s(): wait event %s Ok\n", __FUNCTION__, h->ipc_name);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -107,19 +107,19 @@ int IPC_waitEvent(const  IPC_handle handle, int timeout)
 int IPC_setEvent(const  IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
     int res = sem_post(h->ipc_descr.ipc_sem);
     if(res < 0) {
         DEBUG_PRINT("%s(): wait event %s error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     DEBUG_PRINT("%s(): set event %s Ok\n", __FUNCTION__, h->ipc_name);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -127,7 +127,7 @@ int IPC_setEvent(const  IPC_handle handle)
 int IPC_resetEvent(const  IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
@@ -135,20 +135,20 @@ int IPC_resetEvent(const  IPC_handle handle)
     int res = sem_getvalue(h->ipc_descr.ipc_sem, &value);
     if(res < 0) {
         DEBUG_PRINT("%s(): get event value error - %s\n", __FUNCTION__, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     if(value > 0) {
         res = sem_wait(h->ipc_descr.ipc_sem);
         if(res < 0) {
             DEBUG_PRINT("%s(): wait event %s error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-            return IPC_generalError;
+            return IPC_GENERAL_ERROR;
         }
     }
 
     DEBUG_PRINT("%s(): reset event %s Ok\n", __FUNCTION__, h->ipc_name);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -156,23 +156,23 @@ int IPC_resetEvent(const  IPC_handle handle)
 int IPC_deleteEvent(IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
     if(h->ipc_type != IPC_typeEvent)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     int res = sem_close(h->ipc_descr.ipc_sem);
     if(res < 0) {
         DEBUG_PRINT("%s(): close event error - %s\n", __FUNCTION__, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     res = sem_unlink(h->ipc_name);
     if(res < 0) {
         DEBUG_PRINT("%s(): unlink event %s error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     DEBUG_PRINT("%s(): event - %s deleted\n", __FUNCTION__, h->ipc_name);
@@ -181,7 +181,7 @@ int IPC_deleteEvent(IPC_handle handle)
 
     DEBUG_PRINT("%s(): event deleted successfully\n", __FUNCTION__);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

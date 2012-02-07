@@ -45,7 +45,7 @@ extern "C" {
     \param flags - флаги
     \return дескриптор IPC или NULL
     */
-    IPC_handle IPC_openFile(const IPC_str *name, int flags);
+GIPCY_API    IPC_handle IPC_openFile(const IPC_str *name, int flags);
 
     //! Функция открывает файл с дополнительными параметрами
     /*!
@@ -53,14 +53,14 @@ extern "C" {
     \param flags - флаги
     \return дескриптор IPC или NULL
     */
-    IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr);
+GIPCY_API    IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr);
 
     //! Функция закрывает файл
     /*!
     \param handle - дескриптор IPC
     \return код ошибки
     */
-    int IPC_closeFile(IPC_handle handle);
+GIPCY_API    int IPC_closeFile(IPC_handle handle);
 
     //! Функция чтения из файла
     /*!
@@ -69,7 +69,7 @@ extern "C" {
     \param size - размер буфера данных
     \return количество прочитанных байт
     */
-    int IPC_readFile(IPC_handle handle, void *data, int size);
+GIPCY_API    int IPC_readFile(IPC_handle handle, void *data, int size);
 
     //! Функция записи в файл
     /*!
@@ -78,7 +78,7 @@ extern "C" {
     \param size - размер буфера данных
     \return количество записанных байт
     */
-    int IPC_writeFile(IPC_handle handle, void *data, int size);
+GIPCY_API    int IPC_writeFile(IPC_handle handle, void *data, int size);
 
     //! Функция установки позиции в файле
     /*!
@@ -87,7 +87,7 @@ extern "C" {
     \param method - способ получения новой позиции
     \return код ошибки
     */
-	int IPC_setPosFile(IPC_handle handle, int pos, int method);
+GIPCY_API	int IPC_setPosFile(IPC_handle handle, int pos, int method);
 
     //! Функция открывает устройство
     /*!
@@ -96,14 +96,14 @@ extern "C" {
     \param devnum - номер устройства
     \return дескриптор IPC или NULL
     */
-    IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum);
+GIPCY_API    IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum);
 
     //! Функция закрывает устройство
     /*!
     \param handle - дескриптор IPC
     \return код ошибки
     */
-    int IPC_closeDevice(IPC_handle handle);
+GIPCY_API    int IPC_closeDevice(IPC_handle handle);
 
     //! Функция чтения из устройства
     /*!
@@ -112,7 +112,7 @@ extern "C" {
     \param size - размер буфера данных
     \return количество прочитанных байт
     */
-    int IPC_readDevice(IPC_handle handle, void *data, int size);
+GIPCY_API    int IPC_readDevice(IPC_handle handle, void *data, int size);
 
     //! Функция записи в устройство
     /*!
@@ -121,7 +121,7 @@ extern "C" {
     \param size - размер буфера данных
     \return количество записанных байт
     */
-    int IPC_writeDevice(IPC_handle handle, void *data, int size);
+GIPCY_API    int IPC_writeDevice(IPC_handle handle, void *data, int size);
 
     //! Описывает параметры для команд управления устройством
     struct ioctl_param {
@@ -141,19 +141,19 @@ extern "C" {
     \param dstSize - размер буфера с данными от устройства
     \return код ошибки
     */
-    int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize);
+GIPCY_API    int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize);
 
     //! Устаревшая функция управления устройством
-    int IPC_ioctlDev(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap);
+GIPCY_API    int IPC_ioctlDeviceOvl(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap);
 
     //! Выполняет задержку в миллисекундах
     /*!
       \param ms - время задержки, в мс
       */
-    void IPC_delay(int ms);
+GIPCY_API    void IPC_delay(int ms);
 
     //! Возвращает код последней ошибки
-    int IPC_sysError();
+GIPCY_API    int IPC_sysError();
 
     //! Функция определяет полный путь у указанному файлу
     /*!
@@ -161,7 +161,7 @@ extern "C" {
     \param path - полный путь
     \return код ошибки
     */
-    int IPC_getFullPath(const IPC_str *name, IPC_str *path);
+GIPCY_API    int IPC_getFullPath(const IPC_str *name, IPC_str *path);
 
     //! Функция определяет текущий рабочий каталог
     /*!
@@ -169,34 +169,34 @@ extern "C" {
     \param size - размер буфера
     \return путь к текущей директории
     */
-    const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size);
+GIPCY_API    const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size);
 
-    int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
+GIPCY_API    int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
                                      IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName );
 
-    int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName );
+GIPCY_API    int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName );
 
-    long IPC_interlockedDecrement(volatile long *val );
-    long IPC_interlockedIncrement(volatile long *val );
-    long IPC_interlockedCompareExchange(volatile long *dst, long val, long param );
-    long IPC_interlockedExchange(volatile long *dst, long val );
-    long IPC_interlockedExchangeAdd(volatile long *dst, long val );
+GIPCY_API    long IPC_interlockedDecrement(volatile long *val );
+GIPCY_API    long IPC_interlockedIncrement(volatile long *val );
+GIPCY_API    long IPC_interlockedCompareExchange(volatile long *dst, long val, long param );
+GIPCY_API    long IPC_interlockedExchange(volatile long *dst, long val );
+GIPCY_API    long IPC_interlockedExchangeAdd(volatile long *dst, long val );
 
 #ifdef _WIN32
     typedef int IPC_tls_key;
 #else
     typedef pthread_key_t IPC_tls_key;
 #endif
-    IPC_tls_key IPC_createTlsKey(void);
-    void* IPC_tlsGetValue(IPC_tls_key key);
-    int IPC_tlsSetValue(IPC_tls_key key, void *ptr);
-    int IPC_deleteTlsKey(IPC_tls_key key);
+GIPCY_API    IPC_tls_key IPC_createTlsKey(void);
+GIPCY_API    void* IPC_tlsGetValue(IPC_tls_key key);
+GIPCY_API    int IPC_tlsSetValue(IPC_tls_key key, void *ptr);
+GIPCY_API    int IPC_deleteTlsKey(IPC_tls_key key);
 
-    //! Конвертирует дескриптор IPC в файловый дескриптор
-    int IPC_handleToFile(IPC_handle handle);
+	//! Конвертирует дескриптор IPC в файловый дескриптор
+GIPCY_API    int IPC_handleToFile(IPC_handle handle);
 
     //! Конвертирует дескриптор IPC в файловый дескриптор устройства
-    int IPC_handleToDevice(IPC_handle handle);
+GIPCY_API    int IPC_handleToDevice(IPC_handle handle);
 }
 
 #endif //__SYSIPC_H__

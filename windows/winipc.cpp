@@ -93,7 +93,7 @@ int IPC_closeHandle(IPC_handle handle)
 {
     delete_ipc_object((ipc_handle_t)handle);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

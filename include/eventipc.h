@@ -16,39 +16,38 @@ extern "C" {
     /*!
     \param name - имя события
     \param value - начальное значение события
+	\return в случае ошибки возвращает NULL
     */
-    IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value);
+GIPCY_API    IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value);
 
     //! Функция ожидает перехода события в сигнальное состояние
     /*!
     \param handle - дескриптор события
     \param timeout - время ожидания операции
+	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_WAIT_TIMEOUT или IPC_WAIT_ABANDONED
     */
-    int IPC_waitEvent(const IPC_handle handle, int timeout);
+GIPCY_API    int IPC_waitEvent(const IPC_handle handle, int timeout);
 
     //! Функция переводит событие в сигнальное состояние
     /*!
     \param handle - дескриптор события
+	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
     */
-    int IPC_setEvent(const  IPC_handle handle);
+GIPCY_API    int IPC_setEvent(const  IPC_handle handle);
 
     //! Функция переводит событие в несигнальное состояние
     /*!
     \param handle - дескриптор события
+	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
     */
-    int IPC_resetEvent(const  IPC_handle handle);
-
-    //! Функция возвращает win-дескриптор события
-    /*!
-    \param handle - дескриптор события
-    */
-	//HANDLE IPC_getEvent(const  IPC_handle handle);
+GIPCY_API    int IPC_resetEvent(const  IPC_handle handle);
 
     //! Функция удаляет объект события
     /*!
     \param handle - дескриптор события
+	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
     */
-    int IPC_deleteEvent(IPC_handle handle);
+GIPCY_API    int IPC_deleteEvent(IPC_handle handle);
 }
 
 #endif //__MUTEXIPC_H__

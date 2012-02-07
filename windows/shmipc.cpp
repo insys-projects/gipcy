@@ -9,7 +9,7 @@
 #endif
 
 //-----------------------------------------------------------------------------
-IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
+GIPCY_API IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeSharedMem);
     if(!h)
@@ -18,12 +18,17 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
 	h->ipc_size = size;
 
 	h->ipc_descr = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, size, name);
+	if(h->ipc_descr == NULL)
+	{
+	    delete_ipc_object(h);
+		return NULL;
+	}
 
     return h;
 }
 
 //-----------------------------------------------------------------------------
-IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyCreated)
+GIPCY_API IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyCreated)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeSharedMem);
     if(!h)
@@ -32,50 +37,61 @@ IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyC
     h->ipc_size = size;
 
 	h->ipc_descr = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, size, name);
+	{
+	    delete_ipc_object(h);
+		return NULL;
+	}
 	*alreadyCreated = ( GetLastError() == ERROR_ALREADY_EXISTS ) ? 1 : 0;
 
     return h;
 }
 
 //-----------------------------------------------------------------------------
-void* IPC_mapSharedMemory(const  IPC_handle handle)
+GIPCY_API void* IPC_mapSharedMemory(const  IPC_handle handle)
 {
     if(!handle)
-        return (void*)IPC_invalidHandle;
+        return NULL;
 	ipc_handle_t h = (ipc_handle_t)handle;
 
 	void* pMem = (PVOID)MapViewOfFile(h->ipc_descr, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
-
 	h->ipc_data = pMem;
+	if(h->ipc_data == NULL)
+		return NULL;
 
     return pMem;
 }
 
 //-----------------------------------------------------------------------------
-int IPC_unmapSharedMemory(const  IPC_handle handle)
+GIPCY_API int IPC_unmapSharedMemory(const  IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 	ipc_handle_t h = (ipc_handle_t)handle;
+	if(!h->ipc_data) 
+		return IPC_GENERAL_ERROR;
 
-	UnmapViewOfFile(h->ipc_data);
+	BOOL ret = UnmapViewOfFile(h->ipc_data);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
 
 	h->ipc_data = NULL;
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
-int IPC_deleteSharedMemory(IPC_handle handle)
+GIPCY_API int IPC_deleteSharedMemory(IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
     ipc_handle_t h = (ipc_handle_t)handle;
 
-	CloseHandle(h->ipc_descr);
+	BOOL ret = CloseHandle(h->ipc_descr);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
 
     delete_ipc_object(h);
-	return IPC_ok;
+	return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

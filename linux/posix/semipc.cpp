@@ -52,7 +52,7 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
 int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
@@ -71,16 +71,16 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
     if(res < 0) {
         if(errno == ETIMEDOUT) {
             DEBUG_PRINT("%s(): wait semaphore %s timeout\n", __FUNCTION__, h->ipc_name);
-            return IPC_timeout;
+            return IPC_WAIT_TIMEOUT;
         } else {
             DEBUG_PRINT("%s(): wait semaphore %s error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-            return IPC_generalError;
+            return IPC_GENERAL_ERROR;
         }
     }
 
     DEBUG_PRINT("%s(): wait semaphore %s Ok\n", __FUNCTION__, h->ipc_name);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -88,7 +88,7 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
 int IPC_unlockSemaphore(const  IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
@@ -99,12 +99,12 @@ int IPC_unlockSemaphore(const  IPC_handle handle)
             return IPC_interrupted;
         }
         DEBUG_PRINT("%s(): %s - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     DEBUG_PRINT("%s(): semaphore - %s unlocked\n", __FUNCTION__, h->ipc_name);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -112,23 +112,23 @@ int IPC_unlockSemaphore(const  IPC_handle handle)
 int IPC_deleteSemaphore(IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
     if(h->ipc_type != IPC_typeSemaphore)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     int res = sem_close(h->ipc_descr.ipc_sem);
     if(res < 0) {
         DEBUG_PRINT("%s(): close semaphore error - %s\n", __FUNCTION__, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     res = sem_unlink(h->ipc_name);
     if(res < 0) {
         DEBUG_PRINT("%s(): unlink semaphore %s error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     DEBUG_PRINT("%s(): semaphore - %s deleted\n", __FUNCTION__, h->ipc_name);
@@ -137,7 +137,7 @@ int IPC_deleteSemaphore(IPC_handle handle)
 
     DEBUG_PRINT("%s(): semaphore deleted successfully\n", __FUNCTION__);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

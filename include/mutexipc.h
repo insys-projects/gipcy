@@ -16,27 +16,31 @@ extern "C" {
     /*!
     \param name - имя мютекса
     \param value - начальное значение мютекса
+	\return в случае ошибки возвращает NULL
     */
-    IPC_handle IPC_createMutex(const IPC_str *name, bool value);
+GIPCY_API	IPC_handle IPC_createMutex(const IPC_str *name, bool value);
 
     //! Функция захватывает мютекс или ждет его освобождения
     /*!
     \param handle - дескриптор мютекса
     \param timeout - время ожидания операции
+	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_WAIT_TIMEOUT или IPC_WAIT_ABANDONED
     */
-    int IPC_captureMutex(const IPC_handle handle, int timeout);
+GIPCY_API    int IPC_captureMutex(const IPC_handle handle, int timeout);
 
     //! Функция освобождает занятый мютекс
     /*!
     \param handle - дескриптор мютекса
+	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
     */
-    int IPC_releaseMutex(const IPC_handle handle);
+GIPCY_API    int IPC_releaseMutex(const IPC_handle handle);
 
     //! Функция удаляет именованный объект мютекса
     /*!
     \param handle - дескриптор мютекса
+	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
     */
-    int IPC_deleteMutex(IPC_handle handle);
+GIPCY_API    int IPC_deleteMutex(IPC_handle handle);
 }
 
 #endif //__MUTEXIPC_H__

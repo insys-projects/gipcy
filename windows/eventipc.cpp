@@ -11,7 +11,7 @@
 
 //	manual = TRUE - manual reset, FALSE - autoreset
 //  value = TRUE - начальное состояние Signaled
-IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
+GIPCY_API IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeEvent);
     if(!h)
@@ -20,7 +20,7 @@ IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
     h->ipc_data = NULL;
 
     h->ipc_descr = CreateEvent(NULL, manual, value, name);
-    if(h->ipc_descr == INVALID_HANDLE_VALUE)
+    if(h->ipc_descr == NULL)
 	{
         delete_ipc_object(h);
         return NULL;
@@ -31,72 +31,70 @@ IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
 
 //-----------------------------------------------------------------------------
 
-int IPC_waitEvent(const  IPC_handle handle, int timeout)
+GIPCY_API int IPC_waitEvent(const  IPC_handle handle, int timeout)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
 	int status = WaitForSingleObject(h->ipc_descr, timeout);
 	if(status == WAIT_TIMEOUT) 
-		return IPC_timeout;
+		return IPC_WAIT_TIMEOUT;
+	if(status == WAIT_ABANDONED) 
+		return IPC_WAIT_ABANDONED;
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_setEvent(const  IPC_handle handle)
+GIPCY_API int IPC_setEvent(const  IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
-	SetEvent(h->ipc_descr);
-	return IPC_ok;
+	BOOL ret = SetEvent(h->ipc_descr);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
+	return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_resetEvent(const  IPC_handle handle)
+GIPCY_API int IPC_resetEvent(const  IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
-	ResetEvent(h->ipc_descr);
-    return IPC_ok;
+	BOOL ret = ResetEvent(h->ipc_descr);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
-//HANDLE IPC_getEvent(const  IPC_handle handle)
-//{
-//    if(!handle)
-//        return IPC_invalidHandle;
-//
-//    ipc_handle_t h = (ipc_handle_t)handle;
-//
-//    return h->ipc_descr;
-//}
-//-----------------------------------------------------------------------------
 
-int IPC_deleteEvent(IPC_handle handle)
+GIPCY_API int IPC_deleteEvent(IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
     if(h->ipc_type != IPC_typeEvent)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
-	CloseHandle(h->ipc_descr);
+	BOOL ret = CloseHandle(h->ipc_descr);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
 	
     delete_ipc_object(h);
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

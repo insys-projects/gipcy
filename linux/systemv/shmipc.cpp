@@ -194,7 +194,7 @@ int IPC_deleteSharedMemory(IPC_handle handle)
         DEBUG_PRINT("%s(): shared memory is using. nattach = %d\n", __FUNCTION__, (int)id.shm_nattch );
     }
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

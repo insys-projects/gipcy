@@ -83,19 +83,19 @@ int IPC_closeLibrary(IPC_handle handle)
     DEBUG_PRINT("%s()\n", __FUNCTION__);
 
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
     int res = dlclose(h->ipc_descr.ipc_lib);
     if(res < 0) {
         DEBUG_PRINT( "%s(): Error unload library. %s\n", __FUNCTION__, dlerror());
-        return -1;
+        return IPC_GENERAL_ERROR;
     }
 
     delete_ipc_object(h);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

@@ -86,19 +86,19 @@ int IPC_startThread(const IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h || h->ipc_type != IPC_typeThread)
-        return -1;
+        return IPC_INVALID_HANDLE;
 
     struct thread_param *tp = (struct thread_param *)h->ipc_data;
 
     if(!tp)
-        return -1;
+        return IPC_GENERAL_ERROR;
 
     if(tp->threadMutex) {
         IPC_unlockSemaphore(tp->threadMutex);
         DEBUG_PRINT("%s(): thread %s was started\n", __FUNCTION__, h->ipc_name);
     }
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -106,45 +106,49 @@ int IPC_startThread(const IPC_handle handle)
 int IPC_stopThread(const IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h || h->ipc_type != IPC_typeThread) return -EINVAL;
+    if(!h || h->ipc_type != IPC_typeThread)
+		return IPC_INVALID_HANDLE;
 
     int res = pthread_cancel(h->ipc_descr.ipc_thread);
     if(res < 0) {
         DEBUG_PRINT("%s(): thread %s was error %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-        return -1;
+        return IPC_GENERAL_ERROR;
     }
 
     DEBUG_PRINT("%s(): thread %s was canceled\n", __FUNCTION__, h->ipc_name);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
 
 int IPC_waitThread(const IPC_handle handle, int timeout)
 {
-    if(!handle) {
+    if(!handle)
+	{
         int res = pthread_join(0,NULL);
-	if(res < 0) {
-            DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
-    	    return -1;
-	}
-	return IPC_ok;
+		if(res > 0)
+		{
+				DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
+    			return -1;
+		}
+		return IPC_ok;
     }
 
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(h->ipc_type != IPC_typeThread) return -EINVAL;
+    if(h->ipc_type != IPC_typeThread) 
+		return IPC_INVALID_HANDLE;
     void *ret = 0;
 
     int res = pthread_join(h->ipc_descr.ipc_thread, &ret);
-    if(res < 0) {
+    if(res > 0) {
         DEBUG_PRINT("%s(): thread %s was error %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-        return -1;
+        return IPC_WAIT_TIMEOUT;
     }
 
     DEBUG_PRINT("%s(): thread %s was finished\n", __FUNCTION__, h->ipc_name);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -152,12 +156,13 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 int IPC_deleteThread(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h || h->ipc_type != IPC_typeThread) return -EINVAL;
+    if(!h || h->ipc_type != IPC_typeThread)
+		return IPC_INVALID_HANDLE;
 
     void *ret = 0;
 
     int res = pthread_join(h->ipc_descr.ipc_thread, &ret);
-    if(res < 0) {
+    if(res > 0) {
         if(res != ESRCH) {
             DEBUG_PRINT("%s(): thread %s was error %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
             return -1;
@@ -168,7 +173,7 @@ int IPC_deleteThread(IPC_handle handle)
 
     delete_ipc_object(h);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

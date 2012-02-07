@@ -42,7 +42,6 @@ struct thread_param {
     thread_value    threadExitValue;     //!< Значение возвращенное функцией потока (output)
 };
 
-
 extern "C" {
 
     //! Функция создает поток
@@ -51,41 +50,45 @@ extern "C" {
     \param function - указатель на рабочую функцию потока
     \param param - параметры передаваемые рабочей функции потока
     \param flags - флаги потока
+	\return в случае ошибки возвращает NULL
     */
-    IPC_handle IPC_createThread(const IPC_str *name, thread_func* function, void* param);
+GIPCY_API    IPC_handle IPC_createThread(const IPC_str *name, thread_func* function, void* param);
 
     //! Функция создает поток
     /*! Для синхронизации действий с потоком исрользовать семафор
     \param name - имя потока
     \param tp - парметры для потока, заполняются пользователем
     \param flags - флаги потока
+	\return в случае ошибки возвращает NULL
     */
-    IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int flags);
+GIPCY_API    IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int flags);
 
-    //! Функция разрешает потоку выполняться
+    //! Функция разрешает потоку выполняться (только LINUX)
     /*!
     \param handle - дескриптор потока
     */
-    int IPC_startThread(const IPC_handle handle);
+GIPCY_API    int IPC_startThread(const IPC_handle handle);
 
     //! Функция приостанавливает выполнение потока
     /*!
     \param handle - дескриптор потока
     */
-    int IPC_stopThread(const IPC_handle handle);
+GIPCY_API    int IPC_stopThread(const IPC_handle handle);
 
     //! Функция ожидает завершения потока
     /*!
     \param handle - дескриптор потока
     \param timeout - время ожидания в мс
     */
-    int IPC_waitThread(const IPC_handle handle, int timeout);
+GIPCY_API    int IPC_waitThread(const IPC_handle handle, int timeout);
 
     //! Функция останавливает поток и удаляет дескриптор потока
     /*!
     \param handle - дескриптор разделяемой памяти
+	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
     */
-    int IPC_deleteThread(IPC_handle handle);
+GIPCY_API    int IPC_deleteThread(IPC_handle handle);
+
 };
 
 #endif //__THREADIPC_H__

@@ -54,7 +54,7 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
 int IPC_captureMutex(const  IPC_handle handle, int timeout)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
@@ -73,16 +73,16 @@ int IPC_captureMutex(const  IPC_handle handle, int timeout)
     if(res < 0) {
         if(errno == ETIMEDOUT) {
             DEBUG_PRINT("%s(): capture mutex %s timeout\n", __FUNCTION__, h->ipc_name);
-            return IPC_timeout;
+            return IPC_WAIT_TIMEOUT;
         } else {
             DEBUG_PRINT("%s(): capture mutex %s error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-            return IPC_generalError;
+            return IPC_GENERAL_ERROR;
         }
     }
 
     //DEBUG_PRINT("%s(): capture mutex %s Ok\n", __FUNCTION__, h->ipc_name);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -90,19 +90,19 @@ int IPC_captureMutex(const  IPC_handle handle, int timeout)
 int IPC_releaseMutex(const  IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
     int res = sem_post(h->ipc_descr.ipc_sem);
     if(res < 0) {
         DEBUG_PRINT("%s(): release mutex %s error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     //DEBUG_PRINT("%s(): release mutex %s Ok\n", __FUNCTION__, h->ipc_name);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -110,23 +110,23 @@ int IPC_releaseMutex(const  IPC_handle handle)
 int IPC_deleteMutex(IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
     if(h->ipc_type != IPC_typeMutex)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     int res = sem_close(h->ipc_descr.ipc_sem);
     if(res < 0) {
         DEBUG_PRINT("%s(): close mutex error - %s\n", __FUNCTION__, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     res = sem_unlink(h->ipc_name);
     if(res < 0) {
         DEBUG_PRINT("%s(): unlink mutex %s error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     DEBUG_PRINT("%s(): mutex - %s deleted\n", __FUNCTION__, h->ipc_name);
@@ -135,7 +135,7 @@ int IPC_deleteMutex(IPC_handle handle)
 
     DEBUG_PRINT("%s(): mutex deleted successfully\n", __FUNCTION__);
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

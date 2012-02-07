@@ -89,8 +89,15 @@ int IPC_getFullPath(const IPC_str *name, IPC_str *path)
 {
     char* retpath = realpath(name, path);
     if(!retpath)
-        return errno;
-    return 0;
+        return IPC_GENERAL_ERROR;
+    return IPC_OK;
+}
+
+//-----------------------------------------------------------------------------
+
+const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size)
+{
+    return getcwd(buf, size);
 }
 
 //-----------------------------------------------------------------------------
@@ -182,7 +189,7 @@ IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
 int IPC_closeFile(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     int res = close(h->ipc_descr.ipc_file);
     if(res < 0) {
@@ -202,7 +209,7 @@ int IPC_closeFile(IPC_handle handle)
 int IPC_readFile(IPC_handle handle, void *data, int size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     int res = read(h->ipc_descr.ipc_file,data,size);
     if(res <= 0) {
@@ -210,7 +217,7 @@ int IPC_readFile(IPC_handle handle, void *data, int size)
         return -1;
     }
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -218,7 +225,7 @@ int IPC_readFile(IPC_handle handle, void *data, int size)
 int IPC_writeFile(IPC_handle handle, void *data, int size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     int res = write(h->ipc_descr.ipc_file,data,size);
     if(res <= 0) {
@@ -226,7 +233,7 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
         return -1;
     }
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -234,7 +241,7 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
 int IPC_setPosFile(IPC_handle handle, int pos, int method)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
 	int res = lseek(h->ipc_descr.ipc_file,pos,method);
 
@@ -288,7 +295,7 @@ int IPC_handleToDevice(IPC_handle handle)
 int IPC_closeDevice(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     int res = close(h->ipc_descr.ipc_file);
     if(res < 0) {
@@ -308,7 +315,7 @@ int IPC_closeDevice(IPC_handle handle)
 int IPC_readDevice(IPC_handle handle, void *data, int size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     int res = read(h->ipc_descr.ipc_file,data,size);
     if(res < 0) {
@@ -316,7 +323,7 @@ int IPC_readDevice(IPC_handle handle, void *data, int size)
         return -1;
     }
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -324,7 +331,7 @@ int IPC_readDevice(IPC_handle handle, void *data, int size)
 int IPC_writeDevice(IPC_handle handle, void *data, int size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     int res = write(h->ipc_descr.ipc_file,data,size);
     if(res < 0) {
@@ -332,7 +339,7 @@ int IPC_writeDevice(IPC_handle handle, void *data, int size)
         return -1;
     }
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -340,7 +347,7 @@ int IPC_writeDevice(IPC_handle handle, void *data, int size)
 int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
-    if(!h) return IPC_invalidHandle;
+    if(!h) return IPC_INVALID_HANDLE;
 
     struct ioctl_param param;
 
@@ -595,13 +602,6 @@ int IPC_tlsSetValue(IPC_tls_key key, void *ptr)
 int IPC_deleteTlsKey(IPC_tls_key key)
 {
      return pthread_key_delete(key);
-}
-
-//-----------------------------------------------------------------------------
-
-const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size)
-{
-    return getcwd(buf, size);
 }
 
 //-----------------------------------------------------------------------------

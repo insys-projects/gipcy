@@ -191,21 +191,21 @@ int IPC_unmapSharedMemory(const  IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
 
-    if(!h) return IPC_invalidHandle;
-    if(!h->ipc_data) return IPC_generalError;
+    if(!h) return IPC_INVALID_HANDLE;
+    if(!h->ipc_data) return IPC_GENERAL_ERROR;
 
     //DEBUG_PRINT("%s(): %s\n", __FUNCTION__, h->ipc_name);
 
     int res = munmap(h->ipc_data, h->ipc_size);
     if(res < 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
     h->ipc_data = NULL;
     h->ipc_size = 0;
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -216,7 +216,7 @@ int IPC_deleteSharedMemory(IPC_handle handle)
     if(!h) return -1;
 
     if(h->ipc_type != IPC_typeSharedMem)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     DEBUG_PRINT("%s(): %s\n", __FUNCTION__, h->ipc_name);
 
@@ -227,10 +227,10 @@ int IPC_deleteSharedMemory(IPC_handle handle)
     int res = shm_unlink(h->ipc_name);
     if(res < 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
-        return IPC_generalError;
+        return IPC_GENERAL_ERROR;
     }
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
