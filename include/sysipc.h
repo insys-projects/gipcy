@@ -125,16 +125,6 @@ GIPCY_API    long IPC_interlockedCompareExchange(volatile long *dst, long val, l
 GIPCY_API    long IPC_interlockedExchange(volatile long *dst, long val );
 GIPCY_API    long IPC_interlockedExchangeAdd(volatile long *dst, long val );
 
-#ifdef _WIN32
-    typedef int IPC_tls_key;
-#else
-    typedef pthread_key_t IPC_tls_key;
-#endif
-GIPCY_API    IPC_tls_key IPC_createTlsKey(void);
-GIPCY_API    void* IPC_tlsGetValue(IPC_tls_key key);
-GIPCY_API    int IPC_tlsSetValue(IPC_tls_key key, void *ptr);
-GIPCY_API    int IPC_deleteTlsKey(IPC_tls_key key);
-
 	//! Конвертирует дескриптор IPC в файловый дескриптор
 GIPCY_API    int IPC_handleToFile(IPC_handle handle);
 

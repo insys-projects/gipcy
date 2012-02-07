@@ -89,6 +89,16 @@ GIPCY_API    int IPC_waitThread(const IPC_handle handle, int timeout);
     */
 GIPCY_API    int IPC_deleteThread(IPC_handle handle);
 
+#ifdef _WIN32
+    typedef int IPC_tls_key;
+#else
+    typedef pthread_key_t IPC_tls_key;
+#endif
+GIPCY_API    IPC_tls_key IPC_createTlsKey(void);
+GIPCY_API    void* IPC_tlsGetValue(IPC_tls_key key);
+GIPCY_API    int IPC_tlsSetValue(IPC_tls_key key, void *ptr);
+GIPCY_API    int IPC_deleteTlsKey(IPC_tls_key key);
+
 };
 
 #endif //__THREADIPC_H__

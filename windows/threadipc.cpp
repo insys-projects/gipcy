@@ -114,4 +114,32 @@ GIPCY_API int IPC_deleteThread(IPC_handle handle)
 
 //-----------------------------------------------------------------------------
 
+GIPCY_API IPC_tls_key IPC_createTlsKey(void)
+{
+    return TlsAlloc();
+}
+
+//-----------------------------------------------------------------------------
+
+GIPCY_API void* IPC_tlsGetValue(IPC_tls_key key)
+{
+    return TlsGetValue(key);
+}
+
+//-----------------------------------------------------------------------------
+
+GIPCY_API int IPC_tlsSetValue(IPC_tls_key key, void *ptr)
+{
+    return TlsSetValue(key, ptr);
+}
+
+//-----------------------------------------------------------------------------
+
+GIPCY_API int IPC_deleteTlsKey(IPC_tls_key key)
+{
+     return TlsFree(key);
+}
+
+//-----------------------------------------------------------------------------
+
 #endif //__IPC_WIN__

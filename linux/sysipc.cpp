@@ -463,39 +463,4 @@ long IPC_interlockedExchangeAdd( volatile long *dst, long val )
 
 //-----------------------------------------------------------------------------
 
-IPC_tls_key IPC_createTlsKey(void)
-{
-    pthread_key_t key;
-
-    int res = pthread_key_create(&key, NULL);
-    if(res != 0) {
-        return (pthread_key_t)0;
-    }
-
-    return key;
-}
-
-//-----------------------------------------------------------------------------
-
-void* IPC_tlsGetValue(IPC_tls_key key)
-{
-    return pthread_getspecific(key);
-}
-
-//-----------------------------------------------------------------------------
-
-int IPC_tlsSetValue(IPC_tls_key key, void *ptr)
-{
-    return pthread_setspecific(key, ptr);
-}
-
-//-----------------------------------------------------------------------------
-
-int IPC_deleteTlsKey(IPC_tls_key key)
-{
-     return pthread_key_delete(key);
-}
-
-//-----------------------------------------------------------------------------
-
 #endif //__IPC_LINUX__
