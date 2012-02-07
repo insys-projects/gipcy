@@ -34,4 +34,8 @@
     #include "sysipc.h"
 #endif
 
+#ifndef __DEVIPC_H__
+    #include "devipc.h"
+#endif
+
 #endif //__IPC_H__
