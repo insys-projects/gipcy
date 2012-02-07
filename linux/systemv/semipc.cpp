@@ -102,7 +102,7 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
         if(res < 0) {
             if(errno == EINTR) {
                 DEBUG_PRINT("%s(): Waiting was interrputed - %s\n", __FUNCTION__, h->ipc_name);
-                return IPC_interrupted;
+                return IPC_GENERAL_ERROR;
             }
             if(errno == EAGAIN) {
                 DEBUG_PRINT("%s(): Specified timeout expired - %s\n", __FUNCTION__, h->ipc_name);
@@ -118,7 +118,7 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
         if(res < 0) {
             if(errno == EINTR) {
                 DEBUG_PRINT("%s(): Waiting was interrputed - %s\n", __FUNCTION__, h->ipc_name);
-                return IPC_interrupted;
+                return IPC_GENERAL_ERROR;
             }
             DEBUG_PRINT("%s(): %s - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
             return IPC_GENERAL_ERROR;
@@ -149,7 +149,7 @@ int IPC_unlockSemaphore(const  IPC_handle handle)
     if(res < 0) {
         if(errno == EINTR) {
             DEBUG_PRINT("%s(): Posting was interrputed - %s\n", __FUNCTION__, h->ipc_name);
-            return IPC_interrupted;
+            return IPC_GENERAL_ERROR;
         }
         DEBUG_PRINT("%s(): %s - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
         return IPC_GENERAL_ERROR;
