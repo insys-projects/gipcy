@@ -38,4 +38,8 @@
     #include "devipc.h"
 #endif
 
+#ifndef __FILEIPC_H__
+    #include "fileipc.h"
+#endif
+
 #endif //__IPC_H__
