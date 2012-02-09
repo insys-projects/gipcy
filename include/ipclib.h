@@ -6,11 +6,44 @@
 #ifndef __IPCERR_H__
     #include "ipcerr.h"
 #endif
-#ifndef __IPCTYPE_H__
-    #include "ipctype.h"
-#endif
-#ifndef __STRIPC_H__
-    #include "stripc.h"
+//#ifndef __IPCTYPE_H__
+//    #include "ipctype.h"
+//#endif
+//#ifndef __STRIPC_H__
+//    #include "stripc.h"
+//#endif
+
+enum IPC_type {
+
+    IPC_typeSemaphore,
+    IPC_typeMutex,
+    IPC_typeEvent,
+    IPC_typeThread,
+    IPC_typeSharedMem,
+    IPC_typeLibrary,
+    IPC_typeFile,
+    IPC_typeDevice
+};
+
+//----------------------------------------------------------------------
+// Функции и типы для работы со строками
+//----------------------------------------------------------------------
+
+//! Определим тип указателя на строку,
+//! чтобы исключить директивы препроцессора
+//! в интерфейсных функциях
+
+#ifdef __linux__
+    typedef char           IPC_str;
+    //#define DIR_DELIMITER "/"
+#else
+    #ifdef _WIN64
+        typedef wchar_t    IPC_str;
+        //#define DIR_DELIMITER L"\\"
+    #else
+        typedef char       IPC_str;
+        //#define DIR_DELIMITER "\\"
+    #endif
 #endif
 
 //----------------------------------------------------------------------

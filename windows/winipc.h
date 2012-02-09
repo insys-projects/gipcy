@@ -2,15 +2,18 @@
 #ifndef __WINIPC_H__
 #define __WINIPC_H__
 
-#ifndef __IPCTYPE_H__
-    #include "ipctype.h"
+#ifndef __GIPCY_H__
+    #include "gipcy.h"
 #endif
+//#ifndef __IPCTYPE_H__
+//    #include "ipctype.h"
+//#endif
+//
+//#ifndef __STRIPC_H__
+//    #include "stripc.h"
+//#endif
 
-#ifndef __STRIPC_H__
-    #include "stripc.h"
-#endif
-
-#include <windows.h>
+//#include <windows.h>
 
 //! Структура описывает внутренний тип struct ipc_t используемый библиотекой IPC
 /*!

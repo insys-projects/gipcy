@@ -10,9 +10,9 @@
     #include "shmipc.h"
 #endif
 
-#ifndef __STRIPC_H__
-    #include "stripc.h"
-#endif
+//#ifndef __STRIPC_H__
+//    #include "stripc.h"
+//#endif
 
 #ifndef __THREADIPC_H__
     #include "threadipc.h"
