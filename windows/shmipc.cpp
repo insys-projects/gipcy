@@ -37,6 +37,7 @@ GIPCY_API IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int
     h->ipc_size = size;
 
 	h->ipc_descr = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, size, name);
+	if(h->ipc_descr == NULL)
 	{
 	    delete_ipc_object(h);
 		return NULL;

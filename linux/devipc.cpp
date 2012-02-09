@@ -119,9 +119,45 @@ int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcS
 
 //-----------------------------------------------------------------------------
 
-int IPC_ioctlDev(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap)
+int IPC_ioctlDeviceOvl(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap)
 {
     return IPC_ioctlDevice(handle, cmd, srcBuf, srcSize, dstBuf, dstSize);
+}
+
+//-----------------------------------------------------------------------------
+
+GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void* virtAddr, size_t physAddr, unsigned long size)
+{
+    ipc_handle_t h = (ipc_handle_t)handle;
+    if(!h) return IPC_INVALID_HANDLE;
+
+    void* vAddress = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_SHARED, h->ipc_descr, (off_t)physAddr);
+    if(vAddress == MAP_FAILED )
+	{
+        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
+        virtAddr = NULL;
+        return IPC_GENERAL_ERROR;
+	}
+    DEBUG_PRINT("%s(): Physical Address %p -> Virtual Address %p\n", __FUNCTION__, physAddr, vAddress);
+    virtAddr = vAddress;
+
+    return IPC_OK;
+}
+
+//-----------------------------------------------------------------------------
+
+GIPCY_API int IPC_unmapPhysAddr(IPC_handle handle, void* virtAddr, unsigned long size)
+{
+    ipc_handle_t h = (ipc_handle_t)handle;
+    if(!h) return IPC_INVALID_HANDLE;
+
+    if(munmap( virtAddr, size ) < 0 )
+	{
+        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
+        return IPC_GENERAL_ERROR;
+	}
+
+    return IPC_OK;
 }
 
 #endif //__IPC_LINUX__

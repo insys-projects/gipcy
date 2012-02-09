@@ -12,7 +12,25 @@
 
 extern "C" {
 
-    //! Выполняет задержку в миллисекундах
+    //! Инициализирует буфер клавиатуры в неканоническое состояние
+GIPCY_API    void IPC_initKeyboard(void);
+
+    //! Восстанавливает буфер клавиатуры в каноническое состояние
+GIPCY_API    void IPC_cleanupKeyboard(void);
+
+    //! Ожидает нажатия клавиши (получает символ с консоли)
+    /*!
+      \return возвращает код нажатой клавиши
+      */
+GIPCY_API    int IPC_getch(void);
+
+    //! Проверяет была ли нажата клавиша (проверяет консоль на ввод с клавиатуры)
+    /*!
+      \return в случае ошибки возвращает 0
+      */
+GIPCY_API    int IPC_kbhit(void);
+
+	//! Выполняет задержку в миллисекундах
     /*!
       \param ms - время задержки, в мс
       */
@@ -49,10 +67,10 @@ GIPCY_API    long IPC_interlockedExchange(volatile long *dst, long val );
 GIPCY_API    long IPC_interlockedExchangeAdd(volatile long *dst, long val );
 
 	//! Конвертирует дескриптор IPC в файловый дескриптор
-GIPCY_API    int IPC_handleToFile(IPC_handle handle);
+//GIPCY_API    int IPC_handleToFile(IPC_handle handle);
 
     //! Конвертирует дескриптор IPC в файловый дескриптор устройства
-GIPCY_API    int IPC_handleToDevice(IPC_handle handle);
+//GIPCY_API    int IPC_handleToDevice(IPC_handle handle);
 }
 
 #endif //__SYSIPC_H__

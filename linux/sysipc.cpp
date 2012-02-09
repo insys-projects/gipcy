@@ -101,7 +101,7 @@ const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size)
 }
 
 //-----------------------------------------------------------------------------
-
+/*
 int IPC_handleToFile(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
@@ -115,7 +115,7 @@ int IPC_handleToDevice(IPC_handle handle)
 {
     return IPC_handleToFile(handle);
 }
-
+*/
 //-----------------------------------------------------------------------------
 
 static int FindSection(const char* src, const char* section)
