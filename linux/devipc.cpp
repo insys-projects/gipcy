@@ -131,7 +131,7 @@ GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void* virtAddr, size_t physAddr
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return IPC_INVALID_HANDLE;
 
-    void* vAddress = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_SHARED, h->ipc_descr, (off_t)physAddr);
+    void* vAddress = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_SHARED, h->ipc_descr.ipc_file, (off_t)physAddr);
     if(vAddress == MAP_FAILED )
 	{
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
