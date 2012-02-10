@@ -226,7 +226,7 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
     ifs.open(lpFileName, ios::in);
     if( !ifs.is_open() ) {
         DEBUG_PRINT("Can't open file: %s. %s\n", lpFileName, strerror(errno));
-        return -1;
+        return IPC_BAD_INI_FILE;
     }
 
     while( !ifs.eof() ) {

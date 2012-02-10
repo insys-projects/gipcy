@@ -47,7 +47,10 @@ GIPCY_API IPC_handle IPC_openFile(const IPC_str *name, int flags)
 							  FILE_ATTRIBUTE_NORMAL,
 							  NULL);
 	if(h->ipc_descr == INVALID_HANDLE_VALUE)
+	{
+	    delete_ipc_object(h);
 	   	return NULL;
+	}
    	return h;
 }
 
@@ -90,7 +93,10 @@ GIPCY_API IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
 							  fattr,
 							  NULL);
 	if(h->ipc_descr == INVALID_HANDLE_VALUE)
+	{
+	    delete_ipc_object(h);
 	   	return NULL;
+	}
    	return h;
 }
 /*
@@ -167,9 +173,11 @@ GIPCY_API int IPC_closeFile(IPC_handle handle)
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return IPC_INVALID_HANDLE;
 
-    int res = CloseHandle(h->ipc_descr);
+    int ret = CloseHandle(h->ipc_descr);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
     delete_ipc_object(h);
-    return res;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -180,11 +188,10 @@ GIPCY_API int IPC_readFile(IPC_handle handle, void *data, int size)
     if(!h) return IPC_INVALID_HANDLE;
 
 	unsigned long readsize;
-    int res = ReadFile(h->ipc_descr, data, size, &readsize, NULL);
-	if(res == TRUE)
-	    return IPC_OK;
-	else
-		return 1;
+    int ret = ReadFile(h->ipc_descr, data, size, &readsize, NULL);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -195,13 +202,10 @@ GIPCY_API int IPC_writeFile(IPC_handle handle, void *data, int size)
     if(!h) return IPC_INVALID_HANDLE;
 
 	unsigned long writesize;
-    int res = WriteFile(h->ipc_descr, data, size, &writesize, NULL);
-	if(res == TRUE)
-	    return IPC_OK;
-	else
-		return 1;
-
-    return res;
+    int ret = WriteFile(h->ipc_descr, data, size, &writesize, NULL);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -212,11 +216,10 @@ GIPCY_API int IPC_setPosFile(IPC_handle handle, int pos, int method)
     if(!h) return IPC_INVALID_HANDLE;
 
 	LONG HiPart = 0;
-	int res = SetFilePointer(h->ipc_descr, pos, &HiPart, method);
-	if(HiPart)
-		res = -1;
-
-    return res;
+	int ret = SetFilePointer(h->ipc_descr, pos, &HiPart, method);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

@@ -30,6 +30,11 @@ GIPCY_API IPC_handle IPC_openDevice(wchar_t *devname, const wchar_t *mainname, i
 							OPEN_EXISTING, 
 							FILE_FLAG_OVERLAPPED, // 0,
 							NULL);
+	if(h->ipc_descr == INVALID_HANDLE_VALUE)
+	{
+		delete_ipc_object(h);
+	   	return NULL;
+	}
 	return h;
 }
 #else
@@ -50,6 +55,11 @@ GIPCY_API IPC_handle IPC_openDevice(char *devname, const char *mainname, int dev
 							OPEN_EXISTING, 
 							FILE_FLAG_OVERLAPPED, // 0,
 							NULL);
+	if(h->ipc_descr == INVALID_HANDLE_VALUE)
+	{
+		delete_ipc_object(h);
+	   	return NULL;
+	}
 	return h;
 }
 #endif
@@ -61,9 +71,11 @@ GIPCY_API int IPC_closeDevice(IPC_handle handle)
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return IPC_INVALID_HANDLE;
 
-    int res = CloseHandle(h->ipc_descr);
+    int ret = CloseHandle(h->ipc_descr);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
     delete_ipc_object(h);
-    return res;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -74,9 +86,11 @@ GIPCY_API int IPC_readDevice(IPC_handle handle, void *data, int size)
     if(!h) return IPC_INVALID_HANDLE;
 
 	unsigned long readsize;
-    int res = ReadFile(h->ipc_descr, data, size, &readsize, NULL);
+    int ret = ReadFile(h->ipc_descr, data, size, &readsize, NULL);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
 
-    return res;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -87,9 +101,11 @@ GIPCY_API int IPC_writeDevice(IPC_handle handle, void *data, int size)
     if(!h) return IPC_INVALID_HANDLE;
 
 	unsigned long writesize;
-    int res = WriteFile(h->ipc_descr, data, size, &writesize, NULL);
+    int ret = WriteFile(h->ipc_descr, data, size, &writesize, NULL);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
 
-    return res;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

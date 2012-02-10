@@ -130,7 +130,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 		if(res > 0)
 		{
 				DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
-    			return -1;
+    			return IPC_GENERAL_ERROR;
 		}
 		return IPC_OK;
     }
@@ -143,7 +143,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
     int res = pthread_join(h->ipc_descr.ipc_thread, &ret);
     if(res > 0) {
         DEBUG_PRINT("%s(): thread %s was error %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-        return IPC_WAIT_TIMEOUT;
+        return IPC_GENERAL_ERROR;
     }
 
     DEBUG_PRINT("%s(): thread %s was finished\n", __FUNCTION__, h->ipc_name);
@@ -165,7 +165,7 @@ int IPC_deleteThread(IPC_handle handle)
     if(res > 0) {
         if(res != ESRCH) {
             DEBUG_PRINT("%s(): thread %s was error %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
-            return -1;
+            return IPC_GENERAL_ERROR;
         }
     }
 

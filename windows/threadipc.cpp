@@ -51,10 +51,6 @@ GIPCY_API IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param
     h->ipc_data = tp;
     h->ipc_size = sizeof(struct thread_param);
 
-//    if(flags & CREATE_THREAD_PAUSED) {
-//        IPC_lockSemaphore(tp->threadMutex, 0);
-//    }
-
 	unsigned int threadID;
 
 	h->ipc_descr = (HANDLE)_beginthreadex( NULL, 0, tp->threadFunction, tp, 0, &threadID );

@@ -40,11 +40,19 @@
 
 //----------------------------------------------------------------------
 //
-//	BRDerr_NOT_ENOUGH_MEMORY
+//	IPC_NOT_ENOUGH_MEMORY
 //
 //  Not enough storage is available to process this command.
 //
 #define	IPC_NOT_ENOUGH_MEMORY		0xC0000103L
+
+//----------------------------------------------------------------------
+//
+//	IPC_BAD_INI_FILE	
+//
+//  Error: Can't open INI file
+//
+#define	IPC_BAD_INI_FILE			0xC0000104L
 
 //======================================================================
 // Warnings !

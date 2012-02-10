@@ -31,10 +31,11 @@ IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum)
     h->ipc_size = 0;
 
     h->ipc_descr.ipc_file = open(devname, S_IROTH | S_IWOTH );
-    if(h->ipc_descr.ipc_file < 0) {
-
-            DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
-            return NULL;
+    if(h->ipc_descr.ipc_file < 0)
+	{
+        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
+		delete_ipc_object(h);
+        return NULL;
     }
 
     DEBUG_PRINT("%s(): open file - %s\n", __FUNCTION__, devname );
@@ -52,14 +53,14 @@ int IPC_closeDevice(IPC_handle handle)
     int res = close(h->ipc_descr.ipc_file);
     if(res < 0) {
             DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
-            return -1;
+            return IPC_GENERAL_ERROR;
     }
 
     DEBUG_PRINT("%s(): close file - %s\n", __FUNCTION__, h->ipc_name );
 
     delete_ipc_object(h);
 
-    return 0;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -72,7 +73,7 @@ int IPC_readDevice(IPC_handle handle, void *data, int size)
     int res = read(h->ipc_descr.ipc_file,data,size);
     if(res < 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
-        return -1;
+        return IPC_GENERAL_ERROR;
     }
 
     return IPC_OK;
@@ -88,7 +89,7 @@ int IPC_writeDevice(IPC_handle handle, void *data, int size)
     int res = write(h->ipc_descr.ipc_file,data,size);
     if(res < 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
-        return -1;
+        return IPC_GENERAL_ERROR;
     }
 
     return IPC_OK;
@@ -111,7 +112,7 @@ int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcS
     int res = ioctl(h->ipc_descr.ipc_file,cmd,&param);
     if(res < 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
-        return -1;
+        return IPC_GENERAL_ERROR;
     }
 
     return res;
