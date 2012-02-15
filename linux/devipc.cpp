@@ -127,7 +127,7 @@ int IPC_ioctlDeviceOvl(IPC_handle handle, unsigned long cmd, void *srcBuf, int s
 
 //-----------------------------------------------------------------------------
 
-GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void* virtAddr, size_t physAddr, unsigned long size)
+GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void** virtAddr, size_t physAddr, unsigned long size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return IPC_INVALID_HANDLE;
@@ -140,7 +140,7 @@ GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void* virtAddr, size_t physAddr
         return IPC_GENERAL_ERROR;
 	}
     DEBUG_PRINT("%s(): Physical Address %p -> Virtual Address %p\n", __FUNCTION__, physAddr, vAddress);
-    virtAddr = vAddress;
+    *virtAddr = vAddress;
 
     return IPC_OK;
 }

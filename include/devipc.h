@@ -70,7 +70,7 @@ GIPCY_API    int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *src
 GIPCY_API    int IPC_ioctlDeviceOvl(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap);
 
     //! Функция отображения физической памяти на виртуальную память процесса (нужна только под LINUX)
-GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void* virtAddr, size_t physAddr, unsigned long size);
+GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void** virtAddr, size_t physAddr, unsigned long size);
 
 GIPCY_API int IPC_unmapPhysAddr(IPC_handle handle, void* virtAddr, unsigned long size);
 
