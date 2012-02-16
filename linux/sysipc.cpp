@@ -47,7 +47,8 @@ int IPC_getch(void)
 {
     int ch;
 
-    ch = getchar();
+    //ch = getchar();
+	read(0, &ch, 1);
 
     DEBUG_PRINT("%s(): ch = %d\n", __FUNCTION__, ch );
 
