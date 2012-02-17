@@ -47,13 +47,19 @@ int IPC_getch(void)
 {
     int ch;
 
-    if(IPC_kbhit())
+    while(1)
+    {
+        size_t size = 0;
+	if (ioctl(STDIN_FILENO, FIONREAD, &size) == -1)
+    	    size = 0;
+        if(size)
 	{
 	    ch = getchar();
 		//read(0, &ch, 1);
 	    DEBUG_PRINT("%s(): ch = %d\n", __FUNCTION__, ch );
+	    break;
 	}
-
+    }
     return ch;
 }
 

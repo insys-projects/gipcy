@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
         IPC_delay(10);
     };
 
-    fprintf(stdout, "Press any key for exit\n");
+    fprintf(stdout, "Press any key for exit...\n");
     IPC_getch();
     IPC_cleanupKeyboard();
 

@@ -3,7 +3,7 @@
 #include "winipc.h"
 #endif
 
-#include "ipc.h"
+#include "gipcy.h"
 
 #include <iostream>
 #include <string>
@@ -46,7 +46,7 @@ thread_value __IPC_API reading_thread(void* param)
     while(!tp->exit_flag) {
 
 	int res = IPC_waitEvent(tp->lock, -1);
-	if(res != IPC_ok)
+	if(res != IPC_OK)
 	    continue;
 
 	tp->read_counter++;

@@ -3,7 +3,7 @@
 #include "winipc.h"
 #endif
 
-#include "ipc.h"
+#include "gipcy.h"
 
 #include <iostream>
 #include <string>

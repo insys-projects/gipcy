@@ -3,7 +3,7 @@
 #include "winipc.h"
 #endif
 
-#include "ipc.h"
+#include "gipcy.h"
 
 #include <iostream>
 #include <string>
@@ -46,7 +46,7 @@ thread_value __IPC_API writing_thread(void* param)
     while(!tp->exit_flag) {
 
 	int res = IPC_captureMutex(tp->lock, -1);
-	if(res != IPC_ok)
+	if(res != IPC_OK)
             break;
 	//std::cout << "writing_tread(): lock" << endl;
 	//std::cout << "writing_tread(): write data" << endl;
@@ -58,7 +58,7 @@ thread_value __IPC_API writing_thread(void* param)
 
 	//std::cout << "writing_tread(): unlock" << endl;
 	res = IPC_releaseMutex(tp->lock);
-	if(res != IPC_ok)
+	if(res != IPC_OK)
             break;
     }
 
@@ -81,7 +81,7 @@ thread_value __IPC_API reading_thread(void* param)
 
     while(!tp->exit_flag) {
 	int res = IPC_captureMutex(tp->lock, -1);
-	if(res != IPC_ok)
+	if(res != IPC_OK)
             break;
 	//std::cout << "reading_tread(): lock" << endl;
 	//std::cout << "reading_tread(): read data" << endl;
@@ -94,7 +94,7 @@ thread_value __IPC_API reading_thread(void* param)
 	//std::cout << "reading_thread(): W " << tp->write_counter << " R: " << tp->read_counter  << endl;
 	//std::cout << "reading_tread(): unlock" << endl;
 	res = IPC_releaseMutex(tp->lock);
-	if(res != IPC_ok)
+	if(res != IPC_OK)
             break;
     }
 
