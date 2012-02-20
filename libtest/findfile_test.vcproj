@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="gipcy"
-	ProjectGUID="{BB472BD5-9644-4A00-8E90-EBBBE860661D}"
-	RootNamespace="gipcy"
+	Name="findfile_test"
+	ProjectGUID="{DA6C9541-0447-44E2-B96F-DC8907F6A763}"
+	RootNamespace="findfile_test"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -19,8 +19,8 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			CharacterSet="0"
+			ConfigurationType="1"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\gipcy\include"
-				PreprocessorDefinitions="__IPC_WIN__;WIN32;_DEBUG;_WINDOWS;_USRDLL;GIPCY_EXPORTS"
+				AdditionalIncludeDirectories="..\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -49,7 +49,6 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
-				DisableSpecificWarnings="4996"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -62,10 +61,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="gipcy.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="$(OutDir)\"
 				GenerateDebugInformation="true"
-				SubSystem="2"
-				ImportLibrary="$(TargetDir)$(TargetName).lib"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -97,7 +97,7 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -118,7 +118,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;GIPCY_EXPORTS"
+				AdditionalIncludeDirectories="..\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -136,9 +137,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="gipcy.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OutDir)\"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -178,43 +181,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\windows\devipc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\windows\diripc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\windows\dllipc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\windows\eventipc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\windows\fileipc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\windows\mutexipc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\windows\shmipc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\windows\sysipc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\windows\threadipc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\windows\winipc.cpp"
+				RelativePath=".\findfile_test.cpp"
 				>
 			</File>
 		</Filter>
@@ -223,38 +190,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\include\diripc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\dllipc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\eventipc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\ipcerr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\mutexipc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\shmipc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\sysipc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\threadipc.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

@@ -22,7 +22,8 @@ enum IPC_type {
     IPC_typeSharedMem,
     IPC_typeLibrary,
     IPC_typeFile,
-    IPC_typeDevice
+    IPC_typeDevice,
+    IPC_typeDir
 };
 
 //----------------------------------------------------------------------

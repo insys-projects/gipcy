@@ -42,4 +42,8 @@
     #include "fileipc.h"
 #endif
 
+#ifndef __DIRIPC_H__
+#include "diripc.h"
+#endif
+
 #endif //__IPC_H__
