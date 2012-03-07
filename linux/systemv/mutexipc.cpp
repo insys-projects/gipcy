@@ -34,9 +34,21 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
 
     if(h->ipc_descr.ipc_sem > 0) {
 
-        semarg.val = 1;
+        //semarg.val = 1;
+		semarg.val = 0;
 
         int res = semctl(h->ipc_descr.ipc_sem, 0, SETVAL, semarg);
+        if(res < 0) {
+            DEBUG_PRINT("%s(): mutex - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
+            delete_ipc_object(h);
+            return NULL;
+        }
+		struct sembuf	initop;
+		initop.sem_num = 0;
+		initop.sem_op = 1;
+		initop.sem_flg = 0;
+
+		res = semop(h->ipc_descr.ipc_sem, &initop, 1);
         if(res < 0) {
             DEBUG_PRINT("%s(): mutex - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
             delete_ipc_object(h);
