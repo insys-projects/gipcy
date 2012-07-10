@@ -18,11 +18,6 @@
 
 //-----------------------------------------------------------------------------
 
-static struct termios oldt;
-static struct termios newt;
-
-//-----------------------------------------------------------------------------
-
 static int convert_ipc_flags(int ipc_flags)
 {
     int flags = 0;
