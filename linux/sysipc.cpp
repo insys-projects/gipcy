@@ -162,6 +162,39 @@ static int FindSection(const char* src, const char* section)
 
 //-----------------------------------------------------------------------------
 
+static int IsSection(const char* src)
+{
+    int nSize;
+
+    if((src == 0) || (src[0] != '['))
+        return 0;
+
+    nSize = strlen(src);
+
+    if(src[nSize - 1] != ']')
+        return 0;
+
+    return 1;
+}
+
+//-----------------------------------------------------------------------------
+
+static int IsOptionName(const char* src)
+{
+    char *pStr;
+
+    pStr = strstr((char *)src, "=");
+
+    if(pStr == 0)
+        return 0;
+
+    *pStr = '\0';
+
+    return 1;
+}
+
+//-----------------------------------------------------------------------------
+
 static int FindOption(const char* src, const char* option, char *Buffer, int BufferSize, int *set_default)
 {
     int key_size = strlen(option);
@@ -231,6 +264,8 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
     char str[PATH_MAX];
     ifstream ifs;
     int set_default = 1;
+    int size;
+    int sectionsSize = 0;
 
     ifs.open(lpFileName, ios::in);
     if( !ifs.is_open() ) {
@@ -242,7 +277,23 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
 
         ifs.getline(str, sizeof(str), '\n');
 
-        if( FindSection(str, lpAppName) == 0 ) {
+        if(lpAppName == 0) {
+            size = strlen(str) - 1;
+            str[size] = '\0';
+
+            if(IsSection(str)) {
+                size --;
+                str[size] = '\0';
+                sectionsSize += size;
+
+                if(sectionsSize > (nSize - 1))
+                    break;
+
+                memcpy(lpReturnedString, str + 1, size);
+                lpReturnedString += size;
+            }
+        }
+        else if( FindSection(str, lpAppName) == 0 ) {
 
             //DEBUG_PRINT("inside cycle\n");
 
@@ -250,7 +301,25 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
 
                 ifs.getline(str, sizeof(str), '\n');
 
-                if( FindOption(str, lpKeyName, lpReturnedString, nSize, &set_default) == 0) {
+                if(lpKeyName == 0) {
+                    size = strlen(str) - 1;
+                    str[size] = '\0';
+
+                    if(IsSection(str))
+                        break;
+
+                    if(IsOptionName(str)) {
+                        size = strlen(str) + 1;
+                        sectionsSize += size;
+
+                        if(sectionsSize > (nSize - 1))
+                            break;
+
+                        memcpy(lpReturnedString, str, size);
+                        lpReturnedString += size;
+                    }
+                }
+                else if( FindOption(str, lpKeyName, lpReturnedString, nSize, &set_default) == 0) {
                     break;
                 }
             }
@@ -260,6 +329,9 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
             }
         }
     }
+
+    if((lpAppName == 0) || (lpKeyName == 0))
+        *lpReturnedString = '\0';
 
     ifs.close();
 
