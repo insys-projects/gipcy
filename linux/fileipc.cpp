@@ -166,7 +166,7 @@ int IPC_setPosFile(IPC_handle handle, int pos, int method)
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return IPC_INVALID_HANDLE;
 
-	int res = lseek(h->ipc_descr.ipc_file,pos,method);
+    int res = lseek(h->ipc_descr.ipc_file,pos,method);
     if(res <= 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
         return IPC_GENERAL_ERROR;
