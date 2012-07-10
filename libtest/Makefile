@@ -11,6 +11,7 @@ TARGET_NAME5 := shm_test
 TARGET_NAME6 := kb_test
 TARGET_NAME7 := findfile_test
 TARGET_NAME8 := sem_simple_test
+TARGET_NAME9 := mutex_simple_test
 
 
 all: $(TARGET_NAME1)\
@@ -20,7 +21,8 @@ $(TARGET_NAME4)\
 $(TARGET_NAME5)\
 $(TARGET_NAME6)\
 $(TARGET_NAME7)\
-$(TARGET_NAME8)
+$(TARGET_NAME8)\
+$(TARGET_NAME9)
 
 LIBPATH := ../lib
 DIRS := ../include
@@ -57,6 +59,9 @@ $(TARGET_NAME7): $(patsubst %.cpp,%.o, findfile_test.cpp)
 $(TARGET_NAME8): $(patsubst %.cpp,%.o, $(TARGET_NAME8).cpp)
 	$(LD) -o $(TARGET_NAME8) $(notdir $^) $(LFLAGS)
 
+$(TARGET_NAME9): $(patsubst %.cpp,%.o, $(TARGET_NAME9).cpp)
+	$(LD) -o $(TARGET_NAME9) $(notdir $^) $(LFLAGS)
+
 	rm -f *.o *~ core
 
 %.o: %.cpp
@@ -71,4 +76,4 @@ distclean:
 	rm -f *.d *~ core
 	rm -f $(TARGET_NAME1) $(TARGET_NAME2) \
         $(TARGET_NAME3) $(TARGET_NAME4) $(TARGET_NAME5) $(TARGET_NAME6) $(TARGET_NAME7) \
-        $(TARGET_NAME8)
+        $(TARGET_NAME8) $(TARGET_NAME9)
