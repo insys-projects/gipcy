@@ -1,6 +1,6 @@
 
 #ifdef __IPC_LINUX__
-
+#define __VERBOSE__
 #ifndef __LINIPC_H__
 #include "linipc.h"
 #endif
@@ -28,27 +28,15 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
     h->ipc_data = NULL;
 
     union semun semarg;
-    //struct semid_ds seminfo;
+    struct semid_ds seminfo;
 
     h->ipc_descr.ipc_sem = semget(h->ipc_key, 1, IPC_SVSEM_MODE | IPC_CREAT | IPC_EXCL);
 
     if(h->ipc_descr.ipc_sem > 0) {
 
-        //semarg.val = 1;
-		semarg.val = 0;
+        semarg.val = 1;
 
         int res = semctl(h->ipc_descr.ipc_sem, 0, SETVAL, semarg);
-        if(res < 0) {
-            DEBUG_PRINT("%s(): mutex - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
-            delete_ipc_object(h);
-            return NULL;
-        }
-		struct sembuf	initop;
-		initop.sem_num = 0;
-		initop.sem_op = 1;
-		initop.sem_flg = 0;
-
-		res = semop(h->ipc_descr.ipc_sem, &initop, 1);
         if(res < 0) {
             DEBUG_PRINT("%s(): mutex - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
             delete_ipc_object(h);
@@ -58,33 +46,23 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
     } else if(errno == EEXIST) {
 
         h->ipc_descr.ipc_sem = semget(h->ipc_key, 1, IPC_SVSEM_MODE);
-/*
+
         semarg.buf = &seminfo;
 
         for(int i=0; i<10; i++) {
 
             int res = semctl(h->ipc_descr.ipc_sem, 0, IPC_STAT, semarg);
             if(res < 0) continue;
-            if(semarg.buf->sem_otime != 0) {
+            if(semarg.buf->sem_ctime != 0) {
                 DEBUG_PRINT("%s(): mutex - %s opened\n", __FUNCTION__, h->ipc_name);
                 return h;
             }
             usleep(100);
         }
 
-        DEBUG_PRINT("%s(): mutex - %s opened but not initialized\n", __FUNCTION__, h->ipc_name);
-
-        semarg.val = 1;
-
-        int res = semctl(h->ipc_descr.ipc_sem, 0, SETVAL, semarg);
-        if(res < 0) {
-            DEBUG_PRINT("%s(): mutex - %s opened but not initialized\n", __FUNCTION__, h->ipc_name);
-            return h;
-        }
-*/
-        DEBUG_PRINT("%s(): mutex - %s opened\n", __FUNCTION__, h->ipc_name);
-
-        return h;
+        DEBUG_PRINT("%s(): mutex - %s created but not initialized\n", __FUNCTION__, h->ipc_name);
+        delete_ipc_object(h);
+        return NULL;
     }
 
     DEBUG_PRINT("%s(): mutex - %s created\n", __FUNCTION__, h->ipc_name);
@@ -147,7 +125,7 @@ int IPC_captureMutex(const  IPC_handle handle, int timeout)
         }
     }
 
-    //DEBUG_PRINT("%s(): mutex - %s locked\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): mutex - %s locked\n", __FUNCTION__, h->ipc_name);
 
     return IPC_OK;
 }
@@ -177,7 +155,7 @@ int IPC_releaseMutex(const  IPC_handle handle)
         return IPC_GENERAL_ERROR;
     }
 
-    //DEBUG_PRINT("%s(): mutex - %s unlocked\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): mutex - %s unlocked\n", __FUNCTION__, h->ipc_name);
 
     return IPC_OK;
 }
