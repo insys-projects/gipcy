@@ -53,7 +53,8 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
 
             int res = semctl(h->ipc_descr.ipc_sem, 0, IPC_STAT, semarg);
             if(res < 0) continue;
-            if(semarg.buf->sem_otime != 0) {
+            //if(semarg.buf->sem_otime != 0) {
+            if(semarg.buf->sem_ctime != 0) {
                 DEBUG_PRINT("%s(): semaphore - %s opened\n", __FUNCTION__, h->ipc_name);
                 return h;
             }
@@ -125,7 +126,7 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
         }
     }
 
-    //DEBUG_PRINT("%s(): semaphore - %s locked\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): semaphore - %s locked\n", __FUNCTION__, h->ipc_name);
 
     return IPC_OK;
 }
@@ -155,7 +156,7 @@ int IPC_unlockSemaphore(const  IPC_handle handle)
         return IPC_GENERAL_ERROR;
     }
 
-    //DEBUG_PRINT("%s(): semaphore - %s unlocked\n", __FUNCTION__, h->ipc_name);
+    DEBUG_PRINT("%s(): semaphore - %s unlocked\n", __FUNCTION__, h->ipc_name);
 
     return IPC_OK;
 }

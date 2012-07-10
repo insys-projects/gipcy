@@ -139,7 +139,7 @@ GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void** virtAddr, size_t physAdd
         virtAddr = NULL;
         return IPC_GENERAL_ERROR;
 	}
-    DEBUG_PRINT("%s(): Physical Address %p -> Virtual Address %p\n", __FUNCTION__, physAddr, vAddress);
+    DEBUG_PRINT("%s(): Physical Address 0x%x -> Virtual Address %p\n", __FUNCTION__, physAddr, vAddress);
     *virtAddr = vAddress;
 
     return IPC_OK;

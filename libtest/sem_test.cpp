@@ -1,8 +1,4 @@
 
-#ifdef __IPC_WIN__
-#include "winipc.h"
-#endif
-
 #include "gipcy.h"
 
 #include <iostream>

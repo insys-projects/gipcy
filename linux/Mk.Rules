@@ -22,8 +22,8 @@ endif
 # Select apropriate IPC methods
 #
 IPC := __IPC_LINUX__
-#IPC_TYPE := _SYSTEMV_IPC_
-IPC_TYPE := _POSIX_IPC_
+IPC_TYPE := _SYSTEMV_IPC_
+#IPC_TYPE := _POSIX_IPC_
 
 #GPROF := -pg
 

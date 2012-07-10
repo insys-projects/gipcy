@@ -211,6 +211,7 @@ void delete_ipc_object(ipc_handle_t h)
     case IPC_typeLibrary:
     case IPC_typeFile:
     case IPC_typeDevice:
+    case IPC_typeDir:
         break;
     }
 
@@ -264,8 +265,11 @@ bool is_ok_remove(ipc_handle_t h)
     DEBUG_PRINT( "%s(): %s - semzcnt = %d\n", __FUNCTION__, fname, semzcnt );
 
     if( (semncnt == 0) && (semzcnt == 0) && (semval == 1) ) {
+        DEBUG_PRINT( "%s(): - %s [free]\n", __FUNCTION__, fname );
         return true;
     }
+
+    DEBUG_PRINT( "%s(): - %s [locked]\n", __FUNCTION__, fname );
 
     return false;
 }
