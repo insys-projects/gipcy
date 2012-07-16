@@ -130,12 +130,12 @@ int IPC_readFile(IPC_handle handle, void *data, int size)
     if(!h) return IPC_INVALID_HANDLE;
 
     int res = read(h->ipc_descr.ipc_file,data,size);
-    if(res <= 0) {
+    if(res < 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
         return IPC_GENERAL_ERROR;
     }
-
-    return IPC_OK;
+    //return IPC_OK;
+	return res;
 }
 
 //-----------------------------------------------------------------------------
@@ -146,12 +146,12 @@ int IPC_writeFile(IPC_handle handle, void *data, int size)
     if(!h) return IPC_INVALID_HANDLE;
 
     int res = write(h->ipc_descr.ipc_file,data,size);
-    if(res <= 0) {
+    if(res < 0) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
         return IPC_GENERAL_ERROR;
     }
-
-    return IPC_OK;
+    //return IPC_OK;
+	return res;
 }
 
 //-----------------------------------------------------------------------------

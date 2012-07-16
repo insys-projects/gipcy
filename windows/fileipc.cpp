@@ -191,7 +191,8 @@ GIPCY_API int IPC_readFile(IPC_handle handle, void *data, int size)
     int ret = ReadFile(h->ipc_descr, data, size, &readsize, NULL);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
-    return IPC_OK;
+    //return IPC_OK;
+	return readsize;
 }
 
 //-----------------------------------------------------------------------------
@@ -205,7 +206,8 @@ GIPCY_API int IPC_writeFile(IPC_handle handle, void *data, int size)
     int ret = WriteFile(h->ipc_descr, data, size, &writesize, NULL);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
-    return IPC_OK;
+    //return IPC_OK;
+	return writesize;
 }
 
 //-----------------------------------------------------------------------------
