@@ -278,7 +278,7 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
         ifs.getline(str, sizeof(str), '\n');
 
         if(lpAppName == 0) {
-            size = strlen(str) - 1;
+            size = strlen(str);
             str[size] = '\0';
 
             if(IsSection(str)) {
@@ -302,7 +302,7 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
                 ifs.getline(str, sizeof(str), '\n');
 
                 if(lpKeyName == 0) {
-                    size = strlen(str) - 1;
+                    size = strlen(str);
                     str[size] = '\0';
 
                     if(IsSection(str))
@@ -342,6 +342,153 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
 
 int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName )
 {
+    int nStart, nEnd, nSize;
+    int isFindSection = 0;
+    int isFindParam = 0;
+    char *pBuf, *pCur;
+    char sLine[1024];
+    char sParamName[1024];
+    char sNextSection[1024];
+    FILE *pFile;
+
+    strcpy(sNextSection, "");
+
+    pFile = fopen(lpFileName, "r");
+
+    if(pFile == 0)
+        return -1;
+
+    // Вычисление размера буфера
+    fseek(pFile, 0, SEEK_SET);
+    nStart = ftell(pFile);
+    fseek(pFile, 0, SEEK_END);
+    nEnd = ftell(pFile);
+    fseek(pFile, 0, SEEK_SET);
+    nSize = nEnd - nStart + 1024;
+
+    pBuf = new char[nSize];
+    pCur = pBuf;
+
+    nSize = 0;
+
+    // Поиск секции
+    while(!feof(pFile))
+    {
+        strcpy(sLine, "");
+        fgets(sLine, 1024, pFile);
+
+        if(strlen(sLine) == 0)
+            continue;
+
+        strcpy(pCur, sLine);
+
+        pCur += strlen(sLine);
+
+        nSize += strlen(sLine);
+
+        sLine[strlen(sLine) - 1] = '\0';
+
+        if(!IsSection(sLine))
+            continue;
+
+        sLine[strlen(sLine) - 1] = '\0';
+        strcpy(sLine, sLine + 1);
+
+       if(strcmp(sLine, lpAppName) == 0)
+       {
+           isFindSection = 1;
+           break;
+       }
+    }
+
+    if(isFindSection)
+    {   // Секция найдена, поиск параметра
+        while(!feof(pFile))
+        {
+            strcpy(sLine, "");
+            fgets(sLine, 1024, pFile);
+
+            strcpy(sParamName, sLine);
+
+            if(IsOptionName(sParamName))
+            {   // Параметр
+                if(strcmp(sParamName, lpKeyName) == 0)
+                {   // Найден нужный параметр
+                    isFindParam = 1;
+                    break;
+                }
+            }
+
+            strcpy(sNextSection, sLine);
+            sNextSection[strlen(sLine) - 1] = '\0';
+
+            if(IsSection(sNextSection))
+            {   // Следующая секция
+                strcpy(sNextSection, sLine);
+                break;
+            }
+            else
+                strcpy(sNextSection, "");
+
+            strcpy(pCur, sLine);
+
+            pCur += strlen(sLine);
+
+            nSize += strlen(sLine);
+        }
+    }
+
+    if(!isFindSection)
+    {   // Секция не найдена
+        strcpy(sLine, "");
+        strcpy(sLine, "[");
+        strcat(sLine, lpAppName);
+        strcat(sLine, "]\n");
+        strcat(pCur, sLine);
+
+        pCur += strlen(sLine);
+        nSize += strlen(sLine);
+    }
+
+    // Добавление параметра
+    strcpy(sLine, "");
+    strcpy(sLine, lpKeyName);
+    strcat(sLine, "=");
+    strcat(sLine, lpString);
+    strcat(sLine, "\n");
+    strcat(sLine, sNextSection);
+    strcat(pCur, sLine);
+
+    pCur += strlen(sLine);
+    nSize += strlen(sLine);
+
+    // Чтение оставшихся строк
+    while(!feof(pFile))
+    {
+        strcpy(sLine, "");
+        fgets(sLine, 1024, pFile);
+
+        strcpy(pCur, sLine);
+
+        pCur += strlen(sLine);
+
+        nSize += strlen(sLine);
+    }
+
+    fclose(pFile);
+
+    // Запись в файл
+    pFile = fopen(lpFileName, "w");
+
+    if(pFile == 0)
+        return -1;
+
+    fwrite(pBuf, nSize, 1, pFile);
+    fclose(pFile);
+
+    // Удаление буфера
+    delete [] pBuf;
+
     return 0;
 }
 
