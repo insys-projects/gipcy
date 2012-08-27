@@ -71,6 +71,9 @@ GIPCY_API    long IPC_interlockedExchangeAdd(volatile long *dst, long val );
 
     //! Конвертирует дескриптор IPC в файловый дескриптор устройства
 //GIPCY_API    int IPC_handleToDevice(IPC_handle handle);
+
+GIPCY_API   IPC_str* IPC_itoa(int value, char* result, int base);
+
 }
 
 #endif //__SYSIPC_H__
