@@ -60,6 +60,7 @@ enum IPC_type {
 #include <termios.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <sys/ioctl.h>
 #endif
 
 #ifdef __IPC_WIN__
