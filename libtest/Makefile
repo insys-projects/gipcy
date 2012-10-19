@@ -76,7 +76,6 @@ include $(wildcard *.d)
 
 
 clean:
-distclean:
 	rm -f *.o *~ core
 	rm -f *.d *~ core
 	rm -f $(TARGET_NAME1) $(TARGET_NAME2) \

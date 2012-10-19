@@ -344,7 +344,7 @@ int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKe
 {
     int nStart, nEnd, nSize;
     int isFindSection = 0;
-    int isFindParam = 0;
+    //int isFindParam = 0;
     char *pBuf, *pCur;
     char sLine[1024];
     char sParamName[1024];
@@ -414,7 +414,7 @@ int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKe
             {   // Параметр
                 if(strcmp(sParamName, lpKeyName) == 0)
                 {   // Найден нужный параметр
-                    isFindParam = 1;
+                    //isFindParam = 1;
                     break;
                 }
             }
