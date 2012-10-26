@@ -172,4 +172,27 @@ int IPC_setPosFile(IPC_handle handle, int pos, int method)
 
 //-----------------------------------------------------------------------------
 
+size_t IPC_fileSize(const IPC_str *name)
+{
+    struct stat finfo;
+
+    int fd = open( name, O_RDONLY );
+    if(fd < 0) {
+        return IPC_GENERAL_ERROR;
+    }
+
+    if( fstat(fd, &finfo ) < 0 ) {
+        close(fd);
+        return IPC_GENERAL_ERROR;
+    }
+
+    close(fd);
+
+    size_t fileSize = finfo.st_size;
+
+    return fileSize;
+}
+
+//-----------------------------------------------------------------------------
+
 #endif //__IPC_LINUX__
