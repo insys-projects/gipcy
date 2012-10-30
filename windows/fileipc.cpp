@@ -226,5 +226,21 @@ GIPCY_API int IPC_setPosFile(IPC_handle handle, int pos, int method)
 
 //-----------------------------------------------------------------------------
 
+GIPCY_API int IPC_getFileSize(IPC_handle handle, long long* size)
+{
+    ipc_handle_t h = (ipc_handle_t)handle;
+    if(!h) return IPC_INVALID_HANDLE;
+
+	LARGE_INTEGER file_size;
+
+	int ret = GetFileSizeEx(h->ipc_descr, &file_size);
+	if(!ret)
+	    return IPC_GENERAL_ERROR;
+
+    *size = (long long)file_size.QuadPart;
+
+    return IPC_OK;
+}
+
 #endif //__IPC_WIN__
 

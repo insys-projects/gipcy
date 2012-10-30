@@ -172,25 +172,20 @@ int IPC_setPosFile(IPC_handle handle, int pos, int method)
 
 //-----------------------------------------------------------------------------
 
-size_t IPC_fileSize(const IPC_str *name)
+int IPC_getFileSize(IPC_handle handle, long long* size)
 {
-    struct stat finfo;
+    ipc_handle_t h = (ipc_handle_t)handle;
+    if(!h) return IPC_INVALID_HANDLE;
 
-    int fd = open( name, O_RDONLY );
-    if(fd < 0) {
+	struct stat finfo;
+
+    int res = fstat(h->ipc_descr.ipc_file, &finfo );
+	if(res < 0) {
+        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
         return IPC_GENERAL_ERROR;
     }
-
-    if( fstat(fd, &finfo ) < 0 ) {
-        close(fd);
-        return IPC_GENERAL_ERROR;
-    }
-
-    close(fd);
-
-    size_t fileSize = finfo.st_size;
-
-    return fileSize;
+    *size = (long long)finfo.st_size;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

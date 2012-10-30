@@ -89,12 +89,13 @@ GIPCY_API    int IPC_writeFile(IPC_handle handle, void *data, int size);
     */
 GIPCY_API	int IPC_setPosFile(IPC_handle handle, int pos, int method);
 
-    //! Функция возвращает размер файла
+    //! Функция для получения размера файла
     /*!
-    \param name - имя файла
-    \return отрицательный код ошибки или размер файла
+    \param handle - дескриптор IPC
+    \param size - размер файла
+    \return код ошибки
     */
-GIPCY_API	size_t IPC_fileSize(const IPC_str *name);
+GIPCY_API int IPC_getFileSize(IPC_handle handle, long long* size);
 
 }
 

@@ -151,7 +151,7 @@ GIPCY_API int IPC_ioctlDeviceOvl(IPC_handle handle, unsigned long cmd, void *src
 }
 
 //-----------------------------------------------------------------------------
-GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void* virtAddr, size_t physAddr, unsigned long size)
+GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void** virtAddr, size_t physAddr, unsigned long size)
 {
     return IPC_OK;
 }
