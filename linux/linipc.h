@@ -34,7 +34,10 @@ union ipc {
     int          ipc_sem;       //!< Используется если IPC семафор SYSTEM V
 #endif
 #ifdef _POSIX_IPC_
-    sem_t        *ipc_sem;    //!< Используется если IPC семафор POSIX
+    sem_t        *ipc_sem;      //!< Используется если IPC семафор POSIX
+#endif
+#ifdef _INSYS_IPC_
+    void        *ipc_sem;       //!< Используется если IPC семафор из модуля ipcdrv
 #endif
     int          ipc_shm;       //!< Используется если IPC разделяемая память POSIX
     pthread_t    ipc_thread;    //!< Используется если IPC поток выполнения
@@ -131,8 +134,23 @@ bool is_ok_remove(ipc_handle_t h);
 //! Функция проверяет правильность дескриптора IPC
 /*!
     \param h - дескриптор объекта IPC
-    \param h - тип дескриптора объекта IPC
+    \param h_type - тип дескриптора объекта IPC
 */
 bool chechk_handle(ipc_handle_t h, int h_type);
+
+//! Функция открывает устройство IPC и возвращает дескриптор устройства
+/*!
+    \param name - имя устройства
+*/
+int open_ipc_driver(const char *name);
+
+//! Функция возвращает дескриптор устройства IPC
+int ipc_driver_handle(void);
+
+//! Функция закрывает устройство IPC
+/*!
+    \param name - имя устройства
+*/
+int close_ipc_driver(int fd);
 
 #endif //__LINIPC_H__

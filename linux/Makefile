@@ -11,13 +11,17 @@ include ./Mk.Rules
 
 ifeq ($(IPC_TYPE),_SYSTEMV_IPC_)
     DIRS := . ./systemv ../include
-else
+endif
+ifeq ($(IPC_TYPE),_POSIX_IPC_)
     DIRS := . ./posix ../include
+endif
+ifeq ($(IPC_TYPE),_INSYS_IPC_)
+    DIRS := . ./insys ./ipcdrv ../include
 endif
 
 INC := $(addprefix  -I, $(DIRS))
 
-#CFLAGS += -D__VERBOSE__
+CFLAGS += -D__VERBOSE__
 CFLAGS += $(INC)
 
 EXTFILES :=
