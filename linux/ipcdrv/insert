@@ -1,0 +1,34 @@
+#!/bin/sh 
+
+# 
+# This script is loading modules in the kernel. 
+# 
+
+kernel=`uname -r | grep 3.`
+
+if [ ${kernel} ]
+    then
+        module=`find *.ko`
+        mname=${module%.ko}
+    else
+        module=ipcdrv.o
+        mname=${module%.o}
+fi
+
+if [ ${module} = "" ]
+    then
+        echo No kernel module found. ${module}
+	exit
+    else
+        echo Find ${module} - kernel module.
+fi
+
+/sbin/insmod ./$module $* || exit 1
+
+sleep 1
+
+devfiles=`ls /dev/* | grep ipc`
+
+#echo ${devfiles}
+
+chmod -v 666 ${devfiles}
