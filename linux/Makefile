@@ -16,6 +16,7 @@ ifeq ($(IPC_TYPE),_POSIX_IPC_)
     DIRS := . ./posix ../include
 endif
 ifeq ($(IPC_TYPE),_INSYS_IPC_)
+    DRV := ipcdrv.module
     DIRS := . ./insys ./ipcdrv ../include
 endif
 
@@ -32,7 +33,7 @@ SRC := 		$(wildcard $(SRC_FILES))
 OBJ := 		$(patsubst %.cpp,%.o, $(SRC) $(EXTFILES))
 LIBDIR := ../lib
 
-$(LIBNAME): $(OBJ)
+$(LIBNAME): $(OBJ) $(DRV)
 	$(LD) -g -shared -rdynamic -Wl,-soname,$(SONAME) \
         -o $(LIBNAME) $(notdir $(OBJ)) -ldl -lrt -lpthread
 	chmod 666 $(LIBNAME)
@@ -51,3 +52,7 @@ test:
 	@echo $(SRC_DIR)
 	@echo $(SRC_FILES)
 	@echo $(SRC)
+
+ipcdrv.module:
+	@echo Build ipcdrv kernel module
+	make -C ./ipcdrv
