@@ -15,7 +15,7 @@
 
 //-----------------------------------------------------------------------------
 
-void* ipc_sem_create( struct ipc_driver *drv, struct sem_create_t *sem_param )
+void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *sem_param )
 {
     bool exist = false;
     struct list_head *pos, *n;
@@ -80,7 +80,7 @@ do_out:
 
 //-----------------------------------------------------------------------------
 
-int ipc_sem_down( struct ipc_driver *drv, struct sem_lock_t *sem_param )
+int ipc_sem_down( struct ipc_driver *drv, struct ipc_lock_t *sem_param )
 {
     bool exist = false;
     int error = -EINVAL;
@@ -136,7 +136,7 @@ do_out:
 
 //-----------------------------------------------------------------------------
 
-int ipc_sem_up( struct ipc_driver *drv, struct sem_unlock_t *sem_param )
+int ipc_sem_up( struct ipc_driver *drv, struct ipc_unlock_t *sem_param )
 {
     bool exist = false;
     int error = -EINVAL;
@@ -185,7 +185,7 @@ do_out:
 
 //-----------------------------------------------------------------------------
 
-int ipc_sem_close( struct ipc_driver *drv, struct sem_close_t *sem_param )
+int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *sem_param )
 {
     int error = -EINVAL;
     struct list_head *pos, *n;

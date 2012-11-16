@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
+IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
 {
     int fd = ipc_driver_handle();
     if(fd < 0) {
@@ -34,7 +34,7 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
 
     memset(&ipc_param,0,sizeof(ipc_param));
 
-    ipc_param.type = IPC_typeSemaphore;
+    ipc_param.type = IPC_typeEvent;
     ipc_param.handle = NULL;
     ipc_param.value = 1;
     snprintf(ipc_param.name, sizeof(ipc_param.name), "%s", name);
@@ -53,7 +53,7 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
 
 //-----------------------------------------------------------------------------
 
-int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
+int IPC_waitEvent(const  IPC_handle handle, int timeout)
 {
     int fd = ipc_driver_handle();
     if(fd < 0) {
@@ -79,7 +79,7 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
 
 //-----------------------------------------------------------------------------
 
-int IPC_unlockSemaphore(const  IPC_handle handle)
+int IPC_setEvent(const  IPC_handle handle)
 {
     int fd = ipc_driver_handle();
     if(fd < 0) {
@@ -104,7 +104,32 @@ int IPC_unlockSemaphore(const  IPC_handle handle)
 
 //-----------------------------------------------------------------------------
 
-int IPC_deleteSemaphore(IPC_handle handle)
+int IPC_resetEvent(const  IPC_handle handle)
+{
+    int fd = ipc_driver_handle();
+    if(fd < 0) {
+        DEBUG_PRINT("%s(): IPC driver was not opened\n", __FUNCTION__);
+        return -1;
+    }
+
+    ipc_unlock_t ipc_param;
+
+    memset(&ipc_param,0,sizeof(ipc_param));
+
+    ipc_param.handle = handle;
+
+    int res = ioctl(fd, IOCTL_IPC_RESET, &ipc_param);
+    if(res < 0) {
+        DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
+        return -1;
+    }
+
+    return IPC_OK;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_deleteEvent(IPC_handle handle)
 {
     int fd = ipc_driver_handle();
     if(fd < 0) {

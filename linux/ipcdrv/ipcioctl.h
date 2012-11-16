@@ -18,10 +18,11 @@
 #define IPC_MAKE_IOCTL(c) _IO(IPC_DEVICE_TYPE, (c))
 #endif
 
-#define IOCTL_IPC_SEM_OPEN		IPC_MAKE_IOCTL(10)
-#define IOCTL_IPC_SEM_WAIT		IPC_MAKE_IOCTL(11)
-#define IOCTL_IPC_SEM_POST		IPC_MAKE_IOCTL(12)
-#define IOCTL_IPC_SEM_CLOSE		IPC_MAKE_IOCTL(13)
+#define IOCTL_IPC_OPEN		IPC_MAKE_IOCTL(10)
+#define IOCTL_IPC_LOCK		IPC_MAKE_IOCTL(11)
+#define IOCTL_IPC_UNLOCK	IPC_MAKE_IOCTL(12)
+#define IOCTL_IPC_RESET		IPC_MAKE_IOCTL(13)
+#define IOCTL_IPC_CLOSE		IPC_MAKE_IOCTL(14)
 
 //-----------------------------------------------------------------------------
 
@@ -38,9 +39,11 @@
 #endif
 
 //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-struct sem_create_t {
+struct ipc_create_t {
 
+    int     type;
     char    name[128];
     int     value;
     void    *handle;
@@ -48,7 +51,7 @@ struct sem_create_t {
 
 //-----------------------------------------------------------------------------
 
-struct sem_lock_t {
+struct ipc_lock_t {
 
     void    *handle;
     int     timeout;
@@ -56,14 +59,14 @@ struct sem_lock_t {
 
 //-----------------------------------------------------------------------------
 
-struct sem_unlock_t {
+struct ipc_unlock_t {
 
     void    *handle;
 };
 
 //-----------------------------------------------------------------------------
 
-struct sem_close_t {
+struct ipc_close_t {
 
     void    *handle;
 };

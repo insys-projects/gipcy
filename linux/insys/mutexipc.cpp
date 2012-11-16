@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
+IPC_handle IPC_createMutex(const IPC_str *name, bool value)
 {
     int fd = ipc_driver_handle();
     if(fd < 0) {
@@ -34,14 +34,14 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
 
     memset(&ipc_param,0,sizeof(ipc_param));
 
-    ipc_param.type = IPC_typeSemaphore;
+    ipc_param.type = IPC_typeMutex;
     ipc_param.handle = NULL;
-    ipc_param.value = 1;
+    ipc_param.value = value ? 1 : 0;
     snprintf(ipc_param.name, sizeof(ipc_param.name), "%s", name);
 
     int res = ioctl(fd,IOCTL_IPC_OPEN,&ipc_param);
     if(res < 0) {
-        DEBUG_PRINT("%s(): Error open semaphore - %s\n", __FUNCTION__, name);
+        DEBUG_PRINT("%s(): Error open mutex - %s\n", __FUNCTION__, name);
         return NULL;
     }
 
@@ -53,7 +53,7 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
 
 //-----------------------------------------------------------------------------
 
-int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
+int IPC_captureMutex(const IPC_handle handle, int timeout)
 {
     int fd = ipc_driver_handle();
     if(fd < 0) {
@@ -79,7 +79,7 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
 
 //-----------------------------------------------------------------------------
 
-int IPC_unlockSemaphore(const  IPC_handle handle)
+int IPC_releaseMutex(const IPC_handle handle)
 {
     int fd = ipc_driver_handle();
     if(fd < 0) {
@@ -104,7 +104,7 @@ int IPC_unlockSemaphore(const  IPC_handle handle)
 
 //-----------------------------------------------------------------------------
 
-int IPC_deleteSemaphore(IPC_handle handle)
+int IPC_deleteMutex(IPC_handle handle)
 {
     int fd = ipc_driver_handle();
     if(fd < 0) {

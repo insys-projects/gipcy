@@ -138,17 +138,20 @@ static int ipc_device_ioctl( struct inode *inode, struct file *file, unsigned in
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
 
     switch(cmd) {
-    case IOCTL_IPC_SEM_OPEN:
-        error = ioctl_sem_open(pDriver, arg);
+    case IOCTL_IPC_OPEN:
+        error = ioctl_ipc_open(pDriver, arg);
         break;
-    case IOCTL_IPC_SEM_WAIT:
-        error = ioctl_sem_down(pDriver, arg);
+    case IOCTL_IPC_LOCK:
+        error = ioctl_ipc_lock(pDriver, arg);
         break;
-    case IOCTL_IPC_SEM_POST:
-        error = ioctl_sem_up(pDriver, arg);
+    case IOCTL_IPC_UNLOCK:
+        error = ioctl_ipc_unlock(pDriver, arg);
         break;
-    case IOCTL_IPC_SEM_CLOSE:
-        error = ioctl_sem_close(pDriver, arg);
+    case IOCTL_IPC_RESET:
+        error = ioctl_ipc_reset(pDriver, arg);
+        break;
+    case IOCTL_IPC_CLOSE:
+        error = ioctl_ipc_close(pDriver, arg);
         break;
     default:
         err_msg(err_trace, "%s(): Unknown ioctl command\n", __FUNCTION__);
