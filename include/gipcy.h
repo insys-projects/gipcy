@@ -2,6 +2,10 @@
 #ifndef __IPC_H__
 #define __IPC_H__
 
+#ifndef __IPCTYPE_H__
+    #include "ipctype.h"
+#endif
+
 #ifndef __SEMIPC_H__
     #include "semipc.h"
 #endif
@@ -9,10 +13,6 @@
 #ifndef __SHMIPC_H__
     #include "shmipc.h"
 #endif
-
-//#ifndef __STRIPC_H__
-//    #include "stripc.h"
-//#endif
 
 #ifndef __THREADIPC_H__
     #include "threadipc.h"

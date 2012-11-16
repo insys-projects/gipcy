@@ -6,25 +6,10 @@
 #ifndef __IPCERR_H__
     #include "ipcerr.h"
 #endif
-//#ifndef __IPCTYPE_H__
-//    #include "ipctype.h"
-//#endif
-//#ifndef __STRIPC_H__
-//    #include "stripc.h"
-//#endif
 
-enum IPC_type {
-
-    IPC_typeSemaphore,
-    IPC_typeMutex,
-    IPC_typeEvent,
-    IPC_typeThread,
-    IPC_typeSharedMem,
-    IPC_typeLibrary,
-    IPC_typeFile,
-    IPC_typeDevice,
-    IPC_typeDir
-};
+#ifndef __IPCTYPE_H__
+    #include "ipctype.h"
+#endif
 
 //----------------------------------------------------------------------
 // Функции и типы для работы со строками
