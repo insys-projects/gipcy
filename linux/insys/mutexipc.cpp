@@ -34,12 +34,11 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
 
     memset(&ipc_param,0,sizeof(ipc_param));
 
-    ipc_param.type = IPC_typeMutex;
     ipc_param.handle = NULL;
     ipc_param.value = value ? 1 : 0;
     snprintf(ipc_param.name, sizeof(ipc_param.name), "%s", name);
 
-    int res = ioctl(fd,IOCTL_IPC_OPEN,&ipc_param);
+    int res = ioctl(fd,IOCTL_IPC_MUTEX_OPEN,&ipc_param);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error open mutex - %s\n", __FUNCTION__, name);
         return NULL;
@@ -68,7 +67,7 @@ int IPC_captureMutex(const IPC_handle handle, int timeout)
     ipc_param.handle = handle;
     ipc_param.timeout = timeout;
 
-    int res = ioctl(fd, IOCTL_IPC_LOCK, &ipc_param);
+    int res = ioctl(fd, IOCTL_IPC_MUTEX_LOCK, &ipc_param);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
         return -1;
@@ -93,7 +92,7 @@ int IPC_releaseMutex(const IPC_handle handle)
 
     ipc_param.handle = handle;
 
-    int res = ioctl(fd, IOCTL_IPC_UNLOCK, &ipc_param);
+    int res = ioctl(fd, IOCTL_IPC_MUTEX_UNLOCK, &ipc_param);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
         return -1;
@@ -118,7 +117,7 @@ int IPC_deleteMutex(IPC_handle handle)
 
     ipc_param.handle = handle;
 
-    int res = ioctl(fd, IOCTL_IPC_CLOSE, &ipc_param);
+    int res = ioctl(fd, IOCTL_IPC_MUTEX_CLOSE, &ipc_param);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
         return -1;

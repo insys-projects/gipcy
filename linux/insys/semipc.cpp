@@ -34,12 +34,11 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
 
     memset(&ipc_param,0,sizeof(ipc_param));
 
-    ipc_param.type = IPC_typeSemaphore;
     ipc_param.handle = NULL;
     ipc_param.value = 1;
     snprintf(ipc_param.name, sizeof(ipc_param.name), "%s", name);
 
-    int res = ioctl(fd,IOCTL_IPC_OPEN,&ipc_param);
+    int res = ioctl(fd,IOCTL_IPC_SEM_OPEN,&ipc_param);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error open semaphore - %s\n", __FUNCTION__, name);
         return NULL;
@@ -68,10 +67,10 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
     ipc_param.handle = handle;
     ipc_param.timeout = timeout;
 
-    int res = ioctl(fd, IOCTL_IPC_LOCK, &ipc_param);
+    int res = ioctl(fd, IOCTL_IPC_SEM_LOCK, &ipc_param);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
-        return -1;
+        return res;
     }
 
     return IPC_OK;
@@ -93,7 +92,7 @@ int IPC_unlockSemaphore(const  IPC_handle handle)
 
     ipc_param.handle = handle;
 
-    int res = ioctl(fd, IOCTL_IPC_UNLOCK, &ipc_param);
+    int res = ioctl(fd, IOCTL_IPC_SEM_UNLOCK, &ipc_param);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
         return -1;
@@ -118,7 +117,7 @@ int IPC_deleteSemaphore(IPC_handle handle)
 
     ipc_param.handle = handle;
 
-    int res = ioctl(fd, IOCTL_IPC_CLOSE, &ipc_param);
+    int res = ioctl(fd, IOCTL_IPC_SEM_CLOSE, &ipc_param);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
         return -1;
