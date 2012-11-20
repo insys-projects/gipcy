@@ -18,11 +18,21 @@
 #define IPC_MAKE_IOCTL(c) _IO(IPC_DEVICE_TYPE, (c))
 #endif
 
-#define IOCTL_IPC_OPEN		IPC_MAKE_IOCTL(10)
-#define IOCTL_IPC_LOCK		IPC_MAKE_IOCTL(11)
-#define IOCTL_IPC_UNLOCK	IPC_MAKE_IOCTL(12)
-#define IOCTL_IPC_RESET		IPC_MAKE_IOCTL(13)
-#define IOCTL_IPC_CLOSE		IPC_MAKE_IOCTL(14)
+#define IOCTL_IPC_SEM_OPEN		IPC_MAKE_IOCTL(10)
+#define IOCTL_IPC_SEM_LOCK		IPC_MAKE_IOCTL(11)
+#define IOCTL_IPC_SEM_UNLOCK            IPC_MAKE_IOCTL(12)
+#define IOCTL_IPC_SEM_CLOSE		IPC_MAKE_IOCTL(13)
+
+#define IOCTL_IPC_MUTEX_OPEN		IPC_MAKE_IOCTL(20)
+#define IOCTL_IPC_MUTEX_LOCK		IPC_MAKE_IOCTL(21)
+#define IOCTL_IPC_MUTEX_UNLOCK          IPC_MAKE_IOCTL(22)
+#define IOCTL_IPC_MUTEX_CLOSE		IPC_MAKE_IOCTL(23)
+
+#define IOCTL_IPC_EVENT_OPEN		IPC_MAKE_IOCTL(30)
+#define IOCTL_IPC_EVENT_LOCK		IPC_MAKE_IOCTL(31)
+#define IOCTL_IPC_EVENT_UNLOCK          IPC_MAKE_IOCTL(32)
+#define IOCTL_IPC_EVENT_RESET           IPC_MAKE_IOCTL(33)
+#define IOCTL_IPC_EVENT_CLOSE		IPC_MAKE_IOCTL(34)
 
 //-----------------------------------------------------------------------------
 
@@ -43,7 +53,6 @@
 
 struct ipc_create_t {
 
-    int     type;
     char    name[128];
     int     value;
     void    *handle;
@@ -60,6 +69,13 @@ struct ipc_lock_t {
 //-----------------------------------------------------------------------------
 
 struct ipc_unlock_t {
+
+    void    *handle;
+};
+
+//-----------------------------------------------------------------------------
+
+struct ipc_reset_t {
 
     void    *handle;
 };

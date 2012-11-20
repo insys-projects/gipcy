@@ -15,7 +15,7 @@
 
 //-----------------------------------------------------------------------------
 
-void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *sem_param )
+void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *param )
 {
     bool exist = false;
     struct list_head *pos, *n;
@@ -24,13 +24,13 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *sem_param )
 
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
 
-    if(!drv || !sem_param) {
+    if(!drv || !param) {
         err_msg( err_trace, "%s(): Invalid parameters\n", __FUNCTION__ );
         goto do_out;
     }
 
-    dbg_msg( dbg_trace, "%s(): name = %s\n", __FUNCTION__, sem_param->name );
-    dbg_msg( dbg_trace, "%s(): value = %d\n", __FUNCTION__, sem_param->value );
+    dbg_msg( dbg_trace, "%s(): name = %s\n", __FUNCTION__, param->name );
+    dbg_msg( dbg_trace, "%s(): value = %d\n", __FUNCTION__, param->value );
 
     mutex_lock(&drv->m_sem_lock);
 
@@ -38,7 +38,7 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *sem_param )
 
         entry = list_entry(pos, struct ipcsem_t, sem_list);
 
-        if(strcmp(entry->sem_name, sem_param->name) == 0) {
+        if(strcmp(entry->sem_name, param->name) == 0) {
             sem = entry;
             exist = true;
             break;
@@ -47,7 +47,7 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *sem_param )
 
     if(!exist) {
 
-        dbg_msg( dbg_trace, "%s(): semname = %s was not found. Create new semaphore\n", __FUNCTION__, sem_param->name );
+        dbg_msg( dbg_trace, "%s(): semname = %s was not found. Create new semaphore\n", __FUNCTION__, param->name );
 
         sem = (struct ipcsem_t*)kzalloc(sizeof(struct ipcsem_t), GFP_KERNEL);
         if(!sem) {
@@ -56,21 +56,21 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *sem_param )
         }
 
         INIT_LIST_HEAD(&sem->sem_list);
-        sema_init(&sem->sem, sem_param->value);
-        snprintf(sem->sem_name, sizeof(sem->sem_name), "%s", sem_param->name);
+        sema_init(&sem->sem, param->value);
+        snprintf(sem->sem_name, sizeof(sem->sem_name), "%s", param->name);
         sem->sem_handle = sem;
 
         list_add_tail(&sem->sem_list, &drv->m_sem_list);
 
     } else {
 
-        dbg_msg( dbg_trace, "%s(): semname = %s was found. Use exist semaphore\n", __FUNCTION__, sem_param->name );
+        dbg_msg( dbg_trace, "%s(): semname = %s was found. Use exist semaphore\n", __FUNCTION__, param->name );
     }
 
     atomic_inc(&sem->sem_owner_count);
-    sem_param->handle = sem->sem_handle;
+    param->handle = sem->sem_handle;
 
-    dbg_msg( dbg_trace, "%s(): %s - sem_owner_count: %d\n", __FUNCTION__, sem_param->name, atomic_read(&sem->sem_owner_count) );
+    dbg_msg( dbg_trace, "%s(): %s - sem_owner_count: %d\n", __FUNCTION__, param->name, atomic_read(&sem->sem_owner_count) );
 
 do_out:
     mutex_unlock(&drv->m_sem_lock);
@@ -80,16 +80,16 @@ do_out:
 
 //-----------------------------------------------------------------------------
 
-int ipc_sem_down( struct ipc_driver *drv, struct ipc_lock_t *sem_param )
+int ipc_sem_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
 {
     bool exist = false;
     int error = -EINVAL;
     struct list_head *pos, *n;
     struct ipcsem_t *entry = NULL;
 
-    dbg_msg( dbg_trace, "%s(): timeout = %d\n", __FUNCTION__, sem_param->timeout );
+    dbg_msg( dbg_trace, "%s(): timeout = %d\n", __FUNCTION__, param->timeout );
 
-    if(!drv || !sem_param || !sem_param->handle) {
+    if(!drv || !param || !param->handle) {
         err_msg( err_trace, "%s(): Invalid parameters\n", __FUNCTION__ );
         goto do_out;
     }
@@ -100,7 +100,7 @@ int ipc_sem_down( struct ipc_driver *drv, struct ipc_lock_t *sem_param )
 
         entry = list_entry(pos, struct ipcsem_t, sem_list);
 
-        if(entry->sem_handle == sem_param->handle) {
+        if(entry->sem_handle == param->handle) {
             exist = true;
             break;
         }
@@ -112,12 +112,12 @@ int ipc_sem_down( struct ipc_driver *drv, struct ipc_lock_t *sem_param )
 
         dbg_msg( dbg_trace, "%s(): %s - sem_owner_count: %d\n", __FUNCTION__, entry->sem_name, atomic_read(&entry->sem_owner_count) );
 
-        if(sem_param->timeout < 0) {
+        if(param->timeout < 0) {
             down(&entry->sem);
             atomic_inc(&entry->sem_lock_count);
             error = 0;
         } else {
-            error = down_timeout(&entry->sem, ms_to_jiffies(sem_param->timeout));
+            error = down_timeout(&entry->sem, ms_to_jiffies(param->timeout));
             if(error == 0) {
                 atomic_inc(&entry->sem_lock_count);
             }
@@ -136,7 +136,7 @@ do_out:
 
 //-----------------------------------------------------------------------------
 
-int ipc_sem_up( struct ipc_driver *drv, struct ipc_unlock_t *sem_param )
+int ipc_sem_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
 {
     bool exist = false;
     int error = -EINVAL;
@@ -145,7 +145,7 @@ int ipc_sem_up( struct ipc_driver *drv, struct ipc_unlock_t *sem_param )
 
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
 
-    if(!drv || !sem_param || !sem_param->handle) {
+    if(!drv || !param || !param->handle) {
         err_msg( err_trace, "%s(): Invalid parameters\n", __FUNCTION__ );
         goto do_out;
     }
@@ -156,7 +156,7 @@ int ipc_sem_up( struct ipc_driver *drv, struct ipc_unlock_t *sem_param )
 
         entry = list_entry(pos, struct ipcsem_t, sem_list);
 
-        if(entry->sem_handle == sem_param->handle) {
+        if(entry->sem_handle == param->handle) {
             exist = true;
             break;
         }
@@ -185,7 +185,7 @@ do_out:
 
 //-----------------------------------------------------------------------------
 
-int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *sem_param )
+int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *param )
 {
     int error = -EINVAL;
     struct list_head *pos, *n;
@@ -193,7 +193,7 @@ int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *sem_param )
 
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
 
-    if(!drv || !sem_param || !sem_param->handle) {
+    if(!drv || !param || !param->handle) {
         err_msg( err_trace, "%s(): Invalid parameters\n", __FUNCTION__ );
         goto do_out;
     }
@@ -204,7 +204,7 @@ int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *sem_param )
 
         entry = list_entry(pos, struct ipcsem_t, sem_list);
 
-        if(entry->sem_handle == sem_param->handle) {
+        if(entry->sem_handle == param->handle) {
 
             if(atomic_dec_and_test(&entry->sem_owner_count)) {
 

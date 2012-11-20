@@ -138,20 +138,45 @@ static int ipc_device_ioctl( struct inode *inode, struct file *file, unsigned in
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
 
     switch(cmd) {
-    case IOCTL_IPC_OPEN:
-        error = ioctl_ipc_open(pDriver, arg);
+
+    case IOCTL_IPC_SEM_OPEN:
+        error = ioctl_sem_open(pDriver, arg);
         break;
-    case IOCTL_IPC_LOCK:
-        error = ioctl_ipc_lock(pDriver, arg);
+    case IOCTL_IPC_SEM_LOCK:
+        error = ioctl_sem_lock(pDriver, arg);
         break;
-    case IOCTL_IPC_UNLOCK:
-        error = ioctl_ipc_unlock(pDriver, arg);
+    case IOCTL_IPC_SEM_UNLOCK:
+        error = ioctl_sem_unlock(pDriver, arg);
         break;
-    case IOCTL_IPC_RESET:
-        error = ioctl_ipc_reset(pDriver, arg);
+    case IOCTL_IPC_SEM_CLOSE:
+        error = ioctl_sem_close(pDriver, arg);
         break;
-    case IOCTL_IPC_CLOSE:
-        error = ioctl_ipc_close(pDriver, arg);
+    case IOCTL_IPC_MUTEX_OPEN:
+        error = ioctl_mutex_open(pDriver, arg);
+        break;
+    case IOCTL_IPC_MUTEX_LOCK:
+        error = ioctl_mutex_lock(pDriver, arg);
+        break;
+    case IOCTL_IPC_MUTEX_UNLOCK:
+        error = ioctl_mutex_unlock(pDriver, arg);
+        break;
+    case IOCTL_IPC_MUTEX_CLOSE:
+        error = ioctl_mutex_close(pDriver, arg);
+        break;
+    case IOCTL_IPC_EVENT_OPEN:
+        error = ioctl_event_open(pDriver, arg);
+        break;
+    case IOCTL_IPC_EVENT_LOCK:
+        error = ioctl_event_lock(pDriver, arg);
+        break;
+    case IOCTL_IPC_EVENT_UNLOCK:
+        error = ioctl_sem_unlock(pDriver, arg);
+        break;
+    case IOCTL_IPC_EVENT_CLOSE:
+        error = ioctl_event_close(pDriver, arg);
+        break;
+    case IOCTL_IPC_EVENT_RESET:
+        error = ioctl_event_reset(pDriver, arg);
         break;
     default:
         err_msg(err_trace, "%s(): Unknown ioctl command\n", __FUNCTION__);
