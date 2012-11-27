@@ -51,6 +51,9 @@ static struct ipc_driver *file_to_device( struct file *file )
 static int ipc_device_fasync(int fd, struct file *file, int mode)
 {
     struct ipc_driver *pDriver = file->private_data;
+
+    dbg_msg(dbg_trace, "%s()\n", __FUNCTION__);
+
     if(!pDriver)
         return -ENODEV;
 
@@ -62,8 +65,10 @@ static int ipc_device_fasync(int fd, struct file *file, int mode)
 static unsigned int ipc_device_poll(struct file *filp, poll_table *wait)
 {
     unsigned int mask = 0;
-
     struct ipc_driver *pDriver = file_to_device(filp);
+
+    dbg_msg(dbg_trace, "%s()\n", __FUNCTION__);
+
     if(!pDriver)
         return -ENODEV;
 
@@ -170,7 +175,7 @@ static int ipc_device_ioctl( struct inode *inode, struct file *file, unsigned in
         error = ioctl_event_lock(pDriver, arg);
         break;
     case IOCTL_IPC_EVENT_UNLOCK:
-        error = ioctl_sem_unlock(pDriver, arg);
+        error = ioctl_event_unlock(pDriver, arg);
         break;
     case IOCTL_IPC_EVENT_CLOSE:
         error = ioctl_event_close(pDriver, arg);
