@@ -55,6 +55,7 @@ struct ipc_create_t {
 
     char    name[128];
     int     value;
+    int     flag;
     void    *handle;
 };
 

@@ -47,7 +47,7 @@ void* ipc_event_create( struct ipc_driver *drv, struct ipc_create_t *param )
 
     if(!exist) {
 
-        dbg_msg( dbg_trace, "%s(): semname = %s was not found. Create new semaphore\n", __FUNCTION__, param->name );
+        dbg_msg( dbg_trace, "%s(): event name = %s was not found. Create new semaphore\n", __FUNCTION__, param->name );
 
         event = (struct ipcevent_t*)kzalloc(sizeof(struct ipcevent_t), GFP_KERNEL);
         if(!event) {
@@ -59,12 +59,13 @@ void* ipc_event_create( struct ipc_driver *drv, struct ipc_create_t *param )
         sema_init(&event->event, 1);
         snprintf(event->event_name, sizeof(event->event_name), "%s", param->name);
         event->event_handle = event;
+        event->event_id = EVENT_ID;
 
         list_add_tail(&event->event_list, &drv->m_event_list);
 
     } else {
 
-        dbg_msg( dbg_trace, "%s(): eventname = %s was found. Use exist event\n", __FUNCTION__, param->name );
+        dbg_msg( dbg_trace, "%s(): even tname = %s was found. Use exist event\n", __FUNCTION__, param->name );
     }
 
     atomic_inc(&event->event_owner_count);
@@ -75,7 +76,7 @@ void* ipc_event_create( struct ipc_driver *drv, struct ipc_create_t *param )
 do_out:
     mutex_unlock(&drv->m_event_lock);
 
-    return event->event_handle;
+    return &event->event_handle;
 }
 
 //-----------------------------------------------------------------------------
@@ -84,7 +85,6 @@ int ipc_event_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
 {
     bool exist = false;
     int error = -EINVAL;
-    struct list_head *pos, *n;
     struct ipcevent_t *entry = NULL;
 
     dbg_msg( dbg_trace, "%s(): timeout = %d\n", __FUNCTION__, param->timeout );
@@ -96,21 +96,16 @@ int ipc_event_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
 
     mutex_lock(&drv->m_event_lock);
 
-    list_for_each_safe(pos, n, &drv->m_event_list) {
-
-        entry = list_entry(pos, struct ipcevent_t, event_list);
-
-        if(entry->event_handle == param->handle) {
-            exist = true;
-            break;
-        }
+    entry = container_of(param->handle, struct ipcevent_t, event_handle);
+    if(entry && (entry->event_id == EVENT_ID)) {
+        exist = true;
     }
 
     mutex_unlock(&drv->m_event_lock);
 
     if(exist) {
 
-        dbg_msg( dbg_trace, "%s(): %s - sem_owner_count: %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_owner_count) );
+        dbg_msg( dbg_trace, "%s(): %s - event_owner_count: %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_owner_count) );
 
         if(param->timeout < 0) {
             down(&entry->event);
@@ -123,12 +118,12 @@ int ipc_event_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
             }
         }
 
+        dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
+
     } else {
 
         dbg_msg( dbg_trace, "%s(): Invalid handle\n", __FUNCTION__ );
     }
-
-    dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
 
 do_out:
     return error;
@@ -140,7 +135,6 @@ int ipc_event_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
 {
     bool exist = false;
     int error = -EINVAL;
-    struct list_head *pos, *n;
     struct ipcevent_t *entry = NULL;
 
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
@@ -152,32 +146,27 @@ int ipc_event_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
 
     mutex_lock(&drv->m_event_lock);
 
-    list_for_each_safe(pos, n, &drv->m_event_list) {
-
-        entry = list_entry(pos, struct ipcevent_t, event_list);
-
-        if(entry->event_handle == param->handle) {
-            exist = true;
-            break;
-        }
+    entry = container_of(param->handle, struct ipcevent_t, event_handle);
+    if(entry && (entry->event_id == EVENT_ID)) {
+        exist = true;
     }
 
     mutex_unlock(&drv->m_event_lock);
 
     if(exist) {
 
-        dbg_msg( dbg_trace, "%s(): %s - sem_owner_count: %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_owner_count) );
+        dbg_msg( dbg_trace, "%s(): %s - event_owner_count: %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_owner_count) );
 
         up(&entry->event);
         atomic_dec(&entry->event_lock_count);
         error = 0;
 
+        dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
+
     } else {
 
         dbg_msg( dbg_trace, "%s(): Invalid handle\n", __FUNCTION__ );
     }
-
-    dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
 
 do_out:
     return error;
@@ -190,6 +179,7 @@ int ipc_event_close( struct ipc_driver *drv, struct ipc_close_t *param )
     int error = -EINVAL;
     struct list_head *pos, *n;
     struct ipcevent_t *entry = NULL;
+    struct ipcevent_t *handle = NULL;
 
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
 
@@ -200,32 +190,37 @@ int ipc_event_close( struct ipc_driver *drv, struct ipc_close_t *param )
 
     mutex_lock(&drv->m_event_lock);
 
-    list_for_each_safe(pos, n, &drv->m_event_list) {
+    handle = container_of(param->handle, struct ipcevent_t, event_handle);
 
-        entry = list_entry(pos, struct ipcevent_t, event_list);
+    if(handle && (handle->event_id == EVENT_ID)) {
 
-        if(entry->event_handle == param->handle) {
+        list_for_each_safe(pos, n, &drv->m_event_list) {
 
-            if(atomic_dec_and_test(&entry->event_owner_count)) {
+            entry = list_entry(pos, struct ipcevent_t, event_list);
 
-                dbg_msg( dbg_trace, "%s(): %s - deleted\n", __FUNCTION__, entry->event_name );
+            if(entry == handle) {
 
-                list_del(pos);
-                kfree( (void*)entry );
-                break;
+                error = 0;
 
-            } else {
+                if(atomic_dec_and_test(&entry->event_owner_count)) {
 
-                dbg_msg( dbg_trace, "%s(): %s - samaphore is using... skipping to delete it\n", __FUNCTION__, entry->event_name );
+                    dbg_msg( dbg_trace, "%s(): %s - deleted\n", __FUNCTION__, entry->event_name );
+
+                    list_del(pos);
+                    kfree( (void*)entry );
+                    break;
+
+                } else {
+
+                    dbg_msg( dbg_trace, "%s(): %s - event is using... skipping to delete it\n", __FUNCTION__, entry->event_name );
+                }
             }
         }
     }
 
-    error = 0;
-
-do_out:
     mutex_unlock(&drv->m_event_lock);
 
+do_out:
     return error;
 }
 
@@ -235,7 +230,6 @@ int ipc_event_reset( struct ipc_driver *drv, struct ipc_reset_t *param )
 {
     bool exist = false;
     int error = -EINVAL;
-    struct list_head *pos, *n;
     struct ipcevent_t *entry = NULL;
 
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
@@ -247,32 +241,27 @@ int ipc_event_reset( struct ipc_driver *drv, struct ipc_reset_t *param )
 
     mutex_lock(&drv->m_event_lock);
 
-    list_for_each_safe(pos, n, &drv->m_event_list) {
-
-        entry = list_entry(pos, struct ipcevent_t, event_list);
-
-        if(entry->event_handle == param->handle) {
-            exist = true;
-            break;
-        }
+    entry = container_of(param->handle, struct ipcevent_t, event_handle);
+    if(entry && (entry->event_id == EVENT_ID)) {
+        exist = true;
     }
 
     mutex_unlock(&drv->m_event_lock);
 
     if(exist) {
 
-        dbg_msg( dbg_trace, "%s(): %s - sem_owner_count: %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_owner_count) );
+        dbg_msg( dbg_trace, "%s(): %s - event_owner_count: %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_owner_count) );
 
         up(&entry->event);
         atomic_dec(&entry->event_lock_count);
         error = 0;
 
+        dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
+
     } else {
 
         dbg_msg( dbg_trace, "%s(): Invalid handle\n", __FUNCTION__ );
     }
-
-    dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
 
 do_out:
     return error;

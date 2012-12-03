@@ -47,7 +47,7 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
 
     if(!exist) {
 
-        dbg_msg( dbg_trace, "%s(): semname = %s was not found. Create new semaphore\n", __FUNCTION__, param->name );
+        dbg_msg( dbg_trace, "%s(): mutex name = %s was not found. Create new semaphore\n", __FUNCTION__, param->name );
 
         mutex = (struct ipcmutex_t*)kzalloc(sizeof(struct ipcmutex_t), GFP_KERNEL);
         if(!mutex) {
@@ -56,15 +56,16 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
         }
 
         INIT_LIST_HEAD(&mutex->mutex_list);
-        sema_init(&mutex->mutex, 1);
+        sema_init(&mutex->mutex, (param->value > 0) ? 1 : 0);
         snprintf(mutex->mutex_name, sizeof(mutex->mutex_name), "%s", param->name);
         mutex->mutex_handle = mutex;
+        mutex->mutex_id = MUTEX_ID;
 
         list_add_tail(&mutex->mutex_list, &drv->m_mutex_list);
 
     } else {
 
-        dbg_msg( dbg_trace, "%s(): mutexname = %s was found. Use exist mutex\n", __FUNCTION__, param->name );
+        dbg_msg( dbg_trace, "%s(): mutex name = %s was found. Use exist mutex\n", __FUNCTION__, param->name );
     }
 
     atomic_inc(&mutex->mutex_owner_count);
@@ -75,7 +76,7 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
 do_out:
     mutex_unlock(&drv->m_mutex_lock);
 
-    return mutex->mutex_handle;
+    return &mutex->mutex_handle;
 }
 
 //-----------------------------------------------------------------------------
@@ -84,7 +85,6 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
 {
     bool exist = false;
     int error = -EINVAL;
-    struct list_head *pos, *n;
     struct ipcmutex_t *entry = NULL;
 
     dbg_msg( dbg_trace, "%s(): timeout = %d\n", __FUNCTION__, param->timeout );
@@ -96,14 +96,9 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
 
     mutex_lock(&drv->m_mutex_lock);
 
-    list_for_each_safe(pos, n, &drv->m_mutex_list) {
-
-        entry = list_entry(pos, struct ipcmutex_t, mutex_list);
-
-        if(entry->mutex_handle == param->handle) {
-            exist = true;
-            break;
-        }
+    entry = container_of(param->handle, struct ipcmutex_t, mutex_handle);
+    if(entry && (entry->mutex_id == MUTEX_ID)) {
+        exist = true;
     }
 
     mutex_unlock(&drv->m_mutex_lock);
@@ -123,12 +118,12 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
             }
         }
 
+        dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_lock_count) );
+
     } else {
 
         dbg_msg( dbg_trace, "%s(): Invalid handle\n", __FUNCTION__ );
     }
-
-    dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_lock_count) );
 
 do_out:
     return error;
@@ -140,7 +135,6 @@ int ipc_mutex_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
 {
     bool exist = false;
     int error = -EINVAL;
-    struct list_head *pos, *n;
     struct ipcmutex_t *entry = NULL;
 
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
@@ -152,14 +146,9 @@ int ipc_mutex_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
 
     mutex_lock(&drv->m_mutex_lock);
 
-    list_for_each_safe(pos, n, &drv->m_mutex_list) {
-
-        entry = list_entry(pos, struct ipcmutex_t, mutex_list);
-
-        if(entry->mutex_handle == param->handle) {
-            exist = true;
-            break;
-        }
+    entry = container_of(param->handle, struct ipcmutex_t, mutex_handle);
+    if(entry && (entry->mutex_id == MUTEX_ID)) {
+        exist = true;
     }
 
     mutex_unlock(&drv->m_mutex_lock);
@@ -172,12 +161,12 @@ int ipc_mutex_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
         atomic_dec(&entry->mutex_lock_count);
         error = 0;
 
+        dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_lock_count) );
+
     } else {
 
         dbg_msg( dbg_trace, "%s(): Invalid handle\n", __FUNCTION__ );
     }
-
-    dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_lock_count) );
 
 do_out:
     return error;
@@ -190,6 +179,7 @@ int ipc_mutex_close( struct ipc_driver *drv, struct ipc_close_t *param )
     int error = -EINVAL;
     struct list_head *pos, *n;
     struct ipcmutex_t *entry = NULL;
+    struct ipcmutex_t *handle = NULL;
 
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
 
@@ -200,32 +190,37 @@ int ipc_mutex_close( struct ipc_driver *drv, struct ipc_close_t *param )
 
     mutex_lock(&drv->m_mutex_lock);
 
-    list_for_each_safe(pos, n, &drv->m_mutex_list) {
+    handle = container_of(param->handle, struct ipcmutex_t, mutex_handle);
 
-        entry = list_entry(pos, struct ipcmutex_t, mutex_list);
+    if(handle && (handle->mutex_id == MUTEX_ID)) {
 
-        if(entry->mutex_handle == param->handle) {
+        list_for_each_safe(pos, n, &drv->m_mutex_list) {
 
-            if(atomic_dec_and_test(&entry->mutex_owner_count)) {
+            entry = list_entry(pos, struct ipcmutex_t, mutex_list);
 
-                dbg_msg( dbg_trace, "%s(): %s - deleted\n", __FUNCTION__, entry->mutex_name );
+            if(entry == handle) {
 
-                list_del(pos);
-                kfree( (void*)entry );
-                break;
+                error = 0;
 
-            } else {
+                if(atomic_dec_and_test(&entry->mutex_owner_count)) {
 
-                dbg_msg( dbg_trace, "%s(): %s - samaphore is using... skipping to delete it\n", __FUNCTION__, entry->mutex_name );
+                    dbg_msg( dbg_trace, "%s(): %s - deleted\n", __FUNCTION__, entry->mutex_name );
+
+                    list_del(pos);
+                    kfree( (void*)entry );
+                    break;
+
+                } else {
+
+                    dbg_msg( dbg_trace, "%s(): %s - mutex is using... skipping to delete it\n", __FUNCTION__, entry->mutex_name );
+                }
             }
         }
     }
 
-    error = 0;
-
-do_out:
     mutex_unlock(&drv->m_mutex_lock);
 
+do_out:
     return error;
 }
 

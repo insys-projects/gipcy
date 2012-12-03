@@ -36,7 +36,7 @@ static dev_t devno = MKDEV(0, 0);
 static struct class *ipc_class = NULL;
 static LIST_HEAD(ipc_list);
 static struct mutex ipc_mutex;
-int dbg_trace = 0;
+int dbg_trace = 1;
 int err_trace = 1;
 
 //-----------------------------------------------------------------------------

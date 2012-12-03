@@ -47,7 +47,7 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *param )
 
     if(!exist) {
 
-        dbg_msg( dbg_trace, "%s(): semname = %s was not found. Create new semaphore\n", __FUNCTION__, param->name );
+        dbg_msg( dbg_trace, "%s(): semaphore name = %s was not found. Create new semaphore\n", __FUNCTION__, param->name );
 
         sem = (struct ipcsem_t*)kzalloc(sizeof(struct ipcsem_t), GFP_KERNEL);
         if(!sem) {
@@ -59,12 +59,13 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *param )
         sema_init(&sem->sem, param->value);
         snprintf(sem->sem_name, sizeof(sem->sem_name), "%s", param->name);
         sem->sem_handle = sem;
+        sem->sem_id = SEM_ID;
 
         list_add_tail(&sem->sem_list, &drv->m_sem_list);
 
     } else {
 
-        dbg_msg( dbg_trace, "%s(): semname = %s was found. Use exist semaphore\n", __FUNCTION__, param->name );
+        dbg_msg( dbg_trace, "%s(): semaphore name = %s was found. Use exist semaphore\n", __FUNCTION__, param->name );
     }
 
     atomic_inc(&sem->sem_owner_count);
@@ -75,7 +76,7 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *param )
 do_out:
     mutex_unlock(&drv->m_sem_lock);
 
-    return sem->sem_handle;
+    return &sem->sem_handle;
 }
 
 //-----------------------------------------------------------------------------
@@ -84,7 +85,6 @@ int ipc_sem_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
 {
     bool exist = false;
     int error = -EINVAL;
-    struct list_head *pos, *n;
     struct ipcsem_t *entry = NULL;
 
     dbg_msg( dbg_trace, "%s(): timeout = %d\n", __FUNCTION__, param->timeout );
@@ -96,14 +96,9 @@ int ipc_sem_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
 
     mutex_lock(&drv->m_sem_lock);
 
-    list_for_each_safe(pos, n, &drv->m_sem_list) {
-
-        entry = list_entry(pos, struct ipcsem_t, sem_list);
-
-        if(entry->sem_handle == param->handle) {
-            exist = true;
-            break;
-        }
+    entry = container_of(param->handle, struct ipcsem_t, sem_handle);
+    if(entry && (entry->sem_id == SEM_ID)) {
+        exist = true;
     }
 
     mutex_unlock(&drv->m_sem_lock);
@@ -123,12 +118,12 @@ int ipc_sem_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
             }
         }
 
+        dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->sem_name, atomic_read(&entry->sem_lock_count) );
+
     } else {
 
         dbg_msg( dbg_trace, "%s(): Invalid handle\n", __FUNCTION__ );
     }
-
-    dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->sem_name, atomic_read(&entry->sem_lock_count) );
 
 do_out:
     return error;
@@ -140,7 +135,6 @@ int ipc_sem_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
 {
     bool exist = false;
     int error = -EINVAL;
-    struct list_head *pos, *n;
     struct ipcsem_t *entry = NULL;
 
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
@@ -152,14 +146,9 @@ int ipc_sem_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
 
     mutex_lock(&drv->m_sem_lock);
 
-    list_for_each_safe(pos, n, &drv->m_sem_list) {
-
-        entry = list_entry(pos, struct ipcsem_t, sem_list);
-
-        if(entry->sem_handle == param->handle) {
-            exist = true;
-            break;
-        }
+    entry = container_of(param->handle, struct ipcsem_t, sem_handle);
+    if(entry && (entry->sem_id == SEM_ID)) {
+        exist = true;
     }
 
     mutex_unlock(&drv->m_sem_lock);
@@ -171,13 +160,12 @@ int ipc_sem_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
         up(&entry->sem);
         atomic_dec(&entry->sem_lock_count);
         error = 0;
+        dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->sem_name, atomic_read(&entry->sem_lock_count) );
 
     } else {
 
         dbg_msg( dbg_trace, "%s(): Invalid handle\n", __FUNCTION__ );
     }
-
-    dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->sem_name, atomic_read(&entry->sem_lock_count) );
 
 do_out:
     return error;
@@ -190,6 +178,7 @@ int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *param )
     int error = -EINVAL;
     struct list_head *pos, *n;
     struct ipcsem_t *entry = NULL;
+    struct ipcsem_t *handle = NULL;
 
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
 
@@ -200,32 +189,37 @@ int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *param )
 
     mutex_lock(&drv->m_sem_lock);
 
-    list_for_each_safe(pos, n, &drv->m_sem_list) {
+    handle = container_of(param->handle, struct ipcsem_t, sem_handle);
 
-        entry = list_entry(pos, struct ipcsem_t, sem_list);
+    if(handle && (handle->sem_id == SEM_ID)) {
 
-        if(entry->sem_handle == param->handle) {
+        list_for_each_safe(pos, n, &drv->m_sem_list) {
 
-            if(atomic_dec_and_test(&entry->sem_owner_count)) {
+            entry = list_entry(pos, struct ipcsem_t, sem_list);
 
-                dbg_msg( dbg_trace, "%s(): %s - deleted\n", __FUNCTION__, entry->sem_name );
+            if(entry == handle) {
 
-                list_del(pos);
-                kfree( (void*)entry );
-                break;
+                error = 0;
 
-            } else {
+                if(atomic_dec_and_test(&entry->sem_owner_count)) {
 
-                dbg_msg( dbg_trace, "%s(): %s - samaphore is using... skipping to delete it\n", __FUNCTION__, entry->sem_name );
+                    dbg_msg( dbg_trace, "%s(): %s - deleted\n", __FUNCTION__, entry->sem_name );
+
+                    list_del(pos);
+                    kfree( (void*)entry );
+                    break;
+
+                } else {
+
+                    dbg_msg( dbg_trace, "%s(): %s - samaphore is using... skipping to delete it\n", __FUNCTION__, entry->sem_name );
+                }
             }
         }
     }
 
-    error = 0;
-
-do_out:
     mutex_unlock(&drv->m_sem_lock);
 
+do_out:
     return error;
 }
 
