@@ -35,7 +35,7 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
     memset(&ipc_param,0,sizeof(ipc_param));
 
     ipc_param.handle = NULL;
-    ipc_param.value = value ? 1 : 0;
+    ipc_param.value = value ? 0 : 1;
     snprintf(ipc_param.name, sizeof(ipc_param.name), "%s", name);
 
     int res = ioctl(fd,IOCTL_IPC_MUTEX_OPEN,&ipc_param);

@@ -56,7 +56,7 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
         }
 
         INIT_LIST_HEAD(&mutex->mutex_list);
-        sema_init(&mutex->mutex, (param->value > 0) ? 1 : 0);
+        sema_init(&mutex->mutex, param->value);
         snprintf(mutex->mutex_name, sizeof(mutex->mutex_name), "%s", param->name);
         mutex->mutex_handle = mutex;
         mutex->mutex_id = MUTEX_ID;
