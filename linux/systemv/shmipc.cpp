@@ -5,7 +5,7 @@
 #include "linipc.h"
 #endif
 #ifndef __GIPCY_H__
-    #include "gipcy.h"
+#include "gipcy.h"
 #endif
 
 #include <stdio.h>
@@ -107,6 +107,29 @@ IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyC
     }
 
     if(alreadyCreated) *alreadyCreated = 0;
+
+    DEBUG_PRINT("%s(): create shared memory - %s\n", __FUNCTION__, name);
+
+    return h;
+}
+
+//-----------------------------------------------------------------------------
+
+IPC_handle IPC_openSharedMemory(const IPC_str *name)
+{
+    DEBUG_PRINT("%s(%s)\n", __FUNCTION__, name );
+
+    ipc_handle_t h = allocate_ipc_object(name, IPC_typeSharedMem);
+    if(!h) return NULL;
+
+    h->ipc_size = 0;
+
+    h->ipc_descr.ipc_shm = shmget(h->ipc_key,0, IPC_SVSHM_MODE);
+    if(h->ipc_descr.ipc_shm < 0) {
+
+        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
+        return NULL;
+    }
 
     DEBUG_PRINT("%s(): create shared memory - %s\n", __FUNCTION__, name);
 

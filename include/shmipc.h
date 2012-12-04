@@ -29,6 +29,12 @@ GIPCY_API    IPC_handle IPC_createSharedMemory(const IPC_str *name, int size);
     */
 GIPCY_API    IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyCreated);
 
+	//! Функция открывает именованный объект разделяемой памяти
+    /*!
+    \param name - имя объекта разделяемой памяти
+    */
+	GIPCY_API    IPC_handle IPC_openSharedMemory(const IPC_str *name);
+
     //! Функция отображает объект разделяемой памяти в адресное пространство процесса
     /*!
     \param handle - дескриптор разделяемой памяти
