@@ -40,7 +40,7 @@ struct ipcsem_t {
     atomic_t                sem_lock_count;            //!< Счетчик блокировок семафора
     atomic_t                sem_unlock_count;          //!< Счетчик разблокировок семафора
     struct semaphore        sem;                       //!< Семафор
-    u32                     sem_id;                    //!<
+    u32                     sem_id;                    //!< Идентификатор семафора
 };
 
 //-----------------------------------------------------------------------------
@@ -52,15 +52,15 @@ struct ipcsem_t {
 */
 struct ipcmutex_t {
 
-    struct list_head        mutex_list;                  //!< Связанный список семафоров
-    char                    mutex_name[128];             //!< Имя семафора
+    struct list_head        mutex_list;                  //!< Связанный список мьютексов
+    char                    mutex_name[128];             //!< Имя мьютекса
     void*                   mutex_file;                  //!< Дескриптор файла устройства
     void*                   mutex_handle;                //!< Адрес этой структуры
-    atomic_t                mutex_owner_count;           //!< Счетчик пользователей семафора
-    atomic_t                mutex_lock_count;            //!< Счетчик блокировок семафора
-    atomic_t                mutex_unlock_count;          //!< Счетчик разблокировок семафора
+    atomic_t                mutex_owner_count;           //!< Счетчик пользователей мьютекса
+    atomic_t                mutex_lock_count;            //!< Счетчик блокировок мьютекса
+    atomic_t                mutex_unlock_count;          //!< Счетчик разблокировок мьютекса
     struct semaphore        mutex;                       //!< Семафор
-    u32                     mutex_id;                    //!<
+    u32                     mutex_id;                    //!< Идентификатор мьютекса
 };
 
 //-----------------------------------------------------------------------------
@@ -72,15 +72,16 @@ struct ipcmutex_t {
 */
 struct ipcevent_t {
 
-    struct list_head        event_list;                  //!< Связанный список семафоров
-    char                    event_name[128];             //!< Имя семафора
+    struct list_head        event_list;                  //!< Связанный список событий
+    char                    event_name[128];             //!< Имя события
     void*                   event_file;                  //!< Дескриптор файла устройства
     void*                   event_handle;                //!< Адрес этой структуры
-    atomic_t                event_owner_count;           //!< Счетчик пользователей семафора
-    atomic_t                event_lock_count;            //!< Счетчик блокировок семафора
-    atomic_t                event_unlock_count;          //!< Счетчик разблокировок семафора
-    struct semaphore        event;                       //!< Семафор
-    u32                     event_id;                    //!<
+    atomic_t                event_owner_count;           //!< Счетчик пользователей события
+    atomic_t                event_lock_count;            //!< Счетчик блокировок события
+    atomic_t                event_unlock_count;          //!< Счетчик разблокировок события
+    struct semaphore        event;                       //!< Дескриптор события
+    u32                     event_flag;                  //!< Флаг автосброса
+    u32                     event_id;                    //!< Идентификатор события
 };
 
 //-----------------------------------------------------------------------------
@@ -127,21 +128,21 @@ extern int err_trace;
 
 //-----------------------------------------------------------------------------
 
-void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *sem_param );
-int ipc_sem_lock( struct ipc_driver *drv, struct ipc_lock_t *sem_param );
-int ipc_sem_unlock( struct ipc_driver *drv, struct ipc_unlock_t *sem_param );
-int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *sem_param );
+void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *param );
+int ipc_sem_lock( struct ipc_driver *drv, struct ipc_lock_t *param );
+int ipc_sem_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param );
+int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *param );
 
-void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *sem_param );
-int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *sem_param );
-int ipc_mutex_unlock( struct ipc_driver *drv, struct ipc_unlock_t *sem_param );
-int ipc_mutex_close( struct ipc_driver *drv, struct ipc_close_t *sem_param );
+void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param );
+int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param );
+int ipc_mutex_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param );
+int ipc_mutex_close( struct ipc_driver *drv, struct ipc_close_t *param );
 
-void* ipc_event_create( struct ipc_driver *drv, struct ipc_create_t *sem_param );
-int ipc_event_lock( struct ipc_driver *drv, struct ipc_lock_t *sem_param );
-int ipc_event_unlock( struct ipc_driver *drv, struct ipc_unlock_t *sem_param );
-int ipc_event_reset( struct ipc_driver *drv, struct ipc_reset_t *sem_param );
-int ipc_event_close( struct ipc_driver *drv, struct ipc_close_t *sem_param );
+void* ipc_event_create( struct ipc_driver *drv, struct ipc_create_t *param );
+int ipc_event_lock( struct ipc_driver *drv, struct ipc_lock_t *param );
+int ipc_event_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param );
+int ipc_event_reset( struct ipc_driver *drv, struct ipc_reset_t *param );
+int ipc_event_close( struct ipc_driver *drv, struct ipc_close_t *param );
 
 
-#endif //_PEXDEV_H_
+#endif //__IPCMODULE_H__
