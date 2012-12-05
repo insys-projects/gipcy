@@ -146,6 +146,42 @@ static int show_event_info( struct ipc_driver *drv, char **p )
 
 //--------------------------------------------------------------------
 
+static int show_shm_info( struct ipc_driver *drv, char **p )
+{
+    struct list_head *pos, *n;
+    struct ipcshm_t *entry = NULL;
+    int sem_counter = 0;
+
+    if(!drv || !*p) {
+        dbg_msg( dbg_trace, "%s(): EINVAL\n", __FUNCTION__ );
+        return -1;
+    }
+
+    *p += sprintf(*p,"Shared memory\n" );
+
+    mutex_lock(&drv->m_shm_lock);
+
+    list_for_each_safe(pos, n, &drv->m_shm_list) {
+
+        entry = list_entry(pos, struct ipcshm_t, shm_list);
+
+        if(entry) {
+
+            *p += sprintf(*p,"%d: %s (usage %d)\n", sem_counter,
+                          entry->shm_name, atomic_read(&entry->shm_owner_count));
+            sem_counter++;
+        }
+    }
+
+    mutex_unlock(&drv->m_shm_lock);
+
+    *p += sprintf(*p,"Total shared memories: %d\n", sem_counter );
+
+    return sem_counter;
+}
+
+//--------------------------------------------------------------------
+
 int ipc_proc_info(  char *buf,
                     char **start,
                     off_t off,
@@ -164,6 +200,7 @@ int ipc_proc_info(  char *buf,
 
     p += sprintf(p,"IPC DRIVER INFO\n" );
 
+    show_shm_info( drv, &p );
     show_sem_info( drv, &p );
     show_mutex_info( drv, &p );
     show_event_info( drv, &p );
