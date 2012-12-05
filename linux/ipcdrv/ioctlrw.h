@@ -20,6 +20,9 @@ int ioctl_event_lock(struct ipc_driver *drv, unsigned long arg);
 int ioctl_event_unlock(struct ipc_driver *drv, unsigned long arg);
 int ioctl_event_reset(struct ipc_driver *drv, unsigned long arg);
 
+int ioctl_shm_open(struct ipc_driver *drv, unsigned long arg);
+int ioctl_shm_close(struct ipc_driver *drv, unsigned long arg);
+
 //-----------------------------------------------------------------------------
 
 #endif //_IOCTLRW_H_

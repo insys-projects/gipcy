@@ -60,6 +60,7 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *param )
         snprintf(sem->sem_name, sizeof(sem->sem_name), "%s", param->name);
         sem->sem_handle = sem;
         sem->sem_id = SEM_ID;
+        atomic_set(&sem->sem_owner_count, 0);
 
         list_add_tail(&sem->sem_list, &drv->m_sem_list);
 
@@ -112,7 +113,7 @@ int ipc_sem_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
             atomic_inc(&entry->sem_lock_count);
             error = 0;
         } else {
-            error = down_timeout(&entry->sem, ms_to_jiffies(param->timeout));
+            error = down_timeout(&entry->sem, msecs_to_jiffies(param->timeout));
             if(error == 0) {
                 atomic_inc(&entry->sem_lock_count);
             }
@@ -212,6 +213,7 @@ int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *param )
                 } else {
 
                     dbg_msg( dbg_trace, "%s(): %s - samaphore is using... skipping to delete it\n", __FUNCTION__, entry->sem_name );
+                    error = -EBUSY;
                 }
             }
         }

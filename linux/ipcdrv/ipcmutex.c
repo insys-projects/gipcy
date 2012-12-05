@@ -47,11 +47,11 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
 
     if(!exist) {
 
-        dbg_msg( dbg_trace, "%s(): mutex name = %s was not found. Create new semaphore\n", __FUNCTION__, param->name );
+        dbg_msg( dbg_trace, "%s(): mutex name = %s was not found. Create new mutex\n", __FUNCTION__, param->name );
 
         mutex = (struct ipcmutex_t*)kzalloc(sizeof(struct ipcmutex_t), GFP_KERNEL);
         if(!mutex) {
-            err_msg( err_trace, "%s(): Error allocate memory to semaphore\n", __FUNCTION__ );
+            err_msg( err_trace, "%s(): Error allocate memory to mutex\n", __FUNCTION__ );
             goto do_out;
         }
 
@@ -60,6 +60,7 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
         snprintf(mutex->mutex_name, sizeof(mutex->mutex_name), "%s", param->name);
         mutex->mutex_handle = mutex;
         mutex->mutex_id = MUTEX_ID;
+        atomic_set(&mutex->mutex_owner_count, 0);
 
         list_add_tail(&mutex->mutex_list, &drv->m_mutex_list);
 
@@ -112,7 +113,7 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
             atomic_inc(&entry->mutex_lock_count);
             error = 0;
         } else {
-            error = down_timeout(&entry->mutex, ms_to_jiffies(param->timeout));
+            error = down_timeout(&entry->mutex, msecs_to_jiffies(param->timeout));
             if(error == 0) {
                 atomic_inc(&entry->mutex_lock_count);
             }
@@ -160,7 +161,6 @@ int ipc_mutex_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
         up(&entry->mutex);
         atomic_dec(&entry->mutex_lock_count);
         error = 0;
-
         dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_lock_count) );
 
     } else {
@@ -213,6 +213,7 @@ int ipc_mutex_close( struct ipc_driver *drv, struct ipc_close_t *param )
                 } else {
 
                     dbg_msg( dbg_trace, "%s(): %s - mutex is using... skipping to delete it\n", __FUNCTION__, entry->mutex_name );
+                    error = -EBUSY;
                 }
             }
         }

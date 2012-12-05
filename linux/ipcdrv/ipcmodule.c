@@ -183,6 +183,12 @@ static int ipc_device_ioctl( struct inode *inode, struct file *file, unsigned in
     case IOCTL_IPC_EVENT_RESET:
         error = ioctl_event_reset(pDriver, arg);
         break;
+    case IOCTL_IPC_SHM_OPEN:
+        error = ioctl_shm_open(pDriver, arg);
+        break;
+    case IOCTL_IPC_SHM_CLOSE:
+        error = ioctl_shm_close(pDriver, arg);
+        break;
     default:
         err_msg(err_trace, "%s(): Unknown ioctl command\n", __FUNCTION__);
         error = -EINVAL;
@@ -243,11 +249,13 @@ static int  __devinit ipc_probe(void)
     INIT_LIST_HEAD(&drv->m_sem_list);
     INIT_LIST_HEAD(&drv->m_mutex_list);
     INIT_LIST_HEAD(&drv->m_event_list);
+    INIT_LIST_HEAD(&drv->m_shm_list);
 
     mutex_init(&drv->m_file_lock);
     mutex_init(&drv->m_sem_lock);
     mutex_init(&drv->m_mutex_lock);
     mutex_init(&drv->m_event_lock);
+    mutex_init(&drv->m_shm_lock);
 
     cdev_init(&drv->m_cdev, &ipc_fops);
     drv->m_cdev.owner = THIS_MODULE;

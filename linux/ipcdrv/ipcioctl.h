@@ -34,6 +34,9 @@
 #define IOCTL_IPC_EVENT_RESET           IPC_MAKE_IOCTL(33)
 #define IOCTL_IPC_EVENT_CLOSE		IPC_MAKE_IOCTL(34)
 
+#define IOCTL_IPC_SHM_OPEN		IPC_MAKE_IOCTL(40)
+#define IOCTL_IPC_SHM_CLOSE             IPC_MAKE_IOCTL(41)
+
 //-----------------------------------------------------------------------------
 
 #ifdef __linux__

@@ -23,6 +23,7 @@
 #define SEM_ID    0x11223344
 #define MUTEX_ID  0x22334455
 #define EVENT_ID  0x33445566
+#define SHM_ID    0x44556677
 //-----------------------------------------------------------------------------
 
 //! Структура описывает внутренний тип struct ipcsem_t используемый библиотекой IPC
@@ -86,6 +87,23 @@ struct ipcevent_t {
 
 //-----------------------------------------------------------------------------
 
+//! Структура описывает внутренний тип struct ipcsem_t используемый библиотекой IPC
+/*!
+    struct ipcsem_t - это внутренний тип данных, используемый библиотекой IPC,
+    для представления объектов синхронизации типа семафор
+*/
+struct ipcshm_t {
+
+    struct list_head        shm_list;                  //!< Связанный список разделяемой памяти
+    char                    shm_name[128];             //!< Имя разделяемой памяти
+    void*                   shm_file;                  //!< Дескриптор файла устройства
+    void*                   shm_handle;                //!< Адрес этой структуры
+    atomic_t                shm_owner_count;           //!< Счетчик пользователей разделяемой памяти
+    u32                     shm_id;                    //!< Идентификатор разделяемой памяти
+};
+
+//-----------------------------------------------------------------------------
+
 struct ipc_driver {
 
     dev_t                   m_devno;
@@ -110,6 +128,9 @@ struct ipc_driver {
 
     struct list_head        m_event_list;
     struct mutex            m_event_lock;
+
+    struct list_head        m_shm_list;
+    struct mutex            m_shm_lock;
 
     struct cdev             m_cdev;
 };
@@ -144,5 +165,7 @@ int ipc_event_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param );
 int ipc_event_reset( struct ipc_driver *drv, struct ipc_reset_t *param );
 int ipc_event_close( struct ipc_driver *drv, struct ipc_close_t *param );
 
+void* ipc_shm_open( struct ipc_driver *drv, struct ipc_create_t *param );
+int ipc_shm_close( struct ipc_driver *drv, struct ipc_close_t *param );
 
 #endif //__IPCMODULE_H__

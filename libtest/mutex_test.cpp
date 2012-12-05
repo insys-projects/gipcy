@@ -118,7 +118,7 @@ static void exit_application( int )
 int main(int argc, char* argv[])
 {
     std::cout << "GIPCY LIBRARY TEST START" << endl;
-    
+    IPC_init();
     signal(SIGINT, exit_application);
 
     std::cout << "Create synchronize mutex..." << endl;
@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
     std::cout << "Delete mutex..." << endl;
     IPC_deleteMutex(captMutex);
     std::cout << "Ok" << endl;
-    
+    IPC_cleanup();
     std::cout << "GIPCY LIBRARY TEST COMPLETE" << endl;
 
     return 0;

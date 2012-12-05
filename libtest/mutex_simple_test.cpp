@@ -33,7 +33,7 @@ void show_error(int err)
 int main(int argc, char* argv[])
 {
     std::cout << "Mutex test start" << endl;
-    
+    IPC_init();
     std::cout << "Create synchronize mutex..." << endl;
     IPC_handle lockMutex = IPC_createMutex("lockMutex", 0);
     if(!lockMutex) {
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 
     std::cout << "Delete mutex..." << endl;
     IPC_deleteMutex(lockMutex);
-
+    IPC_cleanup();
     std::cout << "Ok" << endl;
 
     return 0;

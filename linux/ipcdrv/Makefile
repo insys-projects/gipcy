@@ -5,7 +5,7 @@ EXTRA_CFLAGS += -I $(PWD)/../../include
 
 ifneq ($(KERNELRELEASE),)
 
-ipcdrv-objs := ipcproc.o ioctlrw.o ipcmodule.o ipcsem.o ipcmutex.o ipcevent.o
+ipcdrv-objs := ipcproc.o ioctlrw.o ipcmodule.o ipcsem.o ipcmutex.o ipcevent.o ipcshm.o
 obj-m := ipcdrv.o
 
 else

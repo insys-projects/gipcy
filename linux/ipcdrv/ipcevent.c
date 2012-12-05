@@ -47,11 +47,11 @@ void* ipc_event_create( struct ipc_driver *drv, struct ipc_create_t *param )
 
     if(!exist) {
 
-        dbg_msg( dbg_trace, "%s(): event name = %s was not found. Create new semaphore\n", __FUNCTION__, param->name );
+        dbg_msg( dbg_trace, "%s(): event name = %s was not found. Create new event\n", __FUNCTION__, param->name );
 
         event = (struct ipcevent_t*)kzalloc(sizeof(struct ipcevent_t), GFP_KERNEL);
         if(!event) {
-            err_msg( err_trace, "%s(): Error allocate memory to semaphore\n", __FUNCTION__ );
+            err_msg( err_trace, "%s(): Error allocate memory to event\n", __FUNCTION__ );
             goto do_out;
         }
 
@@ -60,12 +60,13 @@ void* ipc_event_create( struct ipc_driver *drv, struct ipc_create_t *param )
         snprintf(event->event_name, sizeof(event->event_name), "%s", param->name);
         event->event_handle = event;
         event->event_id = EVENT_ID;
+        atomic_set(&event->event_owner_count, 0);
 
         list_add_tail(&event->event_list, &drv->m_event_list);
 
     } else {
 
-        dbg_msg( dbg_trace, "%s(): even tname = %s was found. Use exist event\n", __FUNCTION__, param->name );
+        dbg_msg( dbg_trace, "%s(): event name = %s was found. Use exist event\n", __FUNCTION__, param->name );
     }
 
     atomic_inc(&event->event_owner_count);
@@ -112,7 +113,7 @@ int ipc_event_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
             atomic_inc(&entry->event_lock_count);
             error = 0;
         } else {
-            error = down_timeout(&entry->event, ms_to_jiffies(param->timeout));
+            error = down_timeout(&entry->event, msecs_to_jiffies(param->timeout));
             if(error == 0) {
                 atomic_inc(&entry->event_lock_count);
             }
@@ -160,7 +161,6 @@ int ipc_event_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
         up(&entry->event);
         atomic_dec(&entry->event_lock_count);
         error = 0;
-
         dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
 
     } else {
@@ -213,6 +213,7 @@ int ipc_event_close( struct ipc_driver *drv, struct ipc_close_t *param )
                 } else {
 
                     dbg_msg( dbg_trace, "%s(): %s - event is using... skipping to delete it\n", __FUNCTION__, entry->event_name );
+                    error = -EBUSY;
                 }
             }
         }
@@ -255,7 +256,6 @@ int ipc_event_reset( struct ipc_driver *drv, struct ipc_reset_t *param )
         up(&entry->event);
         atomic_dec(&entry->event_lock_count);
         error = 0;
-
         dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
 
     } else {

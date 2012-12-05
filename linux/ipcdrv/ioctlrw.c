@@ -204,7 +204,7 @@ int ioctl_mutex_lock(struct ipc_driver *drv, unsigned long arg)
 
     error = ipc_mutex_lock( drv, &ipc_param );
     if(error < 0) {
-        err_msg(err_trace, "%s(): Error in ipc_mutex_down()\n", __FUNCTION__);
+        err_msg(err_trace, "%s(): Error in ipc_mutex_lock()\n", __FUNCTION__);
         goto do_exit;
     }
 
@@ -361,5 +361,59 @@ do_exit:
 }
 
 //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
+int ioctl_shm_open(struct ipc_driver *drv, unsigned long arg)
+{
+    int error = 0;
+    struct ipc_create_t ipc_param;
 
+    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_create_t))) {
+        err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
+        error = -EFAULT;
+        goto do_exit;
+    }
+
+    ipc_param.handle = ipc_shm_open( drv, &ipc_param );
+    if(!ipc_param.handle) {
+        err_msg(err_trace, "%s(): Error in ipc_shm_open()\n", __FUNCTION__);
+        error = -EINVAL;
+        goto do_exit;
+    }
+
+    if(copy_to_user((void*)arg, (void*)&ipc_param, sizeof(struct ipc_create_t))) {
+        err_msg(err_trace, "%s(): Error in copy_to_user()\n", __FUNCTION__);
+        error = -EFAULT;
+        goto do_exit;
+    }
+
+do_exit:
+    return error;
+}
+
+//-----------------------------------------------------------------------------
+
+int ioctl_shm_close(struct ipc_driver *drv, unsigned long arg)
+{
+    int error = 0;
+    struct ipc_close_t ipc_param;
+
+    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_close_t))) {
+        err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
+        error = -EFAULT;
+        goto do_exit;
+    }
+
+    error = ipc_shm_close( drv, &ipc_param );
+    if(error < 0) {
+        err_msg(err_trace, "%s(): Error in ioctl_shm_close()\n", __FUNCTION__);
+        goto do_exit;
+    }
+
+do_exit:
+    return error;
+}
+
+//-----------------------------------------------------------------------------
