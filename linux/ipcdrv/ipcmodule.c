@@ -317,6 +317,11 @@ static void __devexit ipc_remove(void)
 
         entry = list_entry(pos, struct ipc_driver, m_list);
 
+        ipc_sem_close_all(entry);
+        ipc_mutex_close_all(entry);
+        ipc_event_close_all(entry);
+        ipc_shm_close_all(entry);
+
         ipc_remove_proc(entry->m_name);
         dbg_msg(dbg_trace, "%s(): ipc_remove_proc() - complete\n", __FUNCTION__);
         device_destroy(ipc_class, entry->m_devno);

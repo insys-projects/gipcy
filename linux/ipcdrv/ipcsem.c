@@ -212,12 +212,57 @@ int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *param )
 
                 } else {
 
-                    dbg_msg( dbg_trace, "%s(): %s - samaphore is using... skipping to delete it\n", __FUNCTION__, entry->sem_name );
+                    dbg_msg( dbg_trace, "%s(): %s - semaphore is using... skipping to delete it\n", __FUNCTION__, entry->sem_name );
                     error = -EBUSY;
                 }
             }
         }
     }
+
+    mutex_unlock(&drv->m_sem_lock);
+
+do_out:
+    return error;
+}
+
+//-----------------------------------------------------------------------------
+
+int ipc_sem_close_all( struct ipc_driver *drv )
+{
+    int error = -EINVAL;
+    int used_counter = 0;
+    struct list_head *pos, *n;
+    struct ipcsem_t *entry = NULL;
+
+    dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
+
+    if(!drv) {
+        err_msg( err_trace, "%s(): Invalid parameters\n", __FUNCTION__ );
+        goto do_out;
+    }
+
+    mutex_lock(&drv->m_sem_lock);
+
+    list_for_each_safe(pos, n, &drv->m_sem_list) {
+
+        entry = list_entry(pos, struct ipcsem_t, sem_list);
+
+        if(atomic_read(&entry->sem_owner_count) == 0) {
+
+            dbg_msg( dbg_trace, "%s(): %s - delete\n", __FUNCTION__, entry->sem_name );
+            list_del(pos);
+            kfree( (void*)entry );
+            error = 0;
+
+        } else {
+
+            dbg_msg( dbg_trace, "%s(): %s - semaphore is using... skipping to delete it\n", __FUNCTION__, entry->sem_name );
+            used_counter++;
+        }
+    }
+
+    if(used_counter)
+        error = -EBUSY;
 
     mutex_unlock(&drv->m_sem_lock);
 

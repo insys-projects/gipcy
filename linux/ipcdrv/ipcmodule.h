@@ -153,19 +153,23 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *param );
 int ipc_sem_lock( struct ipc_driver *drv, struct ipc_lock_t *param );
 int ipc_sem_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param );
 int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *param );
+int ipc_sem_close_all( struct ipc_driver *drv );
 
 void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param );
 int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param );
 int ipc_mutex_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param );
 int ipc_mutex_close( struct ipc_driver *drv, struct ipc_close_t *param );
+int ipc_mutex_close_all( struct ipc_driver *drv );
 
 void* ipc_event_create( struct ipc_driver *drv, struct ipc_create_t *param );
 int ipc_event_lock( struct ipc_driver *drv, struct ipc_lock_t *param );
 int ipc_event_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param );
 int ipc_event_reset( struct ipc_driver *drv, struct ipc_reset_t *param );
 int ipc_event_close( struct ipc_driver *drv, struct ipc_close_t *param );
+int ipc_event_close_all( struct ipc_driver *drv );
 
 void* ipc_shm_open( struct ipc_driver *drv, struct ipc_create_t *param );
 int ipc_shm_close( struct ipc_driver *drv, struct ipc_close_t *param );
+int ipc_shm_close_all( struct ipc_driver *drv );
 
 #endif //__IPCMODULE_H__

@@ -226,3 +226,48 @@ do_out:
 }
 
 //-----------------------------------------------------------------------------
+
+int ipc_mutex_close_all( struct ipc_driver *drv )
+{
+    int error = -EINVAL;
+    int used_counter = 0;
+    struct list_head *pos, *n;
+    struct ipcmutex_t *entry = NULL;
+
+    dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
+
+    if(!drv) {
+        err_msg( err_trace, "%s(): Invalid parameters\n", __FUNCTION__ );
+        goto do_out;
+    }
+
+    mutex_lock(&drv->m_mutex_lock);
+
+    list_for_each_safe(pos, n, &drv->m_mutex_list) {
+
+        entry = list_entry(pos, struct ipcmutex_t, mutex_list);
+
+        if(atomic_read(&entry->mutex_owner_count) == 0) {
+
+            dbg_msg( dbg_trace, "%s(): %s - delete\n", __FUNCTION__, entry->mutex_name );
+            list_del(pos);
+            kfree( (void*)entry );
+            error = 0;
+
+        } else {
+
+            dbg_msg( dbg_trace, "%s(): %s - mutex is using... skipping to delete it\n", __FUNCTION__, entry->mutex_name );
+            used_counter++;
+        }
+    }
+
+    if(used_counter)
+        error = -EBUSY;
+
+    mutex_unlock(&drv->m_mutex_lock);
+
+do_out:
+    return error;
+}
+
+//-----------------------------------------------------------------------------
