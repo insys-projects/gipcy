@@ -116,6 +116,13 @@ static int ipc_device_close( struct inode *inode, struct file *file )
 
     dbg_msg(dbg_trace, "%s(): Open driver %s. m_usage = %d. file = %p\n", __FUNCTION__, pDriver->m_name, atomic_read(&pDriver->m_usage), file);
 
+    if(atomic_read(&pDriver->m_usage) == 0) {
+        ipc_sem_close_all(pDriver);
+        ipc_mutex_close_all(pDriver);
+        ipc_event_close_all(pDriver);
+        ipc_shm_close_all(pDriver);
+    }
+
     mutex_unlock(&pDriver->m_ipc_mutex);
 
     return 0;
