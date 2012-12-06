@@ -285,6 +285,8 @@ int ipc_event_close_all( struct ipc_driver *drv )
 
     mutex_lock(&drv->m_event_lock);
 
+    error = 0;
+
     list_for_each_safe(pos, n, &drv->m_event_list) {
 
         entry = list_entry(pos, struct ipcevent_t, event_list);
@@ -292,15 +294,15 @@ int ipc_event_close_all( struct ipc_driver *drv )
         if(atomic_read(&entry->event_owner_count) == 0) {
 
             dbg_msg( dbg_trace, "%s(): %s - delete\n", __FUNCTION__, entry->event_name );
-            list_del(pos);
-            kfree( (void*)entry );
-            error = 0;
 
         } else {
 
-            dbg_msg( dbg_trace, "%s(): %s - event is using... skipping to delete it\n", __FUNCTION__, entry->event_name );
+            dbg_msg( dbg_trace, "%s(): %s - using. forced deleting\n", __FUNCTION__, entry->event_name );
             used_counter++;
         }
+
+        list_del(pos);
+        kfree( (void*)entry );
     }
 
     if(used_counter)

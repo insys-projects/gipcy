@@ -243,6 +243,8 @@ int ipc_sem_close_all( struct ipc_driver *drv )
 
     mutex_lock(&drv->m_sem_lock);
 
+    error = 0;
+
     list_for_each_safe(pos, n, &drv->m_sem_list) {
 
         entry = list_entry(pos, struct ipcsem_t, sem_list);
@@ -250,15 +252,15 @@ int ipc_sem_close_all( struct ipc_driver *drv )
         if(atomic_read(&entry->sem_owner_count) == 0) {
 
             dbg_msg( dbg_trace, "%s(): %s - delete\n", __FUNCTION__, entry->sem_name );
-            list_del(pos);
-            kfree( (void*)entry );
-            error = 0;
 
         } else {
 
-            dbg_msg( dbg_trace, "%s(): %s - semaphore is using... skipping to delete it\n", __FUNCTION__, entry->sem_name );
+            dbg_msg( dbg_trace, "%s(): %s - using. forced deleting\n", __FUNCTION__, entry->sem_name );
             used_counter++;
         }
+
+        list_del(pos);
+        kfree( (void*)entry );
     }
 
     if(used_counter)
