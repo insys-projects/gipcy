@@ -35,7 +35,7 @@ struct test_param {
 
 thread_value __IPC_API writing_thread(void* param)
 {
-    //std::cout << "Start writing thread" << endl;
+    std::cout << "Start writing thread" << endl;
 
     struct test_param *tp = (struct test_param*)param;
     if(!tp) {
@@ -45,24 +45,30 @@ thread_value __IPC_API writing_thread(void* param)
 
     while(!tp->exit_flag) {
 
-	int res = IPC_captureMutex(tp->lock, -1);
-	if(res != IPC_OK)
+        int res = IPC_captureMutex(tp->lock, -1);
+        if(res != IPC_OK) {
             break;
-	//std::cout << "writing_tread(): lock" << endl;
-	//std::cout << "writing_tread(): write data" << endl;
-	tp->write_counter++;
-	memset(tp->mem_addr,tp->write_counter,tp->mem_size);
-	//std::cout << "writing_thread(): W " << tp->write_counter << " R: " << tp->read_counter  << endl;
+        }
 
-	IPC_delay(1000);
+        //std::cout << "writing_tread(): lock" << endl;
+        //std::cout << "writing_tread(): write data" << endl;
 
-	//std::cout << "writing_tread(): unlock" << endl;
-	res = IPC_releaseMutex(tp->lock);
-	if(res != IPC_OK)
+        tp->write_counter++;
+
+        memset(tp->mem_addr,tp->write_counter,tp->mem_size);
+
+        //std::cout << "writing_thread(): W " << tp->write_counter << " R: " << tp->read_counter  << endl;
+
+        IPC_delay(1000);
+
+        //std::cout << "writing_tread(): unlock" << endl;
+
+        res = IPC_releaseMutex(tp->lock);
+        if(res != IPC_OK)
             break;
     }
 
-    //std::cout << "Writing thread stoped" << endl;
+    std::cout << "Writing thread stoped" << endl;
 
     return NULL;
 }
@@ -71,7 +77,7 @@ thread_value __IPC_API writing_thread(void* param)
 
 thread_value __IPC_API reading_thread(void* param)
 {
-    //std::cout << "Start reading thread" << endl;
+    std::cout << "Start reading thread" << endl;
 
     struct test_param *tp = (struct test_param*)param;
     if(!tp) {
@@ -80,25 +86,32 @@ thread_value __IPC_API reading_thread(void* param)
     }
 
     while(!tp->exit_flag) {
-	int res = IPC_captureMutex(tp->lock, -1);
-	if(res != IPC_OK)
+
+        int res = IPC_captureMutex(tp->lock, -1);
+        if(res != IPC_OK) {
             break;
-	//std::cout << "reading_tread(): lock" << endl;
-	//std::cout << "reading_tread(): read data" << endl;
-	tp->read_counter++;
-	unsigned char *data = (unsigned char*)tp->mem_addr;
-	for(unsigned i=0; i<tp->mem_size; i++) {
-	    std::cout << int(data[i]) << " ";
-	}
-	std::cout << endl;
-	//std::cout << "reading_thread(): W " << tp->write_counter << " R: " << tp->read_counter  << endl;
-	//std::cout << "reading_tread(): unlock" << endl;
-	res = IPC_releaseMutex(tp->lock);
-	if(res != IPC_OK)
+        }
+
+        //std::cout << "reading_tread(): lock" << endl;
+        //std::cout << "reading_tread(): read data" << endl;
+
+        tp->read_counter++;
+
+        unsigned char *data = (unsigned char*)tp->mem_addr;
+        for(unsigned i=0; i<tp->mem_size; i++) {
+            std::cout << int(data[i]) << " ";
+        }
+
+        std::cout << endl;
+        //std::cout << "reading_thread(): W " << tp->write_counter << " R: " << tp->read_counter  << endl;
+        //std::cout << "reading_tread(): unlock" << endl;
+
+        res = IPC_releaseMutex(tp->lock);
+        if(res != IPC_OK)
             break;
     }
 
-    //std::cout << "Reading thread stoped" << endl;
+    std::cout << "Reading thread stoped" << endl;
 
     return NULL;
 }
@@ -108,9 +121,9 @@ thread_value __IPC_API reading_thread(void* param)
 static struct test_param tp = {0};
 static void exit_application( int ) 
 {
-    //std::cout << endl;
-    tp.exit_flag = 1; 
-    //std::cout << endl;
+    std::cout << endl;
+    tp.exit_flag = 1;
+    std::cout << endl;
 }
 
 //------------------------------------------------------------------
@@ -120,6 +133,8 @@ int main(int argc, char* argv[])
     std::cout << "GIPCY LIBRARY TEST START" << endl;
     IPC_init();
     signal(SIGINT, exit_application);
+
+    IPC_init();
 
     std::cout << "Create synchronize mutex..." << endl;
     IPC_handle captMutex = IPC_createMutex("captMutex", false);
@@ -182,11 +197,11 @@ int main(int argc, char* argv[])
     std::cout << "Press Ctrl+C to exit..." << endl;
 
     while(1)
-	{
-		if(tp.exit_flag)
-			break;
-		IPC_delay(1000);
-	}
+    {
+        if(tp.exit_flag)
+            break;
+        IPC_delay(1000);
+    }
     std::cout << endl;
 
     std::cout << "Delete reading thread..." << endl;
@@ -212,6 +227,8 @@ int main(int argc, char* argv[])
     std::cout << "Ok" << endl;
     IPC_cleanup();
     std::cout << "GIPCY LIBRARY TEST COMPLETE" << endl;
+
+    IPC_cleanup();
 
     return 0;
 }

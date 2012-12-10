@@ -81,6 +81,8 @@ int main(int argc, char* argv[])
     
     signal(SIGINT, exit_application);
 
+    IPC_init();
+
     std::cout << "Create synchronize event..." << endl;
     IPC_handle lockEv = IPC_createEvent("lockEv", true, true);
     if(!lockEv) {
@@ -158,6 +160,8 @@ int main(int argc, char* argv[])
     std::cout << "Ok" << endl;
     
     std::cout << "GIPCY LIBRARY TEST COMPLETE" << endl;
+
+    IPC_cleanup();
 
     return 0;
 }
