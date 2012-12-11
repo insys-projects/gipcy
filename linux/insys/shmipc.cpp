@@ -27,9 +27,9 @@
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
+static void* shared_memory_open(const IPC_str *name, int size)
 {
-    DEBUG_PRINT("%s( %s, 0x%x )\n", __FUNCTION__, name, size );
+    DEBUG_PRINT("%s( %s, 0x%x )\n", __FUNCTION__, name, size);
 
     int fd = ipc_driver_handle();
     if(fd < 0) {
@@ -37,12 +37,7 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
         return NULL;
     }
 
-    int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-    int oflags = O_RDWR | O_CREAT | O_EXCL;
-    ipc_handle_t h = NULL;
     struct ipc_create_t ipc_create_param;
-    struct ipc_close_t ipc_close_param;
-
     memset(&ipc_create_param,0,sizeof(ipc_create_param));
 
     ipc_create_param.handle = NULL;
@@ -52,9 +47,52 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
     int res = ioctl(fd,IOCTL_IPC_SHM_OPEN,&ipc_create_param);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error register shared memory", __FUNCTION__ );
+        return NULL;
+    }
+
+    return ipc_create_param.handle;
+}
+
+//-----------------------------------------------------------------------------
+
+static int shared_memory_close(void* handle)
+{
+    DEBUG_PRINT("%s()\n", __FUNCTION__);
+
+    struct ipc_close_t ipc_close_param;
+
+    int fd = ipc_driver_handle();
+    if(fd < 0) {
+        DEBUG_PRINT("%s(): IPC driver was not opened\n", __FUNCTION__);
+        return -EINVAL;
+    }
+
+    ipc_close_param.handle = handle;
+
+    int res = ioctl(fd,IOCTL_IPC_SHM_CLOSE,&ipc_close_param);
+    if(res < 0) {
+        if(res != -EBUSY) {
+            DEBUG_PRINT("%s(): Error unregister shared memory name\n", __FUNCTION__ );
+        }
+    }
+
+    return res;
+}
+
+//-----------------------------------------------------------------------------
+
+IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
+{
+    DEBUG_PRINT("%s( %s, 0x%x )\n", __FUNCTION__, name, size );
+
+    int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+    int oflags = O_RDWR | O_CREAT | O_EXCL;
+    ipc_handle_t h = NULL;
+    int res = -1;
+
+    void *ipc_drv_handle = shared_memory_open(name, size);
+    if(!ipc_drv_handle) {
         goto do_exit;
-    } else {
-        ipc_close_param.handle = ipc_create_param.handle;
     }
 
     h = allocate_ipc_object(name, IPC_typeSharedMem);
@@ -63,7 +101,7 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
         return NULL;
     }
 
-    h->ipc_user = ipc_create_param.handle;
+    h->ipc_user = ipc_drv_handle;
     h->ipc_descr.ipc_shm = shm_open(h->ipc_name, oflags, mode);
     if(h->ipc_descr.ipc_shm < 0) {
 
@@ -106,13 +144,9 @@ do_return_ipc_object:
 
 do_free_ipc_object:
     delete_ipc_object(h);
-    DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
 
 do_unregister_shm:
-    res = ioctl(fd,IOCTL_IPC_SHM_CLOSE,&ipc_close_param);
-    if(res < 0) {
-        DEBUG_PRINT("%s(): Error unregister shared memory name\n", __FUNCTION__ );
-    }
+    shared_memory_close(ipc_drv_handle);
 
 do_exit:
     return NULL;
@@ -124,30 +158,14 @@ IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyC
 {
     DEBUG_PRINT("%s( %s, 0x%x )\n", __FUNCTION__, name, size );
 
-    int fd = ipc_driver_handle();
-    if(fd < 0) {
-        DEBUG_PRINT("%s(): IPC driver was not opened\n", __FUNCTION__);
-        return NULL;
-    }
-
     int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     int oflags = O_RDWR | O_CREAT | O_EXCL;
     ipc_handle_t h = NULL;
-    struct ipc_create_t ipc_create_param;
-    struct ipc_close_t ipc_close_param;
+    int res = -1;
 
-    memset(&ipc_create_param,0,sizeof(ipc_create_param));
-
-    ipc_create_param.handle = NULL;
-    ipc_create_param.value = size;
-    snprintf(ipc_create_param.name, sizeof(ipc_create_param.name), "%s", name);
-
-    int res = ioctl(fd,IOCTL_IPC_SHM_OPEN,&ipc_create_param);
-    if(res < 0) {
-        DEBUG_PRINT("%s(): Error register shared memory name", __FUNCTION__);
+    void *ipc_drv_handle = shared_memory_open(name, size);
+    if(!ipc_drv_handle) {
         goto do_exit;
-    } else {
-        ipc_close_param.handle = ipc_create_param.handle;
     }
 
     h = allocate_ipc_object(name, IPC_typeSharedMem);
@@ -156,7 +174,7 @@ IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyC
         return NULL;
     }
 
-    h->ipc_user = ipc_create_param.handle;
+    h->ipc_user = ipc_drv_handle;
     h->ipc_descr.ipc_shm = shm_open(h->ipc_name, oflags, mode );
     if(h->ipc_descr.ipc_shm < 0) {
 
@@ -204,13 +222,9 @@ do_return_ipc_object:
 
 do_free_ipc_object:
     delete_ipc_object(h);
-    DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
 
 do_unregister_shm:
-    res = ioctl(fd,IOCTL_IPC_SHM_CLOSE,&ipc_close_param);
-    if(res < 0) {
-        DEBUG_PRINT("%s(): Error unregister shared memory name\n", __FUNCTION__);
-    }
+    shared_memory_close(ipc_drv_handle);
 
 do_exit:
     return NULL;
@@ -222,30 +236,13 @@ IPC_handle IPC_openSharedMemory(const IPC_str *name)
 {
     DEBUG_PRINT("%s( %s )\n", __FUNCTION__, name );
 
-    int fd = ipc_driver_handle();
-    if(fd < 0) {
-        DEBUG_PRINT("%s(): IPC driver was not opened\n", __FUNCTION__);
-        return NULL;
-    }
-
     int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     int oflags = O_RDWR;
     ipc_handle_t h = NULL;
-    struct ipc_create_t ipc_create_param;
-    struct ipc_close_t ipc_close_param;
 
-    memset(&ipc_create_param,0,sizeof(ipc_create_param));
-
-    ipc_create_param.handle = NULL;
-    ipc_create_param.value = -1;
-    snprintf(ipc_create_param.name, sizeof(ipc_create_param.name), "%s", name);
-
-    int res = ioctl(fd,IOCTL_IPC_SHM_OPEN,&ipc_create_param);
-    if(res < 0) {
-        DEBUG_PRINT("%s(): Error open shared memory", __FUNCTION__ );
+    void *ipc_drv_handle = shared_memory_open(name, 0);
+    if(!ipc_drv_handle) {
         goto do_exit;
-    } else {
-        ipc_close_param.handle = ipc_create_param.handle;
     }
 
     h = allocate_ipc_object(name, IPC_typeSharedMem);
@@ -253,7 +250,7 @@ IPC_handle IPC_openSharedMemory(const IPC_str *name)
         goto do_unregister_shm;
     }
 
-    h->ipc_user = ipc_create_param.handle;
+    h->ipc_user = ipc_drv_handle;
     h->ipc_descr.ipc_shm = shm_open(h->ipc_name, oflags, mode);
     if(h->ipc_descr.ipc_shm < 0) {
         goto do_free_ipc_object;
@@ -265,13 +262,9 @@ IPC_handle IPC_openSharedMemory(const IPC_str *name)
 
 do_free_ipc_object:
     delete_ipc_object(h);
-    DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
 
 do_unregister_shm:
-    res = ioctl(fd,IOCTL_IPC_SHM_CLOSE,&ipc_close_param);
-    if(res < 0) {
-        DEBUG_PRINT("%s(): Error unregister shared memory name\n", __FUNCTION__ );
-    }
+    shared_memory_close(ipc_drv_handle);
 
 do_exit:
     return NULL;
@@ -329,12 +322,6 @@ int IPC_unmapSharedMemory(const  IPC_handle handle)
 
 int IPC_deleteSharedMemory(IPC_handle handle)
 {
-    int fd = ipc_driver_handle();
-    if(fd < 0) {
-        DEBUG_PRINT("%s(): IPC driver was not opened\n", __FUNCTION__);
-        return IPC_GENERAL_ERROR;
-    }
-
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return -1;
 
@@ -347,9 +334,7 @@ int IPC_deleteSharedMemory(IPC_handle handle)
         IPC_unmapSharedMemory(handle);
     }
 
-    struct ipc_close_t ipc_close_param;
-    ipc_close_param.handle = h->ipc_user;
-    int res = ioctl(fd, IOCTL_IPC_SHM_CLOSE, &ipc_close_param);
+    int res = shared_memory_close(h->ipc_user);
     if(res < 0) {
         if(res == -EBUSY) {
             return IPC_OK;
