@@ -4,23 +4,33 @@
 # This script is loading modules in the kernel. 
 # 
 
-kernel=`uname -r | grep 3.`
+kernel=`uname -r | grep 2.4`
 
 if [ ${kernel} ]
     then
-        module=`find *.ko`
-        mname=${module%.ko}
-    else
         module=ipcdrv.o
         mname=${module%.o}
+    else
+        module=`find *.ko`
+        mname=${module%.ko}
 fi
 
-if [ ${module} = "" ]
+if [ ${module} ]
     then
-        echo No kernel module found. ${module}
-	exit
-    else
         echo Find ${module} - kernel module.
+    else
+        echo No kernel module found. ${module}
+        exit
+fi
+
+was_loaded=`/sbin/lsmod | cut -c 1-6 | grep ipcdrv`
+
+if [ ${was_loaded} ]
+    then
+        echo Remove loaded module: ${module}
+        /sbin/rmmod ipcdrv
+    else
+        echo Loading module: ${module}
 fi
 
 /sbin/insmod ./$module $* || exit 1

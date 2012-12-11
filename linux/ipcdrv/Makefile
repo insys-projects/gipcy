@@ -30,3 +30,6 @@ depend .depend dep:
 ifeq (.depend, $(wildcard .depend))
 include .depend
 endif
+
+install:
+	$(PWD)/insert
