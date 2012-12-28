@@ -41,6 +41,15 @@ int IPC_kbhit(void)
 GIPCY_API void IPC_delay(int ms)
 {
     Sleep(ms);
+	//unsigned int mctime_out = (unsigned int)ms * 1000;
+	//static LARGE_INTEGER Frequency, zero_time, cur_time;
+	//int bHighRes = QueryPerformanceFrequency (&Frequency);
+	//QueryPerformanceCounter(&zero_time);
+	//unsigned int wait_time;
+	//do {
+	//	QueryPerformanceCounter(&cur_time);
+	//	wait_time = (unsigned int)((cur_time.QuadPart - zero_time.QuadPart) * 1.E6 / Frequency.QuadPart);
+	//} while(wait_time < mctime_out);
 }
 
 //-----------------------------------------------------------------------------
