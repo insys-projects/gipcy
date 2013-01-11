@@ -1,7 +1,7 @@
 
 #ifdef __IPC_LINUX__
 
-#define __VERBOSE__
+//#define __VERBOSE__
 
 #ifndef __LINIPC_H__
 #include "linipc.h"

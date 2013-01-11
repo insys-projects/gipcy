@@ -1,0 +1,53 @@
+#
+# ...all files must be in the same directory...
+# 
+
+TARGET_NAME = ipcdrv.o
+
+PWD := $(shell pwd)
+
+ROOT_DIR := $(PWD)
+KERNELDIR := /lib/modules/$(shell uname -r)/build/include/
+KERNELVER := $(shell uname -r)
+
+#detect kernel version
+ifneq   "$(findstring 2.4,$(KERNELVER))" ""
+    CFLAGS += -DDZYTOOLS_2_4_X
+endif
+
+DIR0 = $(ROOT_DIR)/BRDINC
+DIR1 = $(ROOT_DIR)/WDMLIBS/linux
+DIR2 = $(ROOT_DIR)/BRDLIBS
+
+DIRS = -I $(DIR0) -I $(DIR1) -I $(DIR2)
+
+CFLAGS += -pipe -O -Wall -DMODULE -D__KERNEL__ -DLINUX -I $(KERNELDIR) $(DIRS)
+
+ifdef CONFIG_SMP
+CFLAGS += -D__SMP__ -DSMP
+endif
+
+all: $(TARGET_NAME)
+
+SRC := $(wildcard *.c)
+OBJ := $(patsubst %.c,%.o, $(SRC))
+OBJ += $(EXT)
+
+$(TARGET_NAME): $(OBJ)
+	$(LD) -r $(notdir $(OBJ)) -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -MD $<
+	
+include $(wildcard *.d)
+
+clean:
+	rm -f *.o *.mod.c  *~ core
+	rm -f *.d *~ *.cmd core $(EXT)
+distclean:
+	rm -f *.o *.mod.c *~ core
+	rm -f *.d *~ core $(EXT)
+
+test:
+	@echo SRC = $(SRC)
+	@echo OBJ = $(OBJ)

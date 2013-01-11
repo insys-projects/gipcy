@@ -35,7 +35,7 @@ IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
     memset(&ipc_param,0,sizeof(ipc_param));
 
     ipc_param.handle = NULL;
-    ipc_param.value = value ? 1 : 0;
+    ipc_param.value = value ? 0 : 1;
     ipc_param.flag = manual ? 1 : 0;
     snprintf(ipc_param.name, sizeof(ipc_param.name), "%s", name);
 

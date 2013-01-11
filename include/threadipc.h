@@ -21,6 +21,7 @@
 
 #ifdef __linux__
 
+#include <pthread.h>
 #define __IPC_API
 typedef void* thread_value;                             //!< Тип значения, возвращаемого функцией потока при завершении
 

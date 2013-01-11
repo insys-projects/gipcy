@@ -23,7 +23,7 @@
 
 //-----------------------------------------------------------------------------
 #define IPC_SHM_PREFIX "/"
-#define __VERBOSE__
+//#define __VERBOSE__
 //-----------------------------------------------------------------------------
 
 static char* create_raw_name(const char *name)
@@ -83,7 +83,7 @@ ipc_handle_t allocate_ipc_object(const char *name, IPC_type type)
 
         snprintf(h->ipc_name, len, "%s", tmpName);
 
-        DEBUG_PRINT(stderr, "%s(): %s\n", __FUNCTION__, h->ipc_name);
+        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, h->ipc_name);
 
     } else {
         h->ipc_name = create_raw_name(name);
@@ -145,9 +145,9 @@ int open_ipc_driver(const char *name)
         return ipc_driver_fd;
     }
 
-    ipc_driver_fd = open("/dev/"IPC_DRIVER_NAME, O_RDWR);
+    ipc_driver_fd = open(name, O_RDWR);
     if(ipc_driver_fd < 0) {
-        DEBUG_PRINT("%s(): error open IPC device driver - %s\n", __FUNCTION__, IPC_DRIVER_NAME);
+        DEBUG_PRINT("%s(): error open IPC device driver - %s\n", __FUNCTION__, name);
     }
 
     return ipc_driver_fd;
@@ -180,7 +180,7 @@ int close_ipc_driver(int fd)
 
 int IPC_init(void)
 {
-    return open_ipc_driver(NULL);
+    return open_ipc_driver("/dev/"IPC_DRIVER_NAME);
 }
 
 //-----------------------------------------------------------------------------

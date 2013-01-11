@@ -219,6 +219,9 @@ int ipc_mutex_close( struct ipc_driver *drv, struct ipc_close_t *param )
         }
     }
 
+    if(error == -EBUSY)
+        err_msg( err_trace, "%s(): %s - mutex is using... skipping to delete it\n", __FUNCTION__, entry->mutex_name );
+
     mutex_unlock(&drv->m_mutex_lock);
 
 do_out:

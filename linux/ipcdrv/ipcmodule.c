@@ -47,6 +47,23 @@ static struct ipc_driver *file_to_device( struct file *file )
 }
 
 //-----------------------------------------------------------------------------
+#ifdef DZYTOOLS_2_4_X
+static struct ipc_driver *inode_to_device( struct list_head *head, struct inode *inode )
+{
+    struct list_head *p;
+    struct ipc_driver *entry;
+
+    list_for_each(p, &ipc_list) {
+        entry = list_entry(p, struct ipc_driver, m_list);
+        if(entry) {
+            return entry;
+        }
+    }
+
+    return NULL;
+}
+#endif
+//--------------------------------------------------------------------
 
 static int ipc_device_fasync(int fd, struct file *file, int mode)
 {
@@ -79,11 +96,19 @@ static unsigned int ipc_device_poll(struct file *filp, poll_table *wait)
 
 static int ipc_device_open( struct inode *inode, struct file *file )
 {
+#ifdef DZYTOOLS_2_4_X
+    struct ipc_driver *pDriver = inode_to_device(&ipc_list, inode);
+    if(!pDriver) {
+        err_msg(err_trace, "%s(): Open driver failed\n", __FUNCTION__);
+        return -ENODEV;
+    }
+#else
     struct ipc_driver *pDriver = container_of(inode->i_cdev, struct ipc_driver, m_cdev);
     if(!pDriver) {
         err_msg(err_trace, "%s(): Open driver failed\n", __FUNCTION__);
         return -ENODEV;
     }
+#endif
 
     mutex_lock(&pDriver->m_ipc_mutex);
 
@@ -102,11 +127,19 @@ static int ipc_device_open( struct inode *inode, struct file *file )
 
 static int ipc_device_close( struct inode *inode, struct file *file )
 {
+#ifdef DZYTOOLS_2_4_X
+    struct ipc_driver *pDriver = inode_to_device(&ipc_list, inode);
+    if(!pDriver) {
+        err_msg(err_trace, "%s(): Close driver failed\n", __FUNCTION__);
+        return -ENODEV;
+    }
+#else
     struct ipc_driver *pDriver = container_of(inode->i_cdev, struct ipc_driver, m_cdev);
     if(!pDriver) {
         err_msg(err_trace, "%s(): Close driver failed\n", __FUNCTION__);
         return -ENODEV;
     }
+#endif
 
     mutex_lock(&pDriver->m_ipc_mutex);
 
@@ -140,7 +173,7 @@ static int ipc_device_ioctl( struct inode *inode, struct file *file, unsigned in
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)
     struct ipc_driver *pDriver = file_to_device(file);
 #else
-    struct ipc_driver *pDriver = inode_to_device(&device_list, inode);
+    struct ipc_driver *pDriver = file_to_device(file);
 #endif
     if(!pDriver) {
         err_msg(err_trace, "%s(): ioctl driver failed\n", __FUNCTION__);
@@ -209,7 +242,9 @@ static int ipc_device_ioctl( struct inode *inode, struct file *file, unsigned in
 
 struct file_operations ipc_fops = {
 
+#ifndef DZYTOOLS_2_4_X
     .owner = THIS_MODULE,
+#endif
     .read = NULL,
     .write = NULL,
 
@@ -225,8 +260,6 @@ struct file_operations ipc_fops = {
     .release = ipc_device_close,
     .fasync = ipc_device_fasync,
     .poll = ipc_device_poll,
-    .aio_read =  NULL,
-    .aio_write = NULL,
 };
 
 //-----------------------------------------------------------------------------
@@ -367,6 +400,10 @@ static int __init ipc_module_init(void)
         error = -EINVAL;
         goto do_free_chrdev;
     }
+
+#ifdef DZYTOOLS_2_4_X
+    ipc_class->m_fops = &ipc_fops;
+#endif
 
     error = ipc_probe();
     if(error < 0) {

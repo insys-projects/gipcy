@@ -37,8 +37,19 @@ fi
 
 sleep 1
 
-devfiles=`ls /dev/* | grep ipc`
+if [ ${kernel} ]
+    then
+        rm -f /dev/ipcdrv
+        str=`cat /proc/devices | grep ipc_driver`
+        major=`expr match "$str" '\([0-9]*\)'`
+        echo ${module} loaded successfuly. Major number ${major}.
+        mknod /dev/ipc_driver c ${major} 0
+        chmod -v 666 /dev/ipc_driver
+    else
+        devfiles=`ls /dev/* | grep ipc`
+        chmod -v 666 ${devfiles}
+fi
 
 #echo ${devfiles}
 
-chmod -v 666 ${devfiles}
+

@@ -2,9 +2,14 @@
 #ifndef __IPCMODULE_H__
 #define __IPCMODULE_H__
 
+#ifndef DZYTOOLS_2_4_X
 #include <linux/cdev.h>
 #include <linux/sched.h>
 #include <linux/version.h>
+#else
+#include "ipcext.h"
+#endif
+
 #if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,37)
 #include <linux/semaphore.h>
 #endif

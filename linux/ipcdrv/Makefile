@@ -1,11 +1,21 @@
 
+ifneq   "$(findstring 2.4,$(shell uname -a))" ""
+
+all:
+	make -f Makefile-2.4
+
+clean:
+	make -f Makefile-2.4 clean
+
+else
+
 KERNELVER := $(shell uname -r)
 EXTRA_CFLAGS += -O2
 EXTRA_CFLAGS += -I $(PWD)/../../include
 
 ifneq ($(KERNELRELEASE),)
 
-ipcdrv-objs := ipcproc.o ioctlrw.o ipcmodule.o ipcsem.o ipcmutex.o ipcevent.o ipcshm.o
+ipcdrv-objs := ipcext.o ipcproc.o ioctlrw.o ipcmodule.o ipcsem.o ipcmutex.o ipcevent.o ipcshm.o
 obj-m := ipcdrv.o
 
 else
@@ -33,3 +43,5 @@ endif
 
 install:
 	$(PWD)/insert
+
+endif
