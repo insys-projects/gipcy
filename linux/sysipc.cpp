@@ -266,6 +266,7 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
     int set_default = 1;
     int size;
     int sectionsSize = 0;
+    int found = 0;
 
     ifs.open(lpFileName, ios::in);
     if( !ifs.is_open() ) {
@@ -320,12 +321,17 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
                     }
                 }
                 else if( FindOption(str, lpKeyName, lpReturnedString, nSize, &set_default) == 0) {
+                    found = 1;
                     break;
+                } else {
+                    found = 0;
                 }
             }
 
             if(set_default) {
-                memcpy(lpReturnedString, lpDefault, strlen(lpDefault)+1);
+                if(lpDefault) {
+                    memcpy(lpReturnedString, lpDefault, strlen(lpDefault)+1);
+                }
             }
         }
     }
@@ -335,7 +341,7 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
 
     ifs.close();
 
-    return 0;
+    return found;
 }
 
 //-----------------------------------------------------------------------------
