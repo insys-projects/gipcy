@@ -52,10 +52,11 @@ static struct ipc_driver *inode_to_device( struct list_head *head, struct inode 
 {
     struct list_head *p;
     struct ipc_driver *entry;
+    unsigned int minor = MINOR(inode->i_rdev);
 
-    list_for_each(p, &ipc_list) {
+    list_for_each(p, head) {
         entry = list_entry(p, struct ipc_driver, m_list);
-        if(entry) {
+        if(entry->m_index == minor) {
             return entry;
         }
     }
@@ -147,7 +148,7 @@ static int ipc_device_close( struct inode *inode, struct file *file )
 
     file->private_data = NULL;
 
-    dbg_msg(dbg_trace, "%s(): Open driver %s. m_usage = %d. file = %p\n", __FUNCTION__, pDriver->m_name, atomic_read(&pDriver->m_usage), file);
+    dbg_msg(dbg_trace, "%s(): Close driver %s. m_usage = %d. file = %p\n", __FUNCTION__, pDriver->m_name, atomic_read(&pDriver->m_usage), file);
 
     if(atomic_read(&pDriver->m_usage) == 0) {
         ipc_sem_close_all(pDriver);
@@ -170,11 +171,7 @@ static int ipc_device_ioctl( struct inode *inode, struct file *file, unsigned in
 #endif
 {
     int error = 0;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)
     struct ipc_driver *pDriver = file_to_device(file);
-#else
-    struct ipc_driver *pDriver = file_to_device(file);
-#endif
     if(!pDriver) {
         err_msg(err_trace, "%s(): ioctl driver failed\n", __FUNCTION__);
         return -ENODEV;
@@ -284,6 +281,14 @@ static int  __devinit ipc_probe(void)
     spin_lock_init(&drv->m_ipc_lock);
     atomic_set(&drv->m_usage, 0);
     drv->m_class = ipc_class;
+    drv->m_index = 0;
+
+    //down(&drv->m_ipc_sem);
+    //err_msg(err_trace, "%s(): lock sem2222222 %d\n", __FUNCTION__, 0);
+    //error = down_trylock(&drv->m_ipc_sem);
+    //if(error < 0) {
+    //    err_msg(err_trace, "%s(): sem3333333 %d\n", __FUNCTION__, 0);
+    //}
 
     INIT_LIST_HEAD(&drv->m_file_list);
     INIT_LIST_HEAD(&drv->m_sem_list);
@@ -296,6 +301,8 @@ static int  __devinit ipc_probe(void)
     mutex_init(&drv->m_mutex_lock);
     mutex_init(&drv->m_event_lock);
     mutex_init(&drv->m_shm_lock);
+
+    //up(&drv->m_ipc_sem);
 
     cdev_init(&drv->m_cdev, &ipc_fops);
     drv->m_cdev.owner = THIS_MODULE;

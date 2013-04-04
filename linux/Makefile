@@ -56,3 +56,8 @@ test:
 ipcdrv.module:
 	@echo Build ipcdrv kernel module
 	make -C ./ipcdrv
+
+ipcdrv.clean:
+	@echo Clean ipcdrv kernel module
+	make -C ./ipcdrv clean
+	rm -fv ../lib/*.so ../lib/*.so.0 ../lib/*.so.0.0

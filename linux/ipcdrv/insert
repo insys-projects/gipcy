@@ -39,7 +39,7 @@ sleep 1
 
 if [ ${kernel} ]
     then
-        rm -f /dev/ipcdrv
+        rm -f /dev/ipc_driver
         str=`cat /proc/devices | grep ipc_driver`
         major=`expr match "$str" '\([0-9]*\)'`
         echo ${module} loaded successfuly. Major number ${major}.

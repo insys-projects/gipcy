@@ -57,7 +57,11 @@ IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
             ops.sem_flg = SEM_UNDO;
             ops.sem_op = -1;
 
+#ifndef DZYTOOLS_2_4_X
             res = semtimedop(h->ipc_descr.ipc_sem, &ops, 1, NULL);
+#else
+            res = semop(h->ipc_descr.ipc_sem, &ops, 1);
+#endif
             if(res < 0) {
                 delete_ipc_object(h);
                 DEBUG_PRINT("%s(): %s - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
@@ -120,7 +124,11 @@ int IPC_waitEvent(const  IPC_handle handle, int timeout)
         //DEBUG_PRINT("%s(): ts.tv_nsec = %d\n", __FUNCTION__, (int)ts.tv_nsec);
         //DEBUG_PRINT("%s(): Try wait event - %s\n", __FUNCTION__, h->ipc_name);
 
+#ifndef DZYTOOLS_2_4_X
         int res = semtimedop(h->ipc_descr.ipc_sem, &ops, 1, &ts);
+#else
+        int res = semop(h->ipc_descr.ipc_sem, &ops, 1);
+#endif
         if(res < 0) {
             if(errno == EINTR) {
                 DEBUG_PRINT("%s(): Waiting was interrputed - %s\n", __FUNCTION__, h->ipc_name);
@@ -136,7 +144,11 @@ int IPC_waitEvent(const  IPC_handle handle, int timeout)
 
     } else {
 
+#ifndef DZYTOOLS_2_4_X
         int res = semtimedop(h->ipc_descr.ipc_sem, &ops, 1, NULL);
+#else
+        int res = semop(h->ipc_descr.ipc_sem, &ops, 1);
+#endif
         if(res < 0) {
             if(errno == EINTR) {
                 DEBUG_PRINT("%s(): Waiting was interrputed - %s\n", __FUNCTION__, h->ipc_name);

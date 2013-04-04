@@ -7,6 +7,7 @@
 #include <linux/sched.h>
 #include <linux/version.h>
 #else
+#include <asm/semaphore.h>
 #include "ipcext.h"
 #endif
 
@@ -121,6 +122,7 @@ struct ipc_driver {
     spinlock_t              m_ipc_lock;
     atomic_t                m_usage;
     struct device           *m_device;
+    int                     m_index;
 
     struct list_head        m_file_list;
     struct mutex            m_file_lock;

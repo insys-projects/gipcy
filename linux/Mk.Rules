@@ -67,6 +67,7 @@ SYSLIBDIR := /usr/local/lib/bardy
 # и выполнить ldconfig -v -n
 #
 
+ifeq "$(INSTALL_PREFIX)" ""
 install:
 	mkdir -p $(SYSLIBDIR)
 	chmod 777 $(SYSLIBDIR)
@@ -75,4 +76,11 @@ install:
 	ln -sf $(SYSLIBDIR)/$(SONAME) $(SYSLIBDIR)/$(BASENAME)
 	echo '/usr/local/lib/bardy' > /etc/ld.so.conf.d/bardy.conf
 	/sbin/ldconfig
-
+else
+install:
+	mkdir -p $(INSTALL_PREFIX)$(SYSLIBDIR)
+	chmod 777 $(INSTALL_PREFIX)$(SYSLIBDIR)
+	cp -af $(LIBNAME) $(INSTALL_PREFIX)$(SYSLIBDIR)
+	cp -af $(SONAME) $(INSTALL_PREFIX)$(SYSLIBDIR)
+	cp -af $(BASENAME) $(INSTALL_PREFIX)$(SYSLIBDIR)
+endif

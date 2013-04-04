@@ -47,9 +47,9 @@ void mutex_unlock(struct mutex *m)
 
 //-----------------------------------------------------------------------------
 
-void *kzalloc(int flags, size_t size)
+void *kzalloc(size_t size, int flags)
 {
-    void *ptr = kmalloc(flags, size);
+    void *ptr = kmalloc(size, flags);
     if(ptr) {
         memset(ptr,0,size);
     }
@@ -71,6 +71,8 @@ int cdev_init(struct cdev *cd, struct file_operations *fops)
 
     memset(cd, 0, sizeof(struct cdev));
     cd->ops = fops;
+
+    dbg_msg( dbg_trace, "%s(): fops = %p\n", __FUNCTION__, cd->ops );
 
     return 0;
 }
@@ -100,19 +102,22 @@ int cdev_del(struct cdev *cd)
 struct device* device_create(struct class *class, struct device *parent, dev_t devt, void *drvdata, const char *fmt, ...)
 {
     struct device *dev = NULL;
+    int major = -1;
 
     if(!class) {
         err_msg( err_trace, "%s(): Invalid class pointer.\n", __FUNCTION__ );
         return NULL;
     }
 
-    int major = register_chrdev(0, class->m_drvname, class->m_fops);
+    dbg_msg( dbg_trace, "%s(): fops = %p\n", __FUNCTION__, class->m_fops );
+
+    major = register_chrdev(0, class->m_drvname, class->m_fops);
     if(major < 0) {
         err_msg( err_trace, "%s(): Error in register_chrdev().\n", __FUNCTION__ );
         return NULL;
     }
 
-    dev = kzalloc(GFP_KERNEL, sizeof(struct device));
+    dev = kzalloc(sizeof(struct device), GFP_KERNEL);
 
     if(dev) {
 
@@ -165,7 +170,7 @@ int unregister_chrdev_region(dev_t from, unsigned count)
 
 struct class* class_create(void* owner, const char *name)
 {
-    struct class *class = (struct class*)kzalloc(GFP_KERNEL, sizeof(struct class));
+    struct class *class = (struct class*)kzalloc(sizeof(struct class), GFP_KERNEL);
     if(class) {
         snprintf(class->m_drvname, sizeof(class->m_drvname), "%s", name);
         class->m_owner = owner;

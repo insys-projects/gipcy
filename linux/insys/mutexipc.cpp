@@ -69,7 +69,7 @@ int IPC_captureMutex(const IPC_handle handle, int timeout)
 
     int res = ioctl(fd, IOCTL_IPC_MUTEX_LOCK, &ipc_param);
     if(res < 0) {
-        DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
+        DEBUG_PRINT("%s(): Error lock mutex\n", __FUNCTION__);
         return -1;
     }
 
@@ -94,7 +94,7 @@ int IPC_releaseMutex(const IPC_handle handle)
 
     int res = ioctl(fd, IOCTL_IPC_MUTEX_UNLOCK, &ipc_param);
     if(res < 0) {
-        DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
+        DEBUG_PRINT("%s(): Error unlock mutex\n", __FUNCTION__);
         return -1;
     }
 
@@ -119,7 +119,7 @@ int IPC_deleteMutex(IPC_handle handle)
 
     int res = ioctl(fd, IOCTL_IPC_MUTEX_CLOSE, &ipc_param);
     if(res < 0) {
-        DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
+        DEBUG_PRINT("%s(): Error close mutex\n", __FUNCTION__);
         return -1;
     }
 

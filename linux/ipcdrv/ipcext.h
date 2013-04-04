@@ -5,8 +5,11 @@
 #include <asm/uaccess.h>
 #include <linux/delay.h>
 #include <linux/string.h>
+#include <asm/semaphore.h>
 
+#ifdef DZYTOOLS_2_4_X
 struct device;
+#endif
 
 struct class {
     char m_drvname[32];
@@ -52,8 +55,8 @@ enum {
 void mutex_init(struct mutex *m);
 void mutex_lock(struct mutex *m);
 void mutex_unlock(struct mutex *m);
-void *kzalloc(int flags, size_t size);
-int  down_timeout(struct semaphore *sem, int timeout);
+void *kzalloc(size_t size, int flags);
+int down_timeout(struct semaphore *sem, int timeout);
 int cdev_init(struct cdev *cd, struct file_operations *fops);
 int cdev_add(struct cdev *cd, int major, int count);
 int cdev_del(struct cdev *cd);

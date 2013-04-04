@@ -581,4 +581,16 @@ IPC_str* IPC_itoa(int value, IPC_str* result, int base)
 
 //-----------------------------------------------------------------------------
 
+long IPC_getTickCount()
+{
+    return time(NULL);
+}
+
+//-----------------------------------------------------------------------------
+
+long IPC_getTickPerSec()
+{
+    return CLOCKS_PER_SEC;
+}
+
 #endif //__IPC_LINUX__

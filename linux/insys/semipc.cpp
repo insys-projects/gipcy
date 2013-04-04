@@ -69,7 +69,7 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
 
     int res = ioctl(fd, IOCTL_IPC_SEM_LOCK, &ipc_param);
     if(res < 0) {
-        DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
+        DEBUG_PRINT("%s(): Error lock semaphore\n", __FUNCTION__);
         return res;
     }
 
@@ -94,7 +94,7 @@ int IPC_unlockSemaphore(const  IPC_handle handle)
 
     int res = ioctl(fd, IOCTL_IPC_SEM_UNLOCK, &ipc_param);
     if(res < 0) {
-        DEBUG_PRINT("%s(): Error close semaphore\n", __FUNCTION__);
+        DEBUG_PRINT("%s(): Error unlock semaphore\n", __FUNCTION__);
         return -1;
     }
 

@@ -7,6 +7,9 @@ all:
 clean:
 	make -f Makefile-2.4 clean
 
+install:
+	make -f Makefile-2.4 install
+
 else
 
 KERNELVER := $(shell uname -r)
@@ -42,6 +45,7 @@ include .depend
 endif
 
 install:
+	chmod +x $(PWD)/insert
 	$(PWD)/insert
 
 endif

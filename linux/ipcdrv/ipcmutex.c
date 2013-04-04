@@ -56,7 +56,14 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
         }
 
         INIT_LIST_HEAD(&mutex->mutex_list);
-        sema_init(&mutex->mutex, param->value);
+        if(param->value) {
+            sema_init(&mutex->mutex, param->value);
+            dbg_msg( dbg_trace, "%s(): param->value = %d !!!!!!!!!!!!\n", __FUNCTION__, param->value );
+        } else {
+            sema_init(&mutex->mutex, 1);
+            down(&mutex->mutex);
+            dbg_msg( dbg_trace, "%s(): param->value = %d !!!!!!!!!!!!\n", __FUNCTION__, param->value );
+        }
         snprintf(mutex->mutex_name, sizeof(mutex->mutex_name), "%s", param->name);
         mutex->mutex_handle = mutex;
         mutex->mutex_id = MUTEX_ID;
@@ -73,6 +80,9 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
     param->handle = mutex->mutex_handle;
 
     dbg_msg( dbg_trace, "%s(): %s - mutex_owner_count: %d\n", __FUNCTION__, param->name, atomic_read(&mutex->mutex_owner_count) );
+    dbg_msg( dbg_trace, "%s(): %s - mutex_handle = %p\n", __FUNCTION__, param->name, mutex->mutex_handle );
+    dbg_msg( dbg_trace, "%s(): %s - user_handle = %p\n", __FUNCTION__, param->name, &mutex->mutex_handle );
+    dbg_msg( dbg_trace, "%s(): %s - mutex = %p\n", __FUNCTION__, param->name, &mutex->mutex );
 
 do_out:
     mutex_unlock(&drv->m_mutex_lock);
@@ -88,7 +98,8 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
     int error = -EINVAL;
     struct ipcmutex_t *entry = NULL;
 
-    dbg_msg( dbg_trace, "%s(): timeout = %d\n", __FUNCTION__, param->timeout );
+    dbg_msg( dbg_trace, "%s(): param->user_handle = %p\n", __FUNCTION__, param->handle );
+    dbg_msg( dbg_trace, "%s(): param->timeout = %d\n", __FUNCTION__, param->timeout );
 
     if(!drv || !param || !param->handle) {
         err_msg( err_trace, "%s(): Invalid parameters\n", __FUNCTION__ );
@@ -107,6 +118,9 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
     if(exist) {
 
         dbg_msg( dbg_trace, "%s(): %s - mutex_owner_count: %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_owner_count) );
+        dbg_msg( dbg_trace, "%s(): %s - mutex_handle = %p\n", __FUNCTION__, entry->mutex_name, &entry->mutex_handle );
+        dbg_msg( dbg_trace, "%s(): entry = %p\n", __FUNCTION__, entry );
+        dbg_msg( dbg_trace, "%s(): entry->mutex_id = 0x%x\n", __FUNCTION__, entry->mutex_id );
 
         if(param->timeout < 0) {
             down(&entry->mutex);
