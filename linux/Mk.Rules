@@ -26,14 +26,14 @@ IPC := __IPC_LINUX__
 #IPC_TYPE := _POSIX_IPC_
 IPC_TYPE := _INSYS_IPC_
 
-GPROF := -pg
+#GPROF := -pg
 
 #
 # Setup common Makefile rules and defines
 #
 
-CC := $(CSTOOL_PREFIX)g++
-LD := $(CSTOOL_PREFIX)g++
+CC := $(CSTOOL_PREFIX)gcc
+LD := $(CSTOOL_PREFIX)gcc
 
 CFLAGS += -fPIC -Wall -g -D$(IPC) -D$(IPC_TYPE) -D$(OS) -D$(DEF_TYPES) $(GPROF) $(DZY_VER)
 

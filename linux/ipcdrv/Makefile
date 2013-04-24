@@ -44,8 +44,13 @@ ifeq (.depend, $(wildcard .depend))
 include .depend
 endif
 
+ifeq "$(INSTALL_PREFIX)" ""
 install:
 	chmod +x $(PWD)/insert
 	$(PWD)/insert
+else
+install:
+	cp ipcdrv.ko $(INSTALL_PREFIX)/home/$(TARGETFS_USER)/drivers/
+endif
 
 endif
