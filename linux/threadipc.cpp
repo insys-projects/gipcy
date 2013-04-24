@@ -124,6 +124,60 @@ int IPC_stopThread(const IPC_handle handle)
 
 int IPC_waitThread(const IPC_handle handle, int timeout)
 {
+    if(!handle) {
+        int res = pthread_join(0,NULL);
+        if(res > 0) {
+                DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
+                return IPC_GENERAL_ERROR;
+        }
+        return IPC_OK;
+    }
+
+    ipc_handle_t h = (ipc_handle_t)handle;
+    if(h->ipc_type != IPC_typeThread)
+        return IPC_INVALID_HANDLE;
+
+    void *retval = NULL;
+    int res = 0;
+
+    if(timeout <= 0) {
+
+        DEBUG_PRINT("%s(): Start waiting...\n", __FUNCTION__);
+        res = pthread_join(h->ipc_descr.ipc_thread, &retval);
+
+    } else {
+
+        struct timespec ts;
+
+        if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
+
+            DEBUG_PRINT("%s(): pthread_join() error int clock_gettime(). Try again.\n", __FUNCTION__);
+            return -EAGAIN;
+        }
+
+        ts.tv_nsec += (timeout*1000000);
+        res = pthread_timedjoin_np(h->ipc_descr.ipc_thread, NULL, &ts);
+    }
+
+    if(res != 0) {
+
+        if(res == ETIMEDOUT) {
+            DEBUG_PRINT("%s(): pthread_join() error. retval = %p, ETIMEDOUT\n", __FUNCTION__, retval);
+        } else if(res == EBUSY) {
+            DEBUG_PRINT("%s(): pthread_join() error. retval = %p, EBUSY\n", __FUNCTION__, retval);
+        }
+        return IPC_GENERAL_ERROR;
+    }
+
+    DEBUG_PRINT("%s(): thread %s was finished. retval = %p. OK\n", __FUNCTION__, h->ipc_name, retval);
+
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
+/*
+int IPC_waitThread(const IPC_handle handle, int timeout)
+{
     if(!handle)
 	{
         int res = pthread_join(0,NULL);
@@ -150,7 +204,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 
     return IPC_OK;
 }
-
+*/
 //-----------------------------------------------------------------------------
 
 int IPC_deleteThread(IPC_handle handle)
