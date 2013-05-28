@@ -1,5 +1,5 @@
 
-ifneq   "$(findstring 2.4,$(shell uname -a))" ""
+ifneq   "$(findstring 2.4.,$(shell uname -a))" ""
 
 all:
 	make -f Makefile-2.4
@@ -14,12 +14,12 @@ else
 
 KERNELVER := $(shell uname -r)
 EXTRA_CFLAGS += -O2
-EXTRA_CFLAGS += -I $(PWD)/../../include
+EXTRA_CFLAGS += -I../../include
 
 ifneq ($(KERNELRELEASE),)
 
-ipcdrv-objs := ipcext.o ipcproc.o ioctlrw.o ipcmodule.o ipcsem.o ipcmutex.o ipcevent.o ipcshm.o
 obj-m := ipcdrv.o
+ipcdrv-objs := ipcext.o ipcproc.o ioctlrw.o ipcmodule.o ipcsem.o ipcmutex.o ipcevent.o ipcshm.o
 
 else
 
@@ -27,8 +27,8 @@ KERNELDIR ?= /lib/modules/$(shell uname -r)/build
 
 PWD := $(shell pwd)
 
-modules:
-	$(MAKE) -C $(KERNELDIR) M=$(PWD) EXTRA_CFLAGS="$(EXTRA_CFLAGS)"
+all:
+	$(MAKE) -C $(KERNELDIR) M=$(PWD) EXTRA_CFLAGS="$(EXTRA_CFLAGS)" modules
 
 endif
 
