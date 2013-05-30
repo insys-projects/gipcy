@@ -13,7 +13,8 @@ enum IPC_type {
     IPC_typeLibrary,
     IPC_typeFile,
     IPC_typeDevice,
-    IPC_typeDir
+    IPC_typeDir,
+	IPC_typeSocket
 };
 
 #endif // __IPCTYPE_H__
