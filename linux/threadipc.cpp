@@ -147,6 +147,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 
     } else {
 
+#ifndef DZYTOOLS_2_4_X
         struct timespec ts;
 
         if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
@@ -157,6 +158,10 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 
         ts.tv_nsec += (timeout*1000000);
         res = pthread_timedjoin_np(h->ipc_descr.ipc_thread, NULL, &ts);
+#else
+        res = pthread_join(h->ipc_descr.ipc_thread, &retval);
+#endif
+
     }
 
     if(res != 0) {
