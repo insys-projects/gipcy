@@ -139,7 +139,7 @@ static int show_event_info( struct ipc_driver *drv, char **p )
 
     mutex_unlock(&drv->m_event_lock);
 
-    *p += sprintf(*p,"Total mutexes: %d\n", event_counter );
+    *p += sprintf(*p,"Total events: %d\n", event_counter );
 
     return event_counter;
 }

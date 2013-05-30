@@ -306,7 +306,7 @@ int ioctl_event_lock(struct ipc_driver *drv, unsigned long arg)
 
     error = ipc_event_lock( drv, &ipc_param );
     if(error < 0) {
-        err_msg(err_trace, "%s(): Error in ipc_event_down()\n", __FUNCTION__);
+        err_msg(err_trace, "%s(): Error in ipc_event_lock()\n", __FUNCTION__);
         goto do_exit;
     }
 
