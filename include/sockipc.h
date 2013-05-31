@@ -32,6 +32,8 @@ IPC_sockaddr IPC_resolve( IPC_str* addr );
 IPC_handle	IPC_openSocket( IPC_proto proto );
 
 int IPC_listen( IPC_handle s, IPC_sockaddr* ip, int backlog );
+IPC_handle IPC_accept( IPC_handle s, IPC_sockaddr* ip, int timeout );
+
 int IPC_connect( IPC_handle s, IPC_sockaddr* ip );
 int IPC_bind( IPC_handle s, IPC_sockaddr* ip );
 
