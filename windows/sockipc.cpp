@@ -270,6 +270,7 @@ IPC_handle IPC_accept( IPC_handle s, IPC_sockaddr* ip, int timeout )
 			break;
 	}
 
+
 	if( ip )
 	{
 		ip->port = ntohs( anAddr.sin_port ); 
