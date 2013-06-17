@@ -240,6 +240,10 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
                 return -3;
             }
 
+            while((Buffer[strlen(Buffer) - 1] == '\r') ||
+                  (Buffer[strlen(Buffer) - 1] == '\n'))
+                Buffer[strlen(Buffer) - 1] = '\0';
+
             *set_default = 0;
 
             return 0;
