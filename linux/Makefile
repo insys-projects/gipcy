@@ -30,12 +30,12 @@ EXTFILES :=
 SRC_DIR := 	$(DIRS)
 SRC_FILES := 	$(addsuffix /*.cpp, $(SRC_DIR))
 SRC := 		$(wildcard $(SRC_FILES))
-OBJ := 		$(patsubst %.cpp,%.o, $(SRC) $(EXTFILES))
+OBJ_FILES := 		$(patsubst %.cpp,%.o, $(SRC) $(EXTFILES))
 LIBDIR := ../lib
 
-$(LIBNAME): $(OBJ) $(DRV)
+$(LIBNAME): $(DRV) $(OBJ_FILES) 
 	$(LD) -g -shared -rdynamic -Wl,-soname,$(SONAME) \
-        -o $(LIBNAME) $(notdir $(OBJ)) -ldl -lrt -lpthread
+        -o $(LIBNAME) $(notdir $(OBJ_FILES)) -ldl -lrt -lpthread
 	chmod 666 $(LIBNAME)
 	ln -sf $(LIBNAME) $(SONAME)
 	ln -sf $(SONAME) $(BASENAME)
@@ -52,6 +52,7 @@ test:
 	@echo $(SRC_DIR)
 	@echo $(SRC_FILES)
 	@echo $(SRC)
+	@echo $(OBJ_FILES)
 
 ipcdrv.module:
 	@echo Build ipcdrv kernel module
