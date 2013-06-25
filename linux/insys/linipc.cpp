@@ -109,6 +109,7 @@ void delete_ipc_object(ipc_handle_t h)
     case IPC_typeFile:
     case IPC_typeDevice:
     case IPC_typeDir:
+    case IPC_typeSocket:
         break;
     }
 
