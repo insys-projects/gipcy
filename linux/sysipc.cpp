@@ -504,6 +504,29 @@ int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKe
 
 //-----------------------------------------------------------------------------
 
+void* IPC_heapAlloc(int nSize)
+{
+    void *ptr     = NULL;
+    long pageSize = sysconf(_SC_PAGESIZE);
+    int  res      = posix_memalign(&ptr, pageSize, nSize);
+
+    if((res != 0) || !ptr)
+        return 0;
+
+    return ptr;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_heapFree(void *ptr)
+{
+    free(ptr);
+
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
+
 long IPC_interlockedDecrement( volatile long *val )
 {
     long tmp = *val;

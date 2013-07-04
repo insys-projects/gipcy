@@ -94,6 +94,22 @@ GIPCY_API int IPC_writePrivateProfileString(const IPC_str *lpAppName, const IPC_
 
 //-----------------------------------------------------------------------------
 
+void* IPC_heapAlloc(int nSize)
+{
+	return HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, nSize);
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_heapFree(void *ptr)
+{
+	HeapFree(GetProcessHeap(), 0, ptr);
+
+	return 0;
+}
+
+//-----------------------------------------------------------------------------
+
 GIPCY_API long IPC_interlockedDecrement(volatile long *val )
 {
     return InterlockedDecrement(val);
