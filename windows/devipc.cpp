@@ -127,7 +127,9 @@ GIPCY_API int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf
 								&length,
 								NULL);
 
-    return res;
+	if(!res)
+	    return IPC_GENERAL_ERROR;
+    return IPC_OK;
 }
 
 GIPCY_API int IPC_ioctlDeviceOvl(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap)
@@ -147,7 +149,9 @@ GIPCY_API int IPC_ioctlDeviceOvl(IPC_handle handle, unsigned long cmd, void *src
 								&length,
 								(LPOVERLAPPED)overlap);
 
-    return res;
+	if(!res)
+	    return IPC_GENERAL_ERROR;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
