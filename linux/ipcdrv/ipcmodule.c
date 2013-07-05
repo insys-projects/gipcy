@@ -9,8 +9,6 @@
 #include <linux/pci.h>
 #include <linux/proc_fs.h>
 #include <linux/interrupt.h>
-#include <asm/system.h>
-#include <asm/io.h>
 #include <asm/io.h>
 
 #include <asm/uaccess.h>
@@ -261,7 +259,7 @@ struct file_operations ipc_fops = {
 
 //-----------------------------------------------------------------------------
 
-static int  __devinit ipc_probe(void)
+static int  __init ipc_probe(void)
 {
     int error = 0;
     struct ipc_driver *drv = NULL;
@@ -353,7 +351,7 @@ do_out:
 
 //-----------------------------------------------------------------------------
 
-static void __devexit ipc_remove(void)
+static void __exit ipc_remove(void)
 {
     struct list_head *pos, *n;
     struct ipc_driver *entry = NULL;

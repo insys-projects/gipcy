@@ -9,8 +9,6 @@
 #include <linux/pci.h>
 #include <linux/proc_fs.h>
 #include <linux/interrupt.h>
-#include <asm/system.h>
-#include <asm/io.h>
 #include <asm/io.h>
 
 #include <asm/uaccess.h>
