@@ -23,7 +23,8 @@ static int convert_ipc_flags(int ipc_flags)
     int flags = 0;
 
     if(ipc_flags & IPC_CREATE_FILE) {
-        flags |= (O_CREAT | O_TRUNC);
+        //flags |= (O_CREAT | O_TRUNC);
+        flags |= O_CREAT;
     }
 
     if(ipc_flags & IPC_OPEN_FILE) {
