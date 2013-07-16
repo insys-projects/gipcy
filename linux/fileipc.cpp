@@ -23,25 +23,23 @@ static int convert_ipc_flags(int ipc_flags)
     int flags = 0;
 
     if(ipc_flags & IPC_CREATE_FILE) {
-        //flags |= (O_CREAT | O_TRUNC);
-        flags |= O_CREAT;
+        flags |= (O_CREAT | O_TRUNC);
     }
 
     if(ipc_flags & IPC_OPEN_FILE) {
-        flags |= O_RDONLY;
+        flags |= (O_CREAT | O_RDONLY);
     }
 
-
     if(ipc_flags & IPC_FILE_RDONLY) {
-        flags |= O_RDONLY;
+        flags |= (O_CREAT | O_RDONLY);
     }
 
     if(ipc_flags & IPC_FILE_WRONLY) {
-        flags |= O_WRONLY;
+        flags |= (O_CREAT | O_WRONLY);
     }
 
     if(ipc_flags & IPC_FILE_RDWR) {
-        flags |= O_RDWR;
+        flags |= (O_CREAT | O_RDWR);
     }
 
     return flags;
