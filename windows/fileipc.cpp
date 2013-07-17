@@ -30,7 +30,7 @@ GIPCY_API IPC_handle IPC_openFile(const IPC_str *name, int flags)
 	if(IPC_CREATE_FILE & (flags & 0xf))
 		cmode = CREATE_ALWAYS;
 	if(IPC_OPEN_FILE & (flags & 0xf))
-		cmode = OPEN_EXISTING;
+		cmode = OPEN_ALWAYS;
 
 	if(IPC_FILE_RDONLY & (flags & 0xf0))
 		amode = GENERIC_READ;
