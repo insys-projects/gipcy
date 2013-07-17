@@ -27,11 +27,11 @@ static int convert_ipc_flags(int ipc_flags)
     }
 
     if(ipc_flags & IPC_OPEN_FILE) {
-        flags |= (O_CREAT | O_RDONLY);
+        flags |= (O_CREAT | O_RDWR);
     }
 
     if(ipc_flags & IPC_FILE_RDONLY) {
-        flags |= (O_CREAT | O_RDONLY);
+        flags |= (O_RDONLY);
     }
 
     if(ipc_flags & IPC_FILE_WRONLY) {
