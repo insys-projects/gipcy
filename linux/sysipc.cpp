@@ -278,8 +278,7 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
         return IPC_BAD_INI_FILE;
     }
 
-    while( !ifs.eof() ) {
-
+    while( !ifs.eof() && (!found)) {
         ifs.getline(str, sizeof(str), '\n');
 
         if(lpAppName == 0) {

@@ -14,7 +14,7 @@ endif
 #
 # Detect kernel version
 #
-ifneq   "$(findstring 2.4,$(shell uname -a))" ""
+ifneq   "$(findstring 2.4.,$(shell uname -a))" ""
      DZY_VER := -DDZYTOOLS_2_4_X
 endif
 
