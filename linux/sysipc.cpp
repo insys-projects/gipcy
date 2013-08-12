@@ -233,6 +233,19 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
                 DEBUG_PRINT(stderr, "Val = %d\n", atoi(val));
             }
 */
+
+            char aSymb[6][3] = {"\n", "\r", "\t", ";", "#", "//"};
+
+            for(int i = 0; i < 6; i++)
+            {
+                char *tmp;
+
+                tmp = strstr(val, aSymb[i]);
+
+                if(tmp)
+                    tmp[0] = '\0';
+            }
+
             if(BufferSize >= (int)(strlen(val)+1)) {
                 strcpy( Buffer, val);
             } else {
