@@ -24,6 +24,12 @@ GIPCY_API    void IPC_cleanupKeyboard(void);
       */
 GIPCY_API    int IPC_getch(void);
 
+//! Ожидает нажатия клавиши (получает символ с консоли и отображает его)
+/*!
+  \return возвращает код нажатой клавиши
+  */
+GIPCY_API    int IPC_getche(void);
+
     //! Проверяет была ли нажата клавиша (проверяет консоль на ввод с клавиатуры)
     /*!
       \return в случае ошибки возвращает 0
@@ -76,6 +82,7 @@ GIPCY_API    long IPC_interlockedExchangeAdd(volatile long *dst, long val );
 //GIPCY_API    int IPC_handleToDevice(IPC_handle handle);
 
 GIPCY_API   IPC_str* IPC_itoa(int value, char* result, int base);
+GIPCY_API   unsigned int IPC_flushall();
 GIPCY_API   long IPC_getTickCount();
 GIPCY_API   long IPC_getTickPerSec();
 }
