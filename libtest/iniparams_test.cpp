@@ -60,4 +60,22 @@ void PrintfIniFile()
 
         pSections += strlen(pSections) + 1;
     }
+
+    strcpy(sSections, "SECTION3");
+    printf("%s\n", sSections);
+
+    strcpy(sParams, "a3");
+    strcpy(sValue, "");
+    IPC_getPrivateProfileString(sSections, sParams, "", sValue, BUFSIZE, g_sIniFile);
+    printf("%s = %s\n", sParams, sValue);
+
+    strcpy(sParams, "b3");
+    strcpy(sValue, "");
+    IPC_getPrivateProfileString(sSections, sParams, "", sValue, BUFSIZE, g_sIniFile);
+    printf("%s = %s\n", sParams, sValue);
+
+    strcpy(sParams, "c3");
+    strcpy(sValue, "");
+    IPC_getPrivateProfileString(sSections, sParams, "", sValue, BUFSIZE, g_sIniFile);
+    printf("%s = %s\n\n", sParams, sValue);
 }

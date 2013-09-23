@@ -151,8 +151,13 @@ static int FindSection(const char* src, const char* section)
         {
             char name[PATH_MAX] = {0};
             snprintf(name, key_size+1, "%s\n", &psubstr[i+1] );
+            IPC_strlwr(name);
 
-            if(!strcmp(name, section))
+            char section_tmp[1024];
+            strcpy(section_tmp, section);
+            IPC_strlwr(section_tmp);
+
+            if(!strcmp(name, section_tmp))
             {
                 //DEBUG_PRINT("Section: < %s > was found in the string < %s >\n", section, src);
                 return 0;
@@ -225,8 +230,13 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
 
         char name[128] = {0};
         snprintf(name, key_size+1, "%s\n", &psubstr[i] );
+        IPC_strlwr(name);
 
-        if(!strcmp(name, option))
+        char option_tmp[1024];
+        strcpy(option_tmp, option);
+        IPC_strlwr(option_tmp);
+
+        if(!strcmp(name, option_tmp))
         {
             //DEBUG_PRINT("Option: < %s > was found in the string < %s >\n", option, src);
 
@@ -623,6 +633,24 @@ IPC_str* IPC_itoa(int value, IPC_str* result, int base)
     }
 
     return result;
+}
+
+//-----------------------------------------------------------------------------
+
+GIPCY_API   int IPC_strlwr(char *str)
+{
+    int i;
+    int nSize;
+
+    if(str == 0)
+        return 0;
+
+    nSize = strlen(str);
+
+    for(i = 0; i < nSize; i++)
+        str[i] = tolower(str[i]);
+
+    return 0;
 }
 
 //-----------------------------------------------------------------------------

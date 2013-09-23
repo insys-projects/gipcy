@@ -82,6 +82,7 @@ GIPCY_API    long IPC_interlockedExchangeAdd(volatile long *dst, long val );
 //GIPCY_API    int IPC_handleToDevice(IPC_handle handle);
 
 GIPCY_API   IPC_str* IPC_itoa(int value, char* result, int base);
+GIPCY_API   int IPC_strlwr(char *str);
 GIPCY_API   unsigned int IPC_flushall();
 GIPCY_API   long IPC_getTickCount();
 GIPCY_API   long IPC_getTickPerSec();
