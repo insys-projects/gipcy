@@ -67,7 +67,7 @@ GIPCY_API   int IPC_mapPhysAddr(IPC_handle handle, void** virtAddr, size_t physA
     //! Функция отключает отображение физической памяти на виртуальную память процесса (нужна только под LINUX)
 GIPCY_API   int IPC_unmapPhysAddr(IPC_handle handle, void* virtAddr, unsigned long size);
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__QNX__)
     //! Описывает параметры для команд управления устройством
     struct ioctl_param {
         void    *srcBuf;       //!< буфер с данными для устройства (через него передаются данные В драйвер нулевого кольца)

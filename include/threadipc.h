@@ -19,7 +19,7 @@
 #define THREAD_RESUME           0x8
 #define THREAD_EXIT             0x10
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__QNX__)
 
 #include <pthread.h>
 #define __IPC_API
