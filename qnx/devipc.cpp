@@ -17,7 +17,7 @@
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum)
+GIPCY_API IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum)
 {
     DEBUG_PRINT("%s(%s)\n", __FUNCTION__, mainname);
 
@@ -44,7 +44,7 @@ IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum)
 
 //-----------------------------------------------------------------------------
 
-int IPC_closeDevice(IPC_handle handle)
+GIPCY_API int IPC_closeDevice(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return IPC_INVALID_HANDLE;
@@ -64,7 +64,7 @@ int IPC_closeDevice(IPC_handle handle)
 
 //-----------------------------------------------------------------------------
 
-int IPC_readDevice(IPC_handle handle, void *data, int size)
+GIPCY_API int IPC_readDevice(IPC_handle handle, void *data, int size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return IPC_INVALID_HANDLE;
@@ -80,7 +80,7 @@ int IPC_readDevice(IPC_handle handle, void *data, int size)
 
 //-----------------------------------------------------------------------------
 
-int IPC_writeDevice(IPC_handle handle, void *data, int size)
+GIPCY_API int IPC_writeDevice(IPC_handle handle, void *data, int size)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return IPC_INVALID_HANDLE;
@@ -96,7 +96,7 @@ int IPC_writeDevice(IPC_handle handle, void *data, int size)
 
 //-----------------------------------------------------------------------------
 
-int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize)
+GIPCY_API int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h) return IPC_INVALID_HANDLE;
@@ -119,7 +119,7 @@ int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcS
 
 //-----------------------------------------------------------------------------
 
-int IPC_ioctlDeviceOvl(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap)
+GIPCY_API int IPC_ioctlDeviceOvl(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcSize, void *dstBuf, int dstSize, void *overlap)
 {
     return IPC_ioctlDevice(handle, cmd, srcBuf, srcSize, dstBuf, dstSize);
 }

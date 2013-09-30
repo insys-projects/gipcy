@@ -31,7 +31,7 @@ OBJ_FILES := 		$(patsubst %.cpp,%.o, $(SRC) $(EXTFILES))
 LIBDIR := ../lib
 
 $(LIBNAME): $(OBJ_FILES) 
-	$(LD) -g -shared -rdynamic -Wl,-soname,$(SONAME) \
+	$(LD) -g -shared -fPIC -Wl,-soname,$(SONAME) \
         -o $(LIBNAME) $(notdir $(OBJ_FILES))
 	chmod 666 $(LIBNAME)
 	ln -sf $(LIBNAME) $(SONAME)

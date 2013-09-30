@@ -1,9 +1,9 @@
 
 
-#ifdef __IPC_QNX_
+#ifdef __IPC_QNX__
 
 #ifndef __QNX_H__
-    #include "qnx.h"
+    #include "qnxipc.h"
 #endif
 #ifndef __GIPCY_H__
     #include "gipcy.h"
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_createThread(const IPC_str *name, thread_func *function, void* param)
+GIPCY_API    IPC_handle IPC_createThread(const IPC_str *name, thread_func* function, void* param)
 {
     if(!function)
         return NULL;
@@ -48,7 +48,7 @@ IPC_handle IPC_createThread(const IPC_str *name, thread_func *function, void* pa
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int flags)
+GIPCY_API IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int flags)
 {
     if(!tp)
         return NULL;
@@ -81,7 +81,7 @@ IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int 
 
 //-----------------------------------------------------------------------------
 
-int IPC_startThread(const IPC_handle handle)
+GIPCY_API int IPC_startThread(const IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h || h->ipc_type != IPC_typeThread)
@@ -102,7 +102,7 @@ int IPC_startThread(const IPC_handle handle)
 
 //-----------------------------------------------------------------------------
 
-int IPC_stopThread(const IPC_handle handle)
+GIPCY_API int IPC_stopThread(const IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h || h->ipc_type != IPC_typeThread)
@@ -121,7 +121,7 @@ int IPC_stopThread(const IPC_handle handle)
 
 //-----------------------------------------------------------------------------
 
-int IPC_waitThread(const IPC_handle handle, int timeout)
+GIPCY_API int IPC_waitThread(const IPC_handle handle, int timeout)
 {
     if(!handle) {
         int res = pthread_join(0,NULL);
@@ -146,7 +146,6 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 
     } else {
 
-#ifndef DZYTOOLS_2_4_X
         struct timespec ts;
 
         if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
@@ -156,11 +155,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
         }
 
         ts.tv_nsec += (timeout*1000000);
-        res = pthread_timedjoin_np(h->ipc_descr.ipc_thread, NULL, &ts);
-#else
-        res = pthread_join(h->ipc_descr.ipc_thread, &retval);
-#endif
-
+        res = pthread_timedjoin(h->ipc_descr.ipc_thread, NULL, &ts);
     }
 
     if(res != 0) {
@@ -180,7 +175,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 
 //-----------------------------------------------------------------------------
 /*
-int IPC_waitThread(const IPC_handle handle, int timeout)
+GIPCY_API int IPC_waitThread(const IPC_handle handle, int timeout)
 {
     if(!handle)
 	{
@@ -211,7 +206,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 */
 //-----------------------------------------------------------------------------
 
-int IPC_deleteThread(IPC_handle handle)
+GIPCY_API int IPC_deleteThread(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h || h->ipc_type != IPC_typeThread)
