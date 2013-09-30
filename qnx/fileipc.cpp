@@ -1,8 +1,8 @@
 
-#ifdef __IPC_LINUX__
+#ifdef __IPC_QNX__
 
-#ifndef __LINIPC_H__
-    #include "linipc.h"
+#ifndef __QNXIPC_H__
+    #include "qnxipc.h"
 #endif
 
 #include <stdio.h>
@@ -12,7 +12,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
-#include <error.h>
 #include <time.h>
 #include <sys/ioctl.h>
 
@@ -189,4 +188,4 @@ int IPC_getFileSize(IPC_handle handle, long long* size)
 
 //-----------------------------------------------------------------------------
 
-#endif //__IPC_LINUX__
+#endif //__IPC_QNX__
