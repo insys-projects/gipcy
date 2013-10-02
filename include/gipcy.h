@@ -46,4 +46,8 @@
 #include "diripc.h"
 #endif
 
+#ifndef __SOCKIPC_H__
+#include "sockipc.h"
+#endif
+
 #endif //__IPC_H__

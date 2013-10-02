@@ -284,6 +284,13 @@ IPC_handle IPC_accept( IPC_handle s, IPC_sockaddr* ip, int timeout )
 	return _h;
 }
 
+int IPC_listen( IPC_handle s, int backlog )
+{
+	ipc_handle_t h = (ipc_handle_t)s;
+
+	return listen((SOCKET)h->ipc_descr, backlog);
+}
+
 int IPC_connect( IPC_handle s, IPC_sockaddr* ip )
 {
 	sockaddr_in anAddr;    
@@ -395,4 +402,29 @@ int IPC_closeSocket( IPC_handle s )
     return IPC_OK;
 }
 
+void IPC_FD_ZERO(fd_set *set)
+{
+	FD_ZERO(set);
+}
+
+void IPC_FD_SET(IPC_handle s, fd_set *set)
+{
+	ipc_handle_t h = (ipc_handle_t)s;
+
+	FD_SET((SOCKET)h->ipc_descr, set);
+} 
+
+int IPC_shutdown(IPC_handle s, int how)
+{
+	ipc_handle_t h = (ipc_handle_t)s;
+
+	return shutdown((SOCKET)h->ipc_descr, how);
+}
+
+int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int optlen)
+{
+	ipc_handle_t h = (ipc_handle_t)s;
+
+	return setsockopt((SOCKET)h->ipc_descr, level, optname, optval, optlen);
+}
 #endif

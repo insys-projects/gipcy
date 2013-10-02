@@ -137,6 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -207,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\sockipc.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\windows\sysipc.cpp"
 				>
 			</File>
@@ -246,6 +251,10 @@
 			</File>
 			<File
 				RelativePath=".\include\shmipc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\sockipc.h"
 				>
 			</File>
 			<File
