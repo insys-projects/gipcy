@@ -141,39 +141,7 @@ int IPC_send( IPC_handle s, char *data, int size, int timeout )
 {
     ipc_handle_t h = (ipc_handle_t)s;
 
-    int ret;
-    int total = size;
-
-
-    do
-    {
-        fd_set WriteSet;
-        struct timeval tval={1,0};
-
-        IPC_FD_ZERO(&WriteSet);
-        IPC_FD_SET( h, &	WriteSet);
-
-        int r = select(0, 0, &WriteSet, 0, &tval);
-
-        if( r <= 0 )
-            continue;
-
-        ret = send( h->ipc_descr.ipc_sock, data, size, 0 );
-
-        if( ret == -1 )
-            continue;
-
-        size -= ret;
-        data += ret;
-
-        if( size > 0 )
-            continue;
-
-        break;
-
-    }while(1);
-
-    return total;
+    return send( h->ipc_descr.ipc_sock, data, size, 0 );
 }
 
 int IPC_recv( IPC_handle s, char *data, int size, int timeout  )
