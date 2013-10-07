@@ -10,7 +10,7 @@
 #define IPC_EWOULDBLOCK WSAEWOULDBLOCK
 #endif // WIN32
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__QNX__)
 #define IPC_SOCKET_ERROR -1
 #define IPC_EWOULDBLOCK EWOULDBLOCK
 

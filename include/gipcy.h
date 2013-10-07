@@ -43,11 +43,11 @@
 #endif
 
 #ifndef __DIRIPC_H__
-#include "diripc.h"
+    #include "diripc.h"
 #endif
 
 #ifndef __SOCKIPC_H__
-#include "sockipc.h"
+    #include "sockipc.h"
 #endif
 
 #endif //__IPC_H__
