@@ -135,6 +135,12 @@ int IPC_bind( IPC_handle s, IPC_sockaddr* ip )
 	 return IPC_OK;
 }
 
+int IPC_select( IPC_handle s, fd_set *readfds, fd_set *writefds, 
+						 fd_set *exceptfds, const struct timeval *timeout )
+{
+	return select(0, readfds, writefds, exceptfds, timeout);
+}
+
 int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout )
 {
 	sockaddr_in srcAddr;
@@ -259,17 +265,12 @@ IPC_handle IPC_accept( IPC_handle s, IPC_sockaddr* ip, int timeout )
 	SOCKET _s;
 	sockaddr_in anAddr; 
 
-	while( true )
-	{
-		
-		int len = sizeof(anAddr);
-		
-		_s = accept( (SOCKET)h->ipc_descr, (sockaddr*)&anAddr,  &len );
+	int len = sizeof(anAddr);
+	
+	_s = accept( (SOCKET)h->ipc_descr, (sockaddr*)&anAddr,  &len );
 
-		if( _s != -1 )
-			break;
-	}
-
+	if( _s == -1 )
+		return 0;
 
 	if( ip )
 	{
@@ -303,7 +304,7 @@ int IPC_connect( IPC_handle s, IPC_sockaddr* ip )
 	
 	int err = connect( (SOCKET)h->ipc_descr, (struct sockaddr*)&anAddr, sizeof(struct sockaddr));	
 	
-	return 0;
+	return err;
 }
 
 int IPC_send( IPC_handle s, char *data, int size, int timeout )
@@ -349,39 +350,7 @@ int IPC_recv( IPC_handle s, char *data, int size, int timeout  )
 {	
 	ipc_handle_t h = (ipc_handle_t)s;
 	
-	int total = size;
-	int ret = size;
-
-	fd_set ReadSet;
-    timeval tval={0,10};
-	
-	do
-	{ 
-		
-			
-		FD_ZERO(&ReadSet);	
-		FD_SET( (SOCKET)h->ipc_descr,&	ReadSet);
-		int r = select(0, &ReadSet, 0, 0, &tval);
-
-		if( r <= 0 )
-			continue;
-
-		int ret = recv( (SOCKET)h->ipc_descr, data, size, 0 ); 
-		
-		if( ret == -1 ) 
-			continue; 
-		
-		size -= ret;
-		data += ret;
-
-		if( size > 0 )
-			continue;
-
-		break;
-
-	}while(1);
-
-	return total;
+	return recv( (SOCKET)h->ipc_descr, data, size, 0 ); 
 }
 
 int IPC_closeSocket( IPC_handle s )
@@ -413,6 +382,13 @@ void IPC_FD_SET(IPC_handle s, fd_set *set)
 
 	FD_SET((SOCKET)h->ipc_descr, set);
 } 
+
+void IPC_FD_CLR(IPC_handle s, fd_set *set)
+{
+	ipc_handle_t h = (ipc_handle_t)s;
+
+	FD_CLR((SOCKET)h->ipc_descr, set);
+}
 
 int IPC_shutdown(IPC_handle s, int how)
 {

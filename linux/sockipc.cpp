@@ -129,6 +129,14 @@ int IPC_bind( IPC_handle s, IPC_sockaddr* ip )
      return IPC_OK;
 }
 
+int IPC_select( IPC_handle s, fd_set *readfds, fd_set *writefds,
+                         fd_set *exceptfds, const struct timeval *timeout )
+{
+    ipc_handle_t h = (ipc_handle_t)s;
+
+    return select(h->ipc_descr.ipc_sock + 1, readfds, writefds, exceptfds, (timeval*)timeout);
+}
+
 int IPC_send( IPC_handle s, char *data, int size, int timeout )
 {
     ipc_handle_t h = (ipc_handle_t)s;
@@ -172,39 +180,7 @@ int IPC_recv( IPC_handle s, char *data, int size, int timeout  )
 {
     ipc_handle_t h = (ipc_handle_t)s;
 
-    int total = size;
-    int ret = size;
-
-    fd_set ReadSet;
-    timeval tval={0,10};
-
-    do
-    {
-
-
-        IPC_FD_ZERO(&ReadSet);
-        IPC_FD_SET( h,&	ReadSet);
-        int r = select(0, &ReadSet, 0, 0, &tval);
-
-        if( r <= 0 )
-            continue;
-
-        int ret = recv( h->ipc_descr.ipc_sock, data, size, 0 );
-
-        if( ret == -1 )
-            continue;
-
-        size -= ret;
-        data += ret;
-
-        if( size > 0 )
-            continue;
-
-        break;
-
-    }while(1);
-
-    return total;
+    return recv( h->ipc_descr.ipc_sock, data, size, 0 );
 }
 
 int IPC_closeSocket( IPC_handle s )

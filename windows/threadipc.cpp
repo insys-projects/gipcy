@@ -87,8 +87,12 @@ GIPCY_API int IPC_waitThread(const IPC_handle handle, int timeout)
     ULONG status = WaitForSingleObject(h->ipc_descr, timeout );
 	if(status == WAIT_TIMEOUT) 
 		return IPC_WAIT_TIMEOUT;
-	if(status == WAIT_ABANDONED) 
+	else if(status == WAIT_ABANDONED) 
 		return IPC_WAIT_ABANDONED;
+	else if(status == WAIT_OBJECT_0) 
+		return 0;
+	else
+		return -1;
 
     return IPC_OK;
 }
