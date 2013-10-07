@@ -3,23 +3,16 @@
 # Detect operation system
 #
 
-ifeq "$(findstring QNX, $(shell uname -a))" "QNX"
-    OS := DZY_QNX
-    DEF_TYPES := __QNX__
-    IPC := __IPC_QNX__
-else
-    OS := DZY_LINUX
-    DEF_TYPES := __LINUX__
-    IPC := __IPC_LINUX__
-endif
+CSTOOL_PREFIX := ntox86-
+DEF_TYPES := __QNX__
+IPC := __IPC_QNX__
 
 #
 # Select apropriate IPC methods
 #
-IPC_TYPE := _POSIX_IPC_
-#IPC_TYPE := _INSYS_IPC_
+#IPC_TYPE := _POSIX_IPC_
+IPC_TYPE := _INSYS_IPC_
 
-#GPROF := -pg
 
 #
 # Setup common Makefile rules and defines
@@ -28,7 +21,7 @@ IPC_TYPE := _POSIX_IPC_
 CC := $(CSTOOL_PREFIX)gcc
 LD := $(CSTOOL_PREFIX)gcc
 
-CFLAGS += -fPIC -Wall -g -D$(IPC) -D$(IPC_TYPE) -D$(OS) -D$(DEF_TYPES) $(GPROF) $(DZY_VER)
+CFLAGS += -fPIC -Wall -g -D$(IPC) -D$(IPC_TYPE) -D$(DEF_TYPES)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c -MD $<
@@ -43,12 +36,14 @@ distclean:
 	rm -f *.d *~ core
 	rm -f *.so
 	rm -f *.0
+	rm -f $(TARGET_NAME)
 
 clean:
 	rm -f *.o *~ core
 	rm -f *.d *~ core
 	rm -f *.so
 	rm -f *.0
+	rm -f $(TARGET_NAME)
 
 SYSLIBDIR := /usr/local/lib/bardy
 

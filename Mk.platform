@@ -1,0 +1,22 @@
+
+#
+# Compiling under native QNX
+#
+ifeq "$(findstring QNX, $(shell uname -a))" "QNX"
+    TARGET_OS := qnx
+    CSTOOL_PREFIX := ntox86-
+else
+#
+# May be we crosscompiling under SDP in linux
+#
+ifeq "$(findstring ntox86, $(CC))" "ntox86"
+    TARGET_OS := qnx
+    CSTOOL_PREFIX := ntox86-
+else
+#
+# Compiling in native linux
+#
+    TARGET_OS := linux
+    CSTOOL_PREFIX :=
+endif
+endif

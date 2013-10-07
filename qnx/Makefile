@@ -4,6 +4,7 @@ ROOT_DIR = .
 BASENAME = libgipcy.so
 LIBNAME  = $(BASENAME).0.0
 SONAME   = $(BASENAME).0
+TARGET_NAME = $(LIBNAME)
 
 all: $(LIBNAME)
 
@@ -30,7 +31,7 @@ SRC := 		$(wildcard $(SRC_FILES))
 OBJ_FILES := 		$(patsubst %.cpp,%.o, $(SRC) $(EXTFILES))
 LIBDIR := ../lib
 
-$(LIBNAME): $(OBJ_FILES) 
+$(LIBNAME): $(DRV) $(OBJ_FILES) 
 	$(LD) -g -shared -fPIC -Wl,-soname,$(SONAME) \
         -o $(LIBNAME) $(notdir $(OBJ_FILES))
 	chmod 666 $(LIBNAME)
