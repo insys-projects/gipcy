@@ -39,9 +39,9 @@ static int ipc_ioctl_param(struct ioctl_param *param, unsigned long arg)
 int ioctl_sem_open(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_create_t ipc_param;
+    struct ipc_create_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_create_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_create_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -54,13 +54,13 @@ int ioctl_sem_open(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-    if(copy_to_user((void*)arg, (void*)&ipc_param, sizeof(struct ipc_create_t))) {
+    if(copy_to_user((void*)msg, (void*)&ipc_param, sizeof(struct ipc_create_t))) {
         err_msg(err_trace, "%s(): Error in copy_to_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -69,9 +69,9 @@ do_exit: */
 int ioctl_sem_close(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_close_t ipc_param;
+    struct ipc_close_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_close_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_close_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -83,7 +83,7 @@ int ioctl_sem_close(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -92,9 +92,9 @@ do_exit: */
 int ioctl_sem_lock(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_lock_t ipc_param;
+    struct ipc_lock_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_lock_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_lock_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -106,7 +106,7 @@ int ioctl_sem_lock(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -115,9 +115,9 @@ do_exit: */
 int ioctl_sem_unlock(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_unlock_t ipc_param;
+    struct ipc_unlock_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_unlock_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_unlock_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -129,7 +129,7 @@ int ioctl_sem_unlock(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -141,9 +141,9 @@ do_exit: */
 int ioctl_mutex_open(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_create_t ipc_param;
+    struct ipc_create_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_create_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_create_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -156,13 +156,13 @@ int ioctl_mutex_open(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-    if(copy_to_user((void*)arg, (void*)&ipc_param, sizeof(struct ipc_create_t))) {
+    if(copy_to_user((void*)msg, (void*)&ipc_param, sizeof(struct ipc_create_t))) {
         err_msg(err_trace, "%s(): Error in copy_to_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -171,9 +171,9 @@ do_exit: */
 int ioctl_mutex_close(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_close_t ipc_param;
+    struct ipc_close_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_close_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_close_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -185,7 +185,7 @@ int ioctl_mutex_close(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -194,9 +194,9 @@ do_exit: */
 int ioctl_mutex_lock(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_lock_t ipc_param;
+    struct ipc_lock_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_lock_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_lock_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -208,7 +208,7 @@ int ioctl_mutex_lock(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -217,9 +217,9 @@ do_exit: */
 int ioctl_mutex_unlock(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_unlock_t ipc_param;
+    struct ipc_unlock_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_unlock_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_unlock_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -231,7 +231,7 @@ int ioctl_mutex_unlock(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -243,9 +243,9 @@ do_exit: */
 int ioctl_event_open(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_create_t ipc_param;
+    struct ipc_create_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_create_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_create_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -258,13 +258,13 @@ int ioctl_event_open(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-    if(copy_to_user((void*)arg, (void*)&ipc_param, sizeof(struct ipc_create_t))) {
+    if(copy_to_user((void*)msg, (void*)&ipc_param, sizeof(struct ipc_create_t))) {
         err_msg(err_trace, "%s(): Error in copy_to_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -273,9 +273,9 @@ do_exit: */
 int ioctl_event_close(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_close_t ipc_param;
+    struct ipc_close_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_close_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_close_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -287,7 +287,7 @@ int ioctl_event_close(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -296,9 +296,9 @@ do_exit: */
 int ioctl_event_lock(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_lock_t ipc_param;
+    struct ipc_lock_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_lock_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_lock_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -310,7 +310,7 @@ int ioctl_event_lock(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -319,9 +319,9 @@ do_exit: */
 int ioctl_event_unlock(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_unlock_t ipc_param;
+    struct ipc_unlock_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_unlock_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_unlock_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -333,7 +333,7 @@ int ioctl_event_unlock(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -342,9 +342,9 @@ do_exit: */
 int ioctl_event_reset(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_reset_t ipc_param;
+    struct ipc_reset_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_reset_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_reset_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -356,7 +356,7 @@ int ioctl_event_reset(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -368,9 +368,9 @@ do_exit: */
 int ioctl_shm_open(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_create_t ipc_param;
+    struct ipc_create_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_create_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_create_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -383,13 +383,13 @@ int ioctl_shm_open(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-    if(copy_to_user((void*)arg, (void*)&ipc_param, sizeof(struct ipc_create_t))) {
+    if(copy_to_user((void*)msg, (void*)&ipc_param, sizeof(struct ipc_create_t))) {
         err_msg(err_trace, "%s(): Error in copy_to_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 
@@ -398,9 +398,9 @@ do_exit: */
 int ioctl_shm_close(struct ipc_driver *drv, io_devctl_t *msg)
 {
     int error = 0;
-/*    struct ipc_close_t ipc_param;
+    struct ipc_close_t ipc_param;
 
-    if(copy_from_user(&ipc_param, (void *)arg, sizeof(struct ipc_close_t))) {
+    if(copy_from_user(&ipc_param, (void *)msg, sizeof(struct ipc_close_t))) {
         err_msg(err_trace, "%s(): Error in copy_from_user()\n", __FUNCTION__);
         error = -EFAULT;
         goto do_exit;
@@ -412,7 +412,7 @@ int ioctl_shm_close(struct ipc_driver *drv, io_devctl_t *msg)
         goto do_exit;
     }
 
-do_exit: */
+do_exit:
     return error;
 }
 

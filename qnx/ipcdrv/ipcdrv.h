@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <semaphore.h>
 
-#include <list>
+#include <vector>
 
 #ifndef __IPCIOTCL_H__
     #include "ipcioctl.h"
@@ -32,15 +32,14 @@ typedef volatile unsigned atomic_t;
 */
 struct ipcsem_t {
 
-    std::list<void*>        sem_list;                  //!< Связанный список семафоров
-    char                    sem_name[128];             //!< Имя семафора
-    void*                   sem_file;                  //!< Дескриптор файла устройства
-    void*                   sem_handle;                //!< Адрес этой структуры
-    atomic_t                sem_owner_count;           //!< Счетчик пользователей семафора
-    atomic_t                sem_lock_count;            //!< Счетчик блокировок семафора
-    atomic_t                sem_unlock_count;          //!< Счетчик разблокировок семафора
-    sem_t*					sem;                       //!< Семафор
-    uint32_t                sem_id;                    //!< Идентификатор семафора
+    char                    		sem_name[128];             //!< Имя семафора
+    void*                   		sem_file;                  //!< Дескриптор файла устройства
+    void*                   		sem_handle;                //!< Адрес этой структуры
+    atomic_t                		sem_owner_count;           //!< Счетчик пользователей семафора
+    atomic_t                		sem_lock_count;            //!< Счетчик блокировок семафора
+    atomic_t                		sem_unlock_count;          //!< Счетчик разблокировок семафора
+    sem_t							sem;                       //!< Семафор
+    uint32_t                		sem_id;                    //!< Идентификатор семафора
 };
 
 //-----------------------------------------------------------------------------
@@ -52,15 +51,14 @@ struct ipcsem_t {
 */
 struct ipcmutex_t {
 
-	std::list<void*>        mutex_list;                  //!< Связанный список мьютексов
-    char                    mutex_name[128];             //!< Имя мьютекса
-    void*                   mutex_file;                  //!< Дескриптор файла устройства
-    void*                   mutex_handle;                //!< Адрес этой структуры
-    atomic_t                mutex_owner_count;           //!< Счетчик пользователей мьютекса
-    atomic_t                mutex_lock_count;            //!< Счетчик блокировок мьютекса
-    atomic_t                mutex_unlock_count;          //!< Счетчик разблокировок мьютекса
-    sem_t*					mutex;                       //!< Семафор
-    uint32_t                mutex_id;                    //!< Идентификатор мьютекса
+    char                    		mutex_name[128];             //!< Имя мьютекса
+    void*                   		mutex_file;                  //!< Дескриптор файла устройства
+    void*                   		mutex_handle;                //!< Адрес этой структуры
+    atomic_t                		mutex_owner_count;           //!< Счетчик пользователей мьютекса
+    atomic_t                		mutex_lock_count;            //!< Счетчик блокировок мьютекса
+    atomic_t                		mutex_unlock_count;          //!< Счетчик разблокировок мьютекса
+    sem_t							mutex;                       //!< Семафор
+    uint32_t                		mutex_id;                    //!< Идентификатор мьютекса
 };
 
 //-----------------------------------------------------------------------------
@@ -72,16 +70,15 @@ struct ipcmutex_t {
 */
 struct ipcevent_t {
 
-	std::list<void*>        event_list;                  //!< Связанный список событий
-    char                    event_name[128];             //!< Имя события
-    void*                   event_file;                  //!< Дескриптор файла устройства
-    void*                   event_handle;                //!< Адрес этой структуры
-    atomic_t                event_owner_count;           //!< Счетчик пользователей события
-    atomic_t                event_lock_count;            //!< Счетчик блокировок события
-    atomic_t                event_unlock_count;          //!< Счетчик разблокировок события
-    sem_t*					event;                       //!< Дескриптор события
-    uint32_t                event_flag;                  //!< Флаг автосброса
-    uint32_t                event_id;                    //!< Идентификатор события
+    char                    		event_name[128];             //!< Имя события
+    void*                   		event_file;                  //!< Дескриптор файла устройства
+    void*                   		event_handle;                //!< Адрес этой структуры
+    atomic_t                		event_owner_count;           //!< Счетчик пользователей события
+    atomic_t                		event_lock_count;            //!< Счетчик блокировок события
+    atomic_t                		event_unlock_count;          //!< Счетчик разблокировок события
+    sem_t							event;                       //!< Дескриптор события
+    uint32_t                		event_flag;                  //!< Флаг автосброса
+    uint32_t                		event_id;                    //!< Идентификатор события
 };
 
 //-----------------------------------------------------------------------------
@@ -93,50 +90,40 @@ struct ipcevent_t {
 */
 struct ipcshm_t {
 
-	std::list<void*>        shm_list;                  //!< Связанный список разделяемой памяти
-    char                    shm_name[128];             //!< Имя разделяемой памяти
-    void*                   shm_file;                  //!< Дескриптор файла устройства
-    void*                   shm_handle;                //!< Адрес этой структуры
-    atomic_t                shm_owner_count;           //!< Счетчик пользователей разделяемой памяти
-    uint32_t                shm_id;                    //!< Идентификатор разделяемой памяти
+    char                    		shm_name[128];             //!< Имя разделяемой памяти
+    void*                   		shm_file;                  //!< Дескриптор файла устройства
+    void*                   		shm_handle;                //!< Адрес этой структуры
+    atomic_t                		shm_owner_count;           //!< Счетчик пользователей разделяемой памяти
+    uint32_t                		shm_id;                    //!< Идентификатор разделяемой памяти
 };
 
 //-----------------------------------------------------------------------------
 
 struct ipc_driver {
 
-//    dev_t                   m_devno;
-//    struct list_head        m_list;
-    char                    m_name[128];
-//    struct class           *m_class;
-//    struct device          *m_ipc_device;
-//    struct mutex            m_ipc_mutex;
-//    struct semaphore        m_ipc_sem;
-//    spinlock_t              m_ipc_lock;
-//    atomic_t                m_usage;
-//    struct device           *m_device;
-//    int                     m_index;
+    dev_t                   		m_devno;
+    char                    		m_name[128];
+    sem_t							m_ipc_mutex;
+    sem_t							m_ipc_sem;
+    atomic_t                		m_usage;
+    int                     		m_index;
 
-//    struct list_head        m_file_list;
-//    struct mutex            m_file_lock;
+	std::vector<struct ipcsem_t*>	m_sem_list;
+	sem_t							m_sem_lock;
 
-//    struct list_head        m_sem_list;
-//    struct mutex            m_sem_lock;
+	std::vector<struct ipcmutex_t*>	m_mutex_list;
+	sem_t							m_mutex_lock;
 
-//    struct list_head        m_mutex_list;
-//    struct mutex            m_mutex_lock;
+	std::vector<struct ipcevent_t*>	m_event_list;
+	sem_t							m_event_lock;
 
-//    struct list_head        m_event_list;
-//    struct mutex            m_event_lock;
-
-//    struct list_head        m_shm_list;
-//    struct mutex            m_shm_lock;
-
-//    struct cdev             m_cdev;
+	std::vector<struct ipcshm_t*>	m_shm_list;
+	sem_t							m_shm_lock;
 };
 
 //-----------------------------------------------------------------------------
 
+extern int dbg_trace;
 extern int err_trace;
 
 #ifndef PRINTK
@@ -170,5 +157,12 @@ int ipc_event_close_all( struct ipc_driver *drv );
 void* ipc_shm_open( struct ipc_driver *drv, struct ipc_create_t *param );
 int ipc_shm_close( struct ipc_driver *drv, struct ipc_close_t *param );
 int ipc_shm_close_all( struct ipc_driver *drv );
+
+//-----------------------------------------------------------------------------
+
+int copy_from_user(void *dst, void *src, size_t size);
+int copy_to_user(void *dst, void *src, size_t size);
+
+//-----------------------------------------------------------------------------
 
 #endif //__IPCDRV_H__
