@@ -310,40 +310,8 @@ int IPC_connect( IPC_handle s, IPC_sockaddr* ip )
 int IPC_send( IPC_handle s, char *data, int size, int timeout )
 {
 	ipc_handle_t h = (ipc_handle_t)s;
-	
-	int ret;
-	int total = size;
-	
 
-	do
-	{ 
-		struct fd_set WriteSet;
-		struct timeval tval={1,0};
-	
-		FD_ZERO(&WriteSet);	
-		FD_SET( (SOCKET)h->ipc_descr,&	WriteSet);
-		
-		int r = select(0, 0, &WriteSet, 0, &tval);
-
-		if( r <= 0 )
-			continue;
-
-		ret = send( (SOCKET)h->ipc_descr, data, size, 0 ); 
-		
-		if( ret == -1 ) 
-			continue; 
-
-		size -= ret;
-		data += ret;
-
-		if( size > 0 )
-			continue;
-
-		break;
-
-	}while(1);
-
-	return total;
+	return send( (SOCKET)h->ipc_descr, data, size, 0 ); 
 }
 
 int IPC_recv( IPC_handle s, char *data, int size, int timeout  )
