@@ -75,7 +75,7 @@ void* ipc_shm_open( struct ipc_driver *drv, struct ipc_create_t *param )
 do_out:
     sem_post(&drv->m_shm_lock);
 
-    return &shm->shm_handle;
+    return shm->shm_handle;
 }
 
 //-----------------------------------------------------------------------------
@@ -114,7 +114,6 @@ int ipc_shm_close( struct ipc_driver *drv, struct ipc_close_t *param )
                 if(--entry->shm_owner_count == 0) {
 
                     dbg_msg( dbg_trace, "%s(): %s - deleted\n", __FUNCTION__, entry->shm_name );
-
                     drv->m_shm_list.erase(drv->m_shm_list.begin()+i);
                     free( (void*)entry );
                     break;

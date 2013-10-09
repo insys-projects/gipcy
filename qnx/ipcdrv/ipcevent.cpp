@@ -77,7 +77,7 @@ void* ipc_event_create( struct ipc_driver *drv, struct ipc_create_t *param )
 do_out:
     sem_post(&drv->m_event_lock);
 
-    return &event->event_handle;
+    return event->event_handle;
 }
 
 //-----------------------------------------------------------------------------
@@ -115,10 +115,7 @@ int ipc_event_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
             error = 0;
         } else {
 
-        	struct timespec tm;
-        	uint64_t ns = param->timeout*1000*1000;
-
-        	nsec2timespec(&tm, ns);
+        	struct timespec tm = ms_to_timespec(param->timeout);
 
             error = sem_timedwait(&entry->event, &tm);
             if(error == 0) {
@@ -215,8 +212,8 @@ int ipc_event_close( struct ipc_driver *drv, struct ipc_close_t *param )
 
                 if(--entry->event_owner_count == 0) {
 
+                	sem_destroy(&entry->event);
                     dbg_msg( dbg_trace, "%s(): %s - deleted\n", __FUNCTION__, entry->event_name );
-
                     drv->m_event_list.erase(drv->m_event_list.begin()+i);
                     free( (void*)entry );
                     break;
@@ -303,6 +300,7 @@ int ipc_event_close_all( struct ipc_driver *drv )
 
         if(entry->event_owner_count == 0) {
 
+        	sem_destroy(&entry->event);
             dbg_msg( dbg_trace, "%s(): %s - delete\n", __FUNCTION__, entry->event_name );
 
         } else {

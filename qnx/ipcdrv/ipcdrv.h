@@ -160,8 +160,9 @@ int ipc_shm_close_all( struct ipc_driver *drv );
 
 //-----------------------------------------------------------------------------
 
-int copy_from_user(void *dst, void *src, size_t size);
-int copy_to_user(void *dst, void *src, size_t size);
+struct ipc_driver* create_instance(int index);
+void remove_instance(struct ipc_driver* entry);
+struct timespec ms_to_timespec(int ms);
 
 //-----------------------------------------------------------------------------
 

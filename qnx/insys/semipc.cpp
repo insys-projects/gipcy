@@ -35,9 +35,9 @@ IPC_handle IPC_createSemaphore(const IPC_str *name, int value)
 
     ipc_param.handle = NULL;
     ipc_param.value = 1;
-    snprintf(ipc_param.name, sizeof(ipc_param.name), "%s", name);
+    snprintf(ipc_param.name, sizeof(ipc_param.name), "%s\n", name);
 
-    int res = devctl(fd,IOCTL_IPC_SEM_OPEN,&ipc_param, sizeof(ipc_param), NULL);
+    int res = devctl(fd, IOCTL_IPC_SEM_OPEN, &ipc_param, sizeof(ipc_param), NULL);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error open semaphore - %s\n", __FUNCTION__, name);
         return NULL;

@@ -50,6 +50,11 @@ void remove_instance(struct ipc_driver* entry)
 	if(!entry)
 		return;
 
+	ipc_sem_close_all(entry);
+	ipc_mutex_close_all(entry);
+	ipc_event_close_all(entry);
+	ipc_shm_close_all(entry);
+
 	entry->m_sem_list.clear();
 	entry->m_mutex_list.clear();
 	entry->m_event_list.clear();
@@ -65,16 +70,18 @@ void remove_instance(struct ipc_driver* entry)
 
 //-----------------------------------------------------------------------------
 
-int copy_from_user(void *dst, void *src, size_t size)
+struct timespec ms_to_timespec(int ms)
 {
-	return 0;
+	struct timespec tm;
+	struct timespec tt;
+
+	uint64_t ns = ms*1000*1000;
+	nsec2timespec(&tt, ns);
+
+	clock_gettime(CLOCK_REALTIME, &tm);
+
+	tm.tv_sec += tt.tv_sec;
+	tm.tv_nsec += tt.tv_nsec;
+
+	return tm;
 }
-
-//-----------------------------------------------------------------------------
-
-int copy_to_user(void *dst, void *src, size_t size)
-{
-	return 0;
-}
-
-//-----------------------------------------------------------------------------

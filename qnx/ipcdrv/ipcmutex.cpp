@@ -85,7 +85,7 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
 do_out:
     sem_post(&drv->m_mutex_lock);
 
-    return &mutex->mutex_handle;
+    return mutex->mutex_handle;
 }
 
 //-----------------------------------------------------------------------------
@@ -127,10 +127,7 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
             error = 0;
         } else {
 
-        	struct timespec tm;
-        	uint64_t ns = param->timeout*1000*1000;
-
-        	nsec2timespec(&tm, ns);
+        	struct timespec tm = ms_to_timespec(param->timeout);
 
         	error = sem_timedwait(&entry->mutex, &tm);
             if(error == 0) {
@@ -227,8 +224,8 @@ int ipc_mutex_close( struct ipc_driver *drv, struct ipc_close_t *param )
 
                 if(--entry->mutex_owner_count == 0) {
 
+                	sem_destroy(&entry->mutex);
                     dbg_msg( dbg_trace, "%s(): %s - deleted\n", __FUNCTION__, entry->mutex_name );
-
                     drv->m_mutex_list.erase(drv->m_mutex_list.begin()+i);
                     free( (void*)entry );
                     break;
@@ -272,6 +269,7 @@ int ipc_mutex_close_all( struct ipc_driver *drv )
 
         if(entry->mutex_owner_count == 0) {
 
+        	sem_destroy(&entry->mutex);
             dbg_msg( dbg_trace, "%s(): %s - delete\n", __FUNCTION__, entry->mutex_name );
 
         } else {

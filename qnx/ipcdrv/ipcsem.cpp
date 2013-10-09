@@ -21,6 +21,8 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *param )
     struct ipcsem_t *entry = NULL;
     struct ipcsem_t *sem = NULL;
 
+    sem_wait(&drv->m_sem_lock);
+
     dbg_msg( dbg_trace, "%s()\n", __FUNCTION__ );
 
     if(!drv || !param) {
@@ -31,9 +33,7 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *param )
     dbg_msg( dbg_trace, "%s(): name = %s\n", __FUNCTION__, param->name );
     dbg_msg( dbg_trace, "%s(): value = %d\n", __FUNCTION__, param->value );
 
-    sem_wait(&drv->m_sem_lock);
-
-    for(unsigned i=0; i<drv->m_sem_list.size(); ++i) {
+    for(unsigned i=0; i<drv->m_sem_list.size(); i++) {
 
         entry = drv->m_sem_list.at(i);
 
@@ -77,7 +77,7 @@ void* ipc_sem_create( struct ipc_driver *drv, struct ipc_create_t *param )
 do_out:
     sem_post(&drv->m_sem_lock);
 
-    return &sem->sem_handle;
+    return sem->sem_handle;
 }
 
 //-----------------------------------------------------------------------------
@@ -110,23 +110,24 @@ int ipc_sem_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
         dbg_msg( dbg_trace, "%s(): %s - sem_owner_count: %d\n", __FUNCTION__, entry->sem_name, entry->sem_owner_count );
 
         if(param->timeout < 0) {
+
             sem_wait(&entry->sem);
             ++entry->sem_lock_count;
             error = 0;
+
         } else {
 
-        	struct timespec tm;
-        	uint64_t ns = param->timeout*1000*1000;
-
-        	nsec2timespec(&tm, ns);
+        	struct timespec tm = ms_to_timespec(param->timeout);
 
         	error = sem_timedwait(&entry->sem, &tm);
             if(error == 0) {
                 ++entry->sem_lock_count;
+                dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->sem_name, entry->sem_lock_count );
+            } else {
+            	dbg_msg( dbg_trace, "%s(): %s\n", __FUNCTION__, strerror(errno) );
+            	error = errno;
             }
         }
-
-        dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->sem_name, entry->sem_lock_count );
 
     } else {
 
@@ -212,11 +213,13 @@ int ipc_sem_close( struct ipc_driver *drv, struct ipc_close_t *param )
             if(entry == handle) {
 
                 error = 0;
+                dbg_msg( dbg_trace, "%s(): %s - found\n", __FUNCTION__, entry->sem_name );
 
-                if(--entry->sem_owner_count == 0) {
+                if((--entry->sem_owner_count) == 0) {
+
+                    sem_destroy(&entry->sem);
 
                     dbg_msg( dbg_trace, "%s(): %s - deleted\n", __FUNCTION__, entry->sem_name );
-
                     drv->m_sem_list.erase(drv->m_sem_list.begin()+i);
                     free( (void*)entry );
                     break;
@@ -260,6 +263,7 @@ int ipc_sem_close_all( struct ipc_driver *drv )
 
         if(entry->sem_owner_count == 0) {
 
+        	sem_destroy(&entry->sem);
             dbg_msg( dbg_trace, "%s(): %s - delete\n", __FUNCTION__, entry->sem_name );
 
         } else {

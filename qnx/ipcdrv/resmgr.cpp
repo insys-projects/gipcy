@@ -12,7 +12,6 @@
 
 #include "ipcioctl.h"
 #include "ipcdrv.h"
-#include "ioctlrw.h"
 
 //-----------------------------------------------------------------------------
 
@@ -37,12 +36,13 @@ dispatch_t              *dpp;
 resmgr_attr_t           rattr;
 dispatch_context_t      *ctp;
 iofunc_attr_t           ioattr;
+struct ipc_driver		*entry = 0;
 
 //-----------------------------------------------------------------------------
 
 int     optv;
 int		err_trace = 1;
-int		dbg_trace = 0;
+int		dbg_trace = 1;
 
 //-----------------------------------------------------------------------------
 
@@ -113,13 +113,15 @@ int main (int argc, char **argv)
 	/* Next we call resmgr_attach() to register our device name
 	 * with the process manager, and also to let it know about
 	 * our connect and I/O functions. */
-	pathID = resmgr_attach (dpp, &rattr, "/dev/ipc_drv",
+	pathID = resmgr_attach (dpp, &rattr, "/dev/"IPC_DRIVER_NAME,
 			_FTYPE_ANY, 0, &connect_funcs, &io_funcs, &ioattr);
 	if (pathID == -1) {
 		fprintf (stderr, "%s:  couldn't attach pathname: %s\n",
 				IPC_DRIVER_NAME, strerror (errno));
 		exit (1);
 	}
+
+	entry = create_instance(0);
 
 	/* Now we allocate some memory for the dispatch context
 	 * structure, which will later be used when we receive
@@ -138,6 +140,9 @@ int main (int argc, char **argv)
 			if(exit_flag) {
 				fprintf (stderr, "%s:  Exit flag was raised!\n", IPC_DRIVER_NAME);
 			}
+
+			remove_instance(entry);
+
 			exit (1);
 		}
 		/* Call the correct callback function for the message
@@ -178,6 +183,7 @@ int	io_close_dup(resmgr_context_t *ctp, io_close_t *msg, RESMGR_OCB_T *ocb)
 int	io_devctl(resmgr_context_t *ctp, io_devctl_t *msg, RESMGR_OCB_T *ocb)
 {
 	int error = 0;
+	int nbytes = 0;
 
 	fprintf(stderr, "%s()\n", __FUNCTION__);
 
@@ -186,59 +192,200 @@ int	io_devctl(resmgr_context_t *ctp, io_devctl_t *msg, RESMGR_OCB_T *ocb)
 		return error;
 	}
 
+	int data_area_size = ctp->size - sizeof(io_devctl_t);
+	int input_msg_size = msg->i.nbytes;
+
+	fprintf(stderr, "%s(): data_area_size = %d\n", __FUNCTION__, data_area_size);
+    fprintf(stderr, "%s(): input_msg_size = %d\n", __FUNCTION__, input_msg_size);
+
 	switch(msg->i.dcmd) {
-    case IOCTL_IPC_SEM_OPEN:
-        error = ioctl_sem_open(NULL, msg);
-        break;
-    case IOCTL_IPC_SEM_LOCK:
-        error = ioctl_sem_lock(NULL, msg);
-        break;
-    case IOCTL_IPC_SEM_UNLOCK:
-        error = ioctl_sem_unlock(NULL, msg);
-        break;
-    case IOCTL_IPC_SEM_CLOSE:
-        error = ioctl_sem_close(NULL, msg);
-        break;
-    case IOCTL_IPC_MUTEX_OPEN:
-        error = ioctl_mutex_open(NULL, msg);
-        break;
-    case IOCTL_IPC_MUTEX_LOCK:
-        error = ioctl_mutex_lock(NULL, msg);
-        break;
-    case IOCTL_IPC_MUTEX_UNLOCK:
-        error = ioctl_mutex_unlock(NULL, msg);
-        break;
-    case IOCTL_IPC_MUTEX_CLOSE:
-        error = ioctl_mutex_close(NULL, msg);
-        break;
-    case IOCTL_IPC_EVENT_OPEN:
-        error = ioctl_event_open(NULL, msg);
-        break;
-    case IOCTL_IPC_EVENT_LOCK:
-        error = ioctl_event_lock(NULL, msg);
-        break;
-    case IOCTL_IPC_EVENT_UNLOCK:
-        error = ioctl_event_unlock(NULL, msg);
-        break;
-    case IOCTL_IPC_EVENT_CLOSE:
-        error = ioctl_event_close(NULL, msg);
-        break;
-    case IOCTL_IPC_EVENT_RESET:
-        error = ioctl_event_reset(NULL, msg);
-        break;
-    case IOCTL_IPC_SHM_OPEN:
-        error = ioctl_shm_open(NULL, msg);
-        break;
-    case IOCTL_IPC_SHM_CLOSE:
-        error = ioctl_shm_close(NULL, msg);
-        break;
+
+	//-----------------------------------------------------------------------------
+	// Semaphores
+	//
+    case IOCTL_IPC_SEM_OPEN: {
+
+        struct ipc_create_t *ipc_param = (struct ipc_create_t *)_DEVCTL_DATA(msg->i);
+        ipc_param->handle = ipc_sem_create( entry, ipc_param );
+        if(!ipc_param->handle) {
+            err_msg(err_trace, "%s(): Error in ipc_sem_create()\n", __FUNCTION__);
+            error = -EINVAL;
+            return error;
+        } else {
+            nbytes = sizeof(struct ipc_create_t);
+        }
+
+    } break;
+    case IOCTL_IPC_SEM_LOCK: {
+
+        struct ipc_lock_t *ipc_param = (struct ipc_lock_t*)_DEVCTL_DATA(msg->i);
+        error = ipc_sem_lock( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_sem_lock()\n", __FUNCTION__);
+            return error;
+        }
+
+	} break;
+    case IOCTL_IPC_SEM_UNLOCK: {
+
+        struct ipc_unlock_t *ipc_param = (struct ipc_unlock_t*)_DEVCTL_DATA(msg->i);
+        error = ipc_sem_unlock( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_sem_unlock()\n", __FUNCTION__);
+            return error;
+        }
+
+    } break;
+    case IOCTL_IPC_SEM_CLOSE: {
+
+        struct ipc_close_t *ipc_param = (struct ipc_close_t *)_DEVCTL_DATA(msg->i);
+        error = ipc_sem_close( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_sem_close()\n", __FUNCTION__);
+            return error;
+        }
+
+    } break;
+
+    //-----------------------------------------------------------------------------
+	// Mutexes
+	//
+    case IOCTL_IPC_MUTEX_OPEN: {
+
+        struct ipc_create_t *ipc_param = (struct ipc_create_t *)_DEVCTL_DATA(msg->i);
+        ipc_param->handle = ipc_mutex_create( entry, ipc_param );
+        if(!ipc_param->handle) {
+            err_msg(err_trace, "%s(): Error in ipc_mutex_create()\n", __FUNCTION__);
+            error = -EINVAL;
+            return error;
+        } else {
+            nbytes = sizeof(struct ipc_create_t);
+        }
+
+    } break;
+    case IOCTL_IPC_MUTEX_LOCK: {
+
+        struct ipc_lock_t *ipc_param = (struct ipc_lock_t*)_DEVCTL_DATA(msg->i);
+        error = ipc_mutex_lock( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_mutex_lock()\n", __FUNCTION__);
+            return error;
+        }
+
+    } break;
+    case IOCTL_IPC_MUTEX_UNLOCK: {
+
+        struct ipc_unlock_t *ipc_param = (struct ipc_unlock_t*)_DEVCTL_DATA(msg->i);
+        error = ipc_mutex_unlock( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_mutex_lock()\n", __FUNCTION__);
+            return error;
+        }
+
+    } break;
+    case IOCTL_IPC_MUTEX_CLOSE: {
+
+        struct ipc_close_t *ipc_param = (struct ipc_close_t *)_DEVCTL_DATA(msg->i);
+        error = ipc_mutex_close( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_mutex_close()\n", __FUNCTION__);
+            return error;
+        }
+
+    } break;
+
+    //-----------------------------------------------------------------------------
+    // Events
+    //
+    case IOCTL_IPC_EVENT_OPEN: {
+
+        struct ipc_create_t *ipc_param = (struct ipc_create_t *)_DEVCTL_DATA(msg->i);
+        ipc_param->handle = ipc_event_create( entry, ipc_param );
+        if(!ipc_param->handle) {
+            err_msg(err_trace, "%s(): Error in ipc_event_create()\n", __FUNCTION__);
+            error = -EINVAL;
+            return error;
+        } else {
+            nbytes = sizeof(struct ipc_create_t);
+        }
+
+    } break;
+    case IOCTL_IPC_EVENT_LOCK: {
+
+        struct ipc_lock_t *ipc_param = (struct ipc_lock_t*)_DEVCTL_DATA(msg->i);
+        error = ipc_event_lock( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_event_lock()\n", __FUNCTION__);
+            return error;
+        }
+
+    } break;
+    case IOCTL_IPC_EVENT_UNLOCK: {
+
+        struct ipc_unlock_t *ipc_param = (struct ipc_unlock_t*)_DEVCTL_DATA(msg->i);
+        error = ipc_event_unlock( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_event_unlock()\n", __FUNCTION__);
+            return error;
+        }
+
+    } break;
+    case IOCTL_IPC_EVENT_CLOSE: {
+
+        struct ipc_close_t *ipc_param = (struct ipc_close_t *)_DEVCTL_DATA(msg->i);
+        error = ipc_event_close( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_event_close()\n", __FUNCTION__);
+            return error;
+        }
+
+    } break;
+    case IOCTL_IPC_EVENT_RESET: {
+
+        struct ipc_reset_t *ipc_param = (struct ipc_reset_t *)_DEVCTL_DATA(msg->i);
+        error = ipc_event_reset( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_event_reset()\n", __FUNCTION__);
+            return error;
+        }
+
+    } break;
+
+    //-----------------------------------------------------------------------------
+    // Shared memory
+    //
+    case IOCTL_IPC_SHM_OPEN: {
+
+        struct ipc_create_t *ipc_param = (struct ipc_create_t *)_DEVCTL_DATA(msg->i);
+        ipc_param->handle = ipc_shm_open( entry, ipc_param );
+        if(!ipc_param->handle) {
+            err_msg(err_trace, "%s(): Error in ipc_shm_create()\n", __FUNCTION__);
+            error = -EINVAL;
+            return error;
+        } else {
+            nbytes = sizeof(struct ipc_create_t);
+        }
+
+    } break;
+    case IOCTL_IPC_SHM_CLOSE: {
+
+        struct ipc_close_t *ipc_param = (struct ipc_close_t *)_DEVCTL_DATA(msg->i);
+        error = ipc_shm_close( entry, ipc_param );
+        if(error < 0) {
+            err_msg(err_trace, "%s(): Error in ipc_shm_close()\n", __FUNCTION__);
+            return error;
+        }
+
+    } break;
     default:
         err_msg(err_trace, "%s(): Unknown ioctl command\n", __FUNCTION__);
         error = -EINVAL;
-        break;
+        return error;
 	}
 
-	return error;
+	memset(&msg->o, 0, sizeof(msg->o));
+
+	return _RESMGR_PTR(ctp, &msg->o, sizeof(msg->o)+nbytes);
 }
 
 //-----------------------------------------------------------------------------

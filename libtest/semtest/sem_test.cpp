@@ -42,38 +42,36 @@ int main(int argc, char* argv[])
         std::cout << "IPC_createSemaphore() failed" << endl;
         return -1;
     } else {
-
-    std::cout << "IPC_createSemaphore(1) - Ok" << endl;
-}
+    	std::cout << "IPC_createSemaphore(1) - Ok" << endl;
+    }
 
     int res = IPC_lockSemaphore(lockSem, -1);
     if(res != IPC_OK) {
         std::cout << "IPC_lockSemaphore() - Error" << endl;
     } else {
-
-    std::cout << "IPC_lockSemaphore(-1) - Ok" << endl;
- }
+    	std::cout << "IPC_lockSemaphore(-1) - Ok" << endl;
+ 	}
 
     res = IPC_lockSemaphore(lockSem, 1000);
     if(res != IPC_OK) {
         std::cout << "IPC_lockSemaphore(1000) - Error" << endl;
+    } else {
+    	std::cout << "IPC_lockSemaphore(1000) - Ok" << endl;
     }
 
     res = IPC_unlockSemaphore(lockSem);
     if(res != IPC_OK) {
         std::cout << "IPC_unlockSemaphore() - Error" << endl;
     } else {
-
-    std::cout << "IPC_unlockSemaphore() - Ok" << endl;
-}
+    	std::cout << "IPC_unlockSemaphore() - Ok" << endl;
+	}
 
     res = IPC_deleteSemaphore(lockSem);
     if(res != IPC_OK) {
         std::cout << "IPC_deleteSemaphore() - Error" << endl;
     } else {
-
-    std::cout << "IPC_deleteSemaphore() - Ok" << endl;
-}
+    	std::cout << "IPC_deleteSemaphore() - Ok" << endl;
+	}
 
     IPC_cleanup();
 
