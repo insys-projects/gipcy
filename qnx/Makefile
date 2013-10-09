@@ -8,6 +8,7 @@ TARGET_NAME = $(LIBNAME)
 
 all: $(LIBNAME)
 
+include ../Mk.platform
 include ./Mk.Rules
 
 ifeq ($(IPC_TYPE),_POSIX_IPC_)
@@ -21,7 +22,7 @@ endif
 INC := $(addprefix  -I, $(DIRS))
 
 #CFLAGS += -D__VERBOSE__
-CFLAGS += $(INC)
+CFLAGS += -D$(IPC) $(INC)
 
 EXTFILES :=
 
@@ -31,7 +32,7 @@ SRC := 		$(wildcard $(SRC_FILES))
 OBJ_FILES := 		$(patsubst %.cpp,%.o, $(SRC) $(EXTFILES))
 LIBDIR := ../lib
 
-$(LIBNAME): $(DRV) $(OBJ_FILES) 
+$(LIBNAME): $(OBJ_FILES) 
 	$(LD) -g -shared -fPIC -Wl,-soname,$(SONAME) \
         -o $(LIBNAME) $(notdir $(OBJ_FILES))
 	chmod 666 $(LIBNAME)

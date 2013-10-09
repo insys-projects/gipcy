@@ -5,6 +5,7 @@
 ifeq "$(findstring QNX, $(shell uname -a))" "QNX"
     TARGET_OS := qnx
     CSTOOL_PREFIX := ntox86-
+    IPC := __IPC_QNX__
 else
 #
 # May be we crosscompiling under SDP in linux
@@ -12,11 +13,13 @@ else
 ifeq "$(findstring ntox86, $(CC))" "ntox86"
     TARGET_OS := qnx
     CSTOOL_PREFIX := ntox86-
+    IPC := __IPC_QNX__
 else
 #
 # Compiling in native linux
 #
     TARGET_OS := linux
     CSTOOL_PREFIX :=
+    IPC := __IPC_LINUX__
 endif
 endif

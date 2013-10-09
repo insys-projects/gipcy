@@ -1,18 +1,11 @@
 
-#
-# Detect operation system
-#
-
-CSTOOL_PREFIX := ntox86-
-DEF_TYPES := __QNX__
-IPC := __IPC_QNX__
 
 #
 # Select apropriate IPC methods
 #
+
 #IPC_TYPE := _POSIX_IPC_
 IPC_TYPE := _INSYS_IPC_
-
 
 #
 # Setup common Makefile rules and defines
@@ -21,7 +14,8 @@ IPC_TYPE := _INSYS_IPC_
 CC := $(CSTOOL_PREFIX)gcc
 LD := $(CSTOOL_PREFIX)gcc
 
-CFLAGS += -fPIC -Wall -g -D$(IPC) -D$(IPC_TYPE) -D$(DEF_TYPES)
+CFLAGS += -fPIC -Wall -g -D$(IPC_TYPE)
+LFLAGS += -lstdc++
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c -MD $<
