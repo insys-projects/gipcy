@@ -19,7 +19,7 @@ else
 # Compiling in native linux
 #
     TARGET_OS := linux
-    CSTOOL_PREFIX :=
+    CSTOOL_PREFIX ?=
     IPC := __IPC_LINUX__
 endif
 endif
