@@ -21,7 +21,9 @@ int _IPC_udp()
 
     // make it broadcast capable
     int	i = 1;
-    if( setsockopt( s, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i) ) == IPC_SOCKET_ERROR )
+    socklen_t len = sizeof(i);
+
+    if( setsockopt( s, SOL_SOCKET, SO_BROADCAST, (void*)&i, len ) == IPC_SOCKET_ERROR )
         return IPC_SOCKET_ERROR;
 
     return s;
