@@ -42,7 +42,7 @@ union ipc {
     int          ipc_shm;       //!< Используется если IPC разделяемая память POSIX
     pthread_t    ipc_thread;    //!< Используется если IPC поток выполнения
     void*        ipc_lib;       //!< Используется если IPC разделяемая библиотека
-    int          ipc_sock;
+    int          ipc_sock;      //!< Используется если IPC сокет
 };
 
 //-----------------------------------------------------------------------------
@@ -138,7 +138,7 @@ bool is_ok_remove(ipc_handle_t h);
     \param h - дескриптор объекта IPC
     \param h_type - тип дескриптора объекта IPC
 */
-bool chechk_handle(ipc_handle_t h, int h_type);
+bool check_handle(ipc_handle_t h, int h_type);
 
 //! Функция открывает устройство IPC и возвращает дескриптор устройства
 /*!
