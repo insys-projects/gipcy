@@ -36,11 +36,11 @@ int _IPC_tcp()
     if(fcntl(s, F_SETFL, O_NONBLOCK) == IPC_SOCKET_ERROR)
         return IPC_SOCKET_ERROR;
 
-    struct protoent *proto = NULL;
-    proto = getprotobyname("TCP");
-
     int yes = 1;
-    setsockopt( s, proto->p_proto, TCP_NODELAY, (char *) &yes, sizeof(yes));//NODELAY
+    socklen_t len = sizeof(yes);
+
+    if( setsockopt( s, IPPROTO_TCP, TCP_NODELAY, &yes, len) == IPC_SOCKET_ERROR )
+        return IPC_SOCKET_ERROR;
 
     return s;
 }
