@@ -115,11 +115,11 @@ int ipc_event_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
         } else {
             error = down_timeout(&entry->event, msecs_to_jiffies(param->timeout));
             if(error == 0) {
-                atomic_inc(&entry->event_lock_count);
+                atomic_inc(&entry->event_lock_count);          
+            } else {
+               error = -ETIMEDOUT;
             }
         }
-
-        dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
 
     } else {
 

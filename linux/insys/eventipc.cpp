@@ -70,8 +70,10 @@ int IPC_waitEvent(const  IPC_handle handle, int timeout)
 
     int res = ioctl(fd, IOCTL_IPC_EVENT_LOCK, &ipc_param);
     if(res < 0) {
-        DEBUG_PRINT("%s(): Error wait event\n", __FUNCTION__);
-        return -1;
+        if(errno == ETIMEDOUT) {
+            DEBUG_PRINT("%s(): Error wait event\n", __FUNCTION__);
+            return IPC_WAIT_TIMEOUT;
+        }
     }
 
     return IPC_OK;
