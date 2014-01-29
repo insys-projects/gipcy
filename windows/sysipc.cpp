@@ -150,6 +150,30 @@ GIPCY_API long IPC_interlockedExchangeAdd(volatile long *dst, long val )
     return InterlockedExchangeAdd(dst, val);
 }
 
+#ifdef _WIN64
+GIPCY_API   int IPC_strlwr(wchar_t *str)
+{
+
+	if(str == 0)
+        return 0;
+
+	_wcslwr(str);
+
+    return 0;
+}
+#else
+GIPCY_API   int IPC_strlwr(char *str)
+{
+
+	if(str == 0)
+        return 0;
+
+	_strlwr(str);
+
+    return 0;
+}
+#endif
+
 //-----------------------------------------------------------------------------
 
 #endif //__IPC_WIN__
