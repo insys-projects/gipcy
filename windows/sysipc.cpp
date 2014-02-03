@@ -1,8 +1,6 @@
 
 #ifdef __IPC_WIN__
 
-#include <stdio.h>
-
 #ifndef __WINIPC_H__
     #include "winipc.h"
 #endif

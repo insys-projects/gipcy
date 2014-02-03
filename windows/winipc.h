@@ -2,6 +2,8 @@
 #ifndef __WINIPC_H__
 #define __WINIPC_H__
 
+#include <stdio.h>
+
 #ifndef __GIPCY_H__
     #include "gipcy.h"
 #endif

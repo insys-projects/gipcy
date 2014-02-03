@@ -1,13 +1,13 @@
 
 #ifdef __IPC_WIN__
 
-#ifndef __IPCLIB_H__
-    #include "ipclib.h"
-#endif
 #ifndef __WINIPC_H__
     #include "winipc.h"
 #endif
 
+#ifndef __IPCLIB_H__
+    #include "ipclib.h"
+#endif
 //-----------------------------------------------------------------------------
 #ifdef _WIN64
 ipc_handle_t allocate_ipc_object(const wchar_t *name, IPC_type type)
