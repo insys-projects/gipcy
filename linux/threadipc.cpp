@@ -107,7 +107,7 @@ int IPC_stopThread(const IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
     if(!h || h->ipc_type != IPC_typeThread)
-		return IPC_INVALID_HANDLE;
+        return IPC_INVALID_HANDLE;
 
     int res = pthread_cancel(h->ipc_descr.ipc_thread);
     if(res < 0) {
@@ -127,8 +127,8 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
     if(!handle) {
         int res = pthread_join(0,NULL);
         if(res > 0) {
-                DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
-                return IPC_GENERAL_ERROR;
+            DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
+            return IPC_GENERAL_ERROR;
         }
         return IPC_OK;
     }
@@ -177,6 +177,13 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
     DEBUG_PRINT("%s(): thread %s was finished. retval = %p. OK\n", __FUNCTION__, h->ipc_name, retval);
 
     return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+size_t IPC_threadID(void)
+{
+    return (size_t)pthread_self();
 }
 
 //-----------------------------------------------------------------------------

@@ -66,12 +66,19 @@ ipc_handle_t allocate_ipc_object(const char *name, IPC_type type)
 
     memset(h,0,sizeof(struct ipc_t));
 
+    const char* pname = 0;
+    if(!name) {
+      pname = basename(tmpnam(0));
+    } else {
+      pname = name;
+    }
+
     h->ipc_type = type;
     if(h->ipc_type == IPC_typeSharedMem) {
 
         char tmpName[PATH_MAX] = {'\0'};
 
-        snprintf(tmpName, PATH_MAX, "%s%s", IPC_SHM_PREFIX, name);
+        snprintf(tmpName, PATH_MAX, "%s%s", IPC_SHM_PREFIX, pname);
 
         int len = strlen(tmpName)+1;
 
@@ -86,7 +93,7 @@ ipc_handle_t allocate_ipc_object(const char *name, IPC_type type)
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, h->ipc_name);
 
     } else {
-        h->ipc_name = create_raw_name(name);
+        h->ipc_name = create_raw_name(pname);
     }
 
     return h;

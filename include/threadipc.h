@@ -86,9 +86,15 @@ GIPCY_API    int IPC_waitThread(const IPC_handle handle, int timeout);
     //! Функция останавливает поток и удаляет дескриптор потока
     /*!
     \param handle - дескриптор разделяемой памяти
-	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
+    \return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
     */
 GIPCY_API    int IPC_deleteThread(IPC_handle handle);
+
+    //! Функция возвращает идентификатор потока
+    /*!
+    \return Возвращает идентификатор потока
+    */
+GIPCY_API    size_t IPC_threadID(void);
 
 #ifdef _WIN32
     typedef int IPC_tls_key;
