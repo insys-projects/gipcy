@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <pthread.h>
+#include <libgen.h>
 
 //-----------------------------------------------------------------------------
 #define IPC_SHM_PREFIX "/"
