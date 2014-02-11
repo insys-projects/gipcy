@@ -111,7 +111,7 @@ int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcS
 
     int res = ioctl(h->ipc_descr.ipc_file,cmd,&param);
     if(res < 0) {
-        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
+        DEBUG_PRINT("%s(%d): %s\n", __FUNCTION__, cmd, strerror(errno) );
         return IPC_GENERAL_ERROR;
     }
 
