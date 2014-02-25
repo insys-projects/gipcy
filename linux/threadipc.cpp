@@ -25,6 +25,8 @@
 
 IPC_handle IPC_createThread(const IPC_str *name, thread_func *function, void* param)
 {
+    pthread_attr_t attr;
+
     if(!function)
         return NULL;
 
@@ -35,7 +37,13 @@ IPC_handle IPC_createThread(const IPC_str *name, thread_func *function, void* pa
     h->ipc_data = NULL;
     h->ipc_size = 0;
 
-    int res = pthread_create(&h->ipc_descr.ipc_thread,NULL,function,param);
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
+    int res = pthread_create(&h->ipc_descr.ipc_thread,&attr,function,param);
+
+    pthread_attr_destroy(&attr);
+
     if(res < 0) {
         DEBUG_PRINT("%s(): error create thread. %s\n", __FUNCTION__, strerror(errno));
         delete_ipc_object(h);
