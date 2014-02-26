@@ -68,8 +68,9 @@ ipc_handle_t allocate_ipc_object(const char *name, IPC_type type)
     memset(h,0,sizeof(struct ipc_t));
 
     const char* pname = 0;
+    char tmp_name[] = {"IPC_XXXXXX"};
     if(!name) {
-      pname = basename(tmpnam(0));
+      pname = basename(mktemp(tmp_name));
     } else {
       pname = name;
     }
