@@ -21,6 +21,15 @@ extern "C" {
     */
 GIPCY_API    IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum);
 
+    //! Функция открывает устройство
+    /*!
+    \param devname - полное имя устройства в данной ОС (возвращаемый параметр)
+    \param mainname - основная часть имени устройства
+    \param devnum - номер устройства
+    \return дескриптор IPC или NULL
+    */
+GIPCY_API    IPC_handle IPC_openDeviceRaw(const IPC_str *devname);
+
     //! Функция закрывает устройство
     /*!
     \param handle - дескриптор IPC

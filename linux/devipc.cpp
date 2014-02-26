@@ -45,6 +45,30 @@ IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum)
 
 //-----------------------------------------------------------------------------
 
+IPC_handle IPC_openDeviceRaw(const IPC_str *devname)
+{
+    if(!devname) return NULL;
+
+    ipc_handle_t h = allocate_ipc_object(devname, IPC_typeFile);
+    if(!h) return NULL;
+
+    h->ipc_size = 0;
+
+    h->ipc_descr.ipc_file = open(devname, S_IROTH | S_IWOTH );
+    if(h->ipc_descr.ipc_file < 0)
+	{
+        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
+		delete_ipc_object(h);
+        return NULL;
+    }
+
+    DEBUG_PRINT("%s(): open file - %s\n", __FUNCTION__, devname );
+
+    return h;
+}
+
+//-----------------------------------------------------------------------------
+
 int IPC_closeDevice(IPC_handle handle)
 {
     ipc_handle_t h = (ipc_handle_t)handle;
