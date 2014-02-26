@@ -162,7 +162,7 @@ static int ipc_device_close( struct inode *inode, struct file *file )
 
 //-----------------------------------------------------------------------------
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,34)
 static long ipc_device_ioctl( struct file *file, unsigned int cmd, unsigned long arg )
 #else
 static int ipc_device_ioctl( struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg )
@@ -243,7 +243,7 @@ struct file_operations ipc_fops = {
     .read = NULL,
     .write = NULL,
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,34)
     .unlocked_ioctl = ipc_device_ioctl,
     .compat_ioctl = ipc_device_ioctl,
 #else
@@ -318,7 +318,7 @@ static int  __init ipc_probe(void)
 
     dbg_msg(dbg_trace, "%s(): Add cdev %d\n", __FUNCTION__, 0);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,34)
     drv->m_device = device_create(ipc_class, NULL, drv->m_devno, "%s", drv->m_name);
 #else
     drv->m_device = device_create(ipc_class, NULL, drv->m_devno, NULL, "%s", drv->m_name);
@@ -331,7 +331,11 @@ static int  __init ipc_probe(void)
 
     dbg_msg(dbg_trace, "%s(): Create device file for board: %s\n", __FUNCTION__, drv->m_name);
 
+#ifdef DZYTOOLS_2_4_X
     ipc_register_proc(drv->m_name, ipc_proc_info, drv);
+#else
+    ipc_register_proc(drv->m_name, NULL, drv);
+#endif
 
     dbg_msg(dbg_trace, "%s(): Driver %s - setup complete\n", __FUNCTION__, drv->m_name);
 

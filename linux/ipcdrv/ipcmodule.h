@@ -140,6 +140,7 @@ struct ipc_driver {
     struct mutex            m_shm_lock;
 
     struct cdev             m_cdev;
+    struct proc_dir_entry*  m_proc;
 };
 
 //-----------------------------------------------------------------------------

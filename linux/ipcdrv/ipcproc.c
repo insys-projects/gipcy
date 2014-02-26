@@ -8,6 +8,7 @@
 #include <linux/pagemap.h>
 #include <linux/interrupt.h>
 #include <linux/proc_fs.h>
+#include <linux/seq_file.h>
 #include <asm/io.h>
 
 #include "ipcmodule.h"
@@ -15,17 +16,242 @@
 
 //--------------------------------------------------------------------
 
+#ifndef DZYTOOLS_2_4_X
+
+//--------------------------------------------------------------------
+
+static int show_sem_info( struct ipc_driver *drv, struct seq_file *m )
+{
+    struct list_head *pos, *n;
+    struct ipcsem_t *entry = NULL;
+    int sem_counter = 0;
+
+    if(!drv || !m) {
+        dbg_msg( dbg_trace, "%s(): EINVAL\n", __FUNCTION__ );
+        return -1;
+    }
+
+    seq_printf(m, "%s\n", "Semaphores");
+
+    mutex_lock(&drv->m_sem_lock);
+
+    list_for_each_safe(pos, n, &drv->m_sem_list) {
+
+        entry = list_entry(pos, struct ipcsem_t, sem_list);
+
+        if(entry) {
+
+            seq_printf(m, "%d: %s (lock %d, unlock %d, usage %d)\n", sem_counter,
+                       entry->sem_name,
+                       atomic_read(&entry->sem_lock_count),
+                       atomic_read(&entry->sem_unlock_count),
+                       atomic_read(&entry->sem_owner_count));
+            sem_counter++;
+        }
+    }
+
+    mutex_unlock(&drv->m_sem_lock);
+
+    seq_printf(m, "Total semaphores: %d\n", sem_counter );
+
+    return sem_counter;
+}
+
+//--------------------------------------------------------------------
+
+static int show_mutex_info( struct ipc_driver *drv, struct seq_file *m )
+{
+    struct list_head *pos, *n;
+    struct ipcmutex_t *entry = NULL;
+    int mutex_counter = 0;
+
+    if(!drv || !m) {
+        dbg_msg( dbg_trace, "%s(): EINVAL\n", __FUNCTION__ );
+        return -1;
+    }
+
+    seq_printf(m, "Mutexes\n" );
+
+    mutex_lock(&drv->m_mutex_lock);
+
+    list_for_each_safe(pos, n, &drv->m_mutex_list) {
+
+        entry = list_entry(pos, struct ipcmutex_t, mutex_list);
+
+        if(entry) {
+
+            seq_printf(m, "%d: %s (lock %d, unlock %d, usage %d)\n", mutex_counter,
+                          entry->mutex_name,
+                          atomic_read(&entry->mutex_lock_count),
+                          atomic_read(&entry->mutex_unlock_count),
+                          atomic_read(&entry->mutex_owner_count));
+            mutex_counter++;
+        }
+    }
+
+    mutex_unlock(&drv->m_mutex_lock);
+
+    seq_printf(m, "Total mutexes: %d\n", mutex_counter );
+
+    return mutex_counter;
+}
+
+//--------------------------------------------------------------------
+
+static int show_event_info( struct ipc_driver *drv, struct seq_file *m )
+{
+    struct list_head *pos, *n;
+    struct ipcevent_t *entry = NULL;
+    int event_counter = 0;
+
+    if(!drv || !m) {
+        dbg_msg( dbg_trace, "%s(): EINVAL\n", __FUNCTION__ );
+        return -1;
+    }
+
+    seq_printf(m, "Events\n" );
+
+    mutex_lock(&drv->m_event_lock);
+
+    list_for_each_safe(pos, n, &drv->m_event_list) {
+
+        entry = list_entry(pos, struct ipcevent_t, event_list);
+
+        if(entry) {
+
+            seq_printf(m, "%d: %s (lock %d, unlock %d, usage %d)\n", event_counter,
+                          entry->event_name,
+                          atomic_read(&entry->event_lock_count),
+                          atomic_read(&entry->event_unlock_count),
+                          atomic_read(&entry->event_owner_count));
+            event_counter++;
+        }
+    }
+
+    mutex_unlock(&drv->m_event_lock);
+
+    seq_printf(m, "Total events: %d\n", event_counter );
+
+    return event_counter;
+}
+
+//--------------------------------------------------------------------
+
+static int show_shm_info( struct ipc_driver *drv, struct seq_file *m )
+{
+    struct list_head *pos, *n;
+    struct ipcshm_t *entry = NULL;
+    int sem_counter = 0;
+
+    if(!drv || !m) {
+        dbg_msg( dbg_trace, "%s(): EINVAL\n", __FUNCTION__ );
+        return -1;
+    }
+
+    seq_printf(m, "Shared memory\n" );
+
+    mutex_lock(&drv->m_shm_lock);
+
+    list_for_each_safe(pos, n, &drv->m_shm_list) {
+
+        entry = list_entry(pos, struct ipcshm_t, shm_list);
+
+        if(entry) {
+
+            seq_printf(m, "%d: %s (usage %d)\n", sem_counter,
+                          entry->shm_name, atomic_read(&entry->shm_owner_count));
+            sem_counter++;
+        }
+    }
+
+    mutex_unlock(&drv->m_shm_lock);
+
+    seq_printf(m, "Total shared memories: %d\n", sem_counter );
+
+    return sem_counter;
+}
+
+//--------------------------------------------------------------------
+
+static int ipcdrv_proc_show(struct seq_file *m, void *v)
+{
+    struct ipc_driver *pDriver = m->private;
+
+    show_shm_info( pDriver, m );
+    show_sem_info( pDriver, m );
+    show_mutex_info( pDriver, m );
+    show_event_info( pDriver, m );
+
+    return 0;
+}
+
+//--------------------------------------------------------------------
+
+static int ipcdrv_proc_open(struct inode *inode, struct file *file)
+{
+    unsigned int minor = MINOR(inode->i_rdev);
+
+
+    struct ipc_driver *pDriver = PDE(inode)->data;
+
+    dbg_msg(1, "%s(): pDriver = %p\n", __FUNCTION__, pDriver);
+    dbg_msg(1, "%s(): inode->i_private = %p\n", __FUNCTION__, inode->i_private);
+    dbg_msg(1, "%s(): minor = %d\n", __FUNCTION__, minor);
+
+    return single_open(file, ipcdrv_proc_show, pDriver);
+}
+
+//--------------------------------------------------------------------
+
+static int ipcdrv_proc_release(struct inode *inode, struct file *file)
+{
+    unsigned int minor = MINOR(inode->i_rdev);
+    dbg_msg(1, "%s(): minor = %d\n", __FUNCTION__, minor);
+    return single_release(inode, file);
+}
+
+//--------------------------------------------------------------------
+
+static const struct file_operations ipcdrv_proc_fops = {
+    .owner          = THIS_MODULE,
+    .open           = ipcdrv_proc_open,
+    .read           = seq_read,
+    .llseek         = seq_lseek,
+    .release        = ipcdrv_proc_release,
+};
+
+//--------------------------------------------------------------------
+
 void ipc_register_proc( char *name, void *fptr, void *data )
 {
-    create_proc_read_entry( name, 0, NULL, fptr, data );
+    struct ipc_driver *pDriver = (struct ipc_driver*)data;
+
+    if(!data) {
+        dbg_msg( dbg_trace, "%s(): Invalid driver pointer\n", __FUNCTION__ );
+        return;
+    }
+
+    dbg_msg(1, "%s(): pDriver = %p\n", __FUNCTION__, pDriver);
+
+    pDriver->m_proc = proc_create_data(name, S_IRUGO, NULL, &ipcdrv_proc_fops, pDriver);
+    if(!pDriver->m_proc) {
+        dbg_msg(1, "%s(): Error register /proc entry\n", __FUNCTION__);
+    }
+
+    dbg_msg(1, "%s(): pDriver->m_proc = %p\n", __FUNCTION__, pDriver->m_proc);
+    dbg_msg(1, "%s(): pDriver->m_proc->data = %p\n", __FUNCTION__, pDriver->m_proc->data);
 }
 
 //--------------------------------------------------------------------
 
 void ipc_remove_proc( char *name )
 {
-    remove_proc_entry( name, NULL );
+    remove_proc_entry(name, NULL);
 }
+
+//--------------------------------------------------------------------
+
+#else
 
 //--------------------------------------------------------------------
 
@@ -211,3 +437,5 @@ int ipc_proc_info(  char *buf,
 }
 
 //--------------------------------------------------------------------
+
+#endif //
