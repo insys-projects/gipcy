@@ -42,6 +42,10 @@ static int convert_ipc_flags(int ipc_flags)
         flags |= (O_CREAT | O_RDWR);
     }
 
+    if(ipc_flags & IPC_FILE_DIRECT) {
+        flags |= O_DIRECT;
+    }
+
     return flags;
 }
 
