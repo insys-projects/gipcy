@@ -3,6 +3,7 @@
 #define __NO_VERSION__
 #include <linux/module.h>
 #include <linux/types.h>
+#include <linux/version.h>
 #include <linux/ioport.h>
 #include <linux/pci.h>
 #include <linux/pagemap.h>
@@ -189,14 +190,11 @@ static int ipcdrv_proc_show(struct seq_file *m, void *v)
 
 static int ipcdrv_proc_open(struct inode *inode, struct file *file)
 {
-    unsigned int minor = MINOR(inode->i_rdev);
-
-
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
+    struct ipc_driver *pDriver = (struct ipc_driver *)PDE_DATA(inode);
+#else
     struct ipc_driver *pDriver = PDE(inode)->data;
-
-    dbg_msg(1, "%s(): pDriver = %p\n", __FUNCTION__, pDriver);
-    dbg_msg(1, "%s(): inode->i_private = %p\n", __FUNCTION__, inode->i_private);
-    dbg_msg(1, "%s(): minor = %d\n", __FUNCTION__, minor);
+#endif
 
     return single_open(file, ipcdrv_proc_show, pDriver);
 }
@@ -205,8 +203,6 @@ static int ipcdrv_proc_open(struct inode *inode, struct file *file)
 
 static int ipcdrv_proc_release(struct inode *inode, struct file *file)
 {
-    unsigned int minor = MINOR(inode->i_rdev);
-    dbg_msg(1, "%s(): minor = %d\n", __FUNCTION__, minor);
     return single_release(inode, file);
 }
 
@@ -231,15 +227,10 @@ void ipc_register_proc( char *name, void *fptr, void *data )
         return;
     }
 
-    dbg_msg(1, "%s(): pDriver = %p\n", __FUNCTION__, pDriver);
-
     pDriver->m_proc = proc_create_data(name, S_IRUGO, NULL, &ipcdrv_proc_fops, pDriver);
     if(!pDriver->m_proc) {
         dbg_msg(1, "%s(): Error register /proc entry\n", __FUNCTION__);
     }
-
-    dbg_msg(1, "%s(): pDriver->m_proc = %p\n", __FUNCTION__, pDriver->m_proc);
-    dbg_msg(1, "%s(): pDriver->m_proc->data = %p\n", __FUNCTION__, pDriver->m_proc->data);
 }
 
 //--------------------------------------------------------------------
