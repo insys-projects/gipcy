@@ -239,6 +239,8 @@ IPC_handle IPC_openSharedMemory(const IPC_str *name)
     int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     int oflags = O_RDWR;
     ipc_handle_t h = NULL;
+    struct stat st_buf;
+    int res = -1;
 
     void *ipc_drv_handle = shared_memory_open(name, 0);
     if(!ipc_drv_handle) {
@@ -255,6 +257,16 @@ IPC_handle IPC_openSharedMemory(const IPC_str *name)
     if(h->ipc_descr.ipc_shm < 0) {
         goto do_free_ipc_object;
     }
+
+    //--------------------------
+    res = fstat(h->ipc_descr.ipc_shm, &st_buf);
+    if(res < 0) {
+        goto do_free_ipc_object;
+    }
+
+    if(st_buf.st_size > 0)
+        h->ipc_size = st_buf.st_size;
+    //--------------------------
 
     DEBUG_PRINT("%s(): open shared memory - %s\n", __FUNCTION__, name);
 
