@@ -89,6 +89,20 @@ void delete_ipc_object(ipc_handle_t h)
 
 //-----------------------------------------------------------------------------
 
+int IPC_init(void)
+{
+	return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_cleanup(void)
+{
+	return 0;
+}
+
+//-----------------------------------------------------------------------------
+
 int IPC_closeHandle(IPC_handle handle)
 {
     delete_ipc_object((ipc_handle_t)handle);
