@@ -14,8 +14,12 @@ endif
 #
 # Detect kernel version
 #
-ifneq   "$(findstring 2.4.,$(shell uname -a))" ""
+ifeq   "$(findstring 2.4.,$(shell uname -a))" ""
      DZY_VER := -DDZYTOOLS_2_4_X
+endif
+ifeq   "$(findstring c6x,$(shell echo $CC))" "c6x"
+     DZY_VER := -DDZYTOOLS_C_6_X
+     TARGET := -march=c674x
 endif
 
 #
@@ -35,7 +39,7 @@ IPC_TYPE := _INSYS_IPC_
 CC := $(CSTOOL_PREFIX)gcc
 LD := $(CSTOOL_PREFIX)gcc
 
-CFLAGS += -fPIC -Wall -g -D$(IPC) -D$(IPC_TYPE) -D$(OS) -D$(DEF_TYPES) $(GPROF) $(DZY_VER)
+CFLAGS += -fPIC -Wall -g $(TARGET) -D$(IPC) -D$(IPC_TYPE) -D$(OS) -D$(DEF_TYPES) $(GPROF) $(DZY_VER)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c -MD $<
@@ -48,13 +52,13 @@ include $(wildcard *.d)
 distclean:
 	rm -f *.o *~ core
 	rm -f *.d *~ core
-	rm -f *.so
+	rm -f *.so *.a
 	rm -f *.0
 
 clean:
 	rm -f *.o *~ core
 	rm -f *.d *~ core
-	rm -f *.so
+	rm -f *.so  *.a
 	rm -f *.0
 
 SYSLIBDIR := /usr/local/lib/bardy
@@ -68,7 +72,8 @@ SYSLIBDIR := /usr/local/lib/bardy
 #
 
 ifeq "$(INSTALL_PREFIX)" ""
-install:
+install: install.dynamic install.static
+install.dynamic:
 	mkdir -p $(SYSLIBDIR)
 	chmod 777 $(SYSLIBDIR)
 	cp -af $(LIBNAME) $(SYSLIBDIR)
@@ -76,11 +81,20 @@ install:
 	ln -sf $(SYSLIBDIR)/$(SONAME) $(SYSLIBDIR)/$(BASENAME)
 	echo '/usr/local/lib/bardy' > /etc/ld.so.conf.d/bardy.conf
 	/sbin/ldconfig
+install.static:
+	mkdir -p $(SYSLIBDIR)
+	chmod 777 $(SYSLIBDIR)
+	cp -afv $(LIBNAME) $(SYSLIBDIR)
 else
-install:
+install: install.dynamic install.static
+install.dynamic:
 	mkdir -p $(INSTALL_PREFIX)$(SYSLIBDIR)
 	chmod 777 $(INSTALL_PREFIX)$(SYSLIBDIR)
 	cp -af $(LIBNAME) $(INSTALL_PREFIX)$(SYSLIBDIR)
 	cp -af $(SONAME) $(INSTALL_PREFIX)$(SYSLIBDIR)
 	cp -af $(BASENAME) $(INSTALL_PREFIX)$(SYSLIBDIR)
+install.static:
+	mkdir -p $(INSTALL_PREFIX)$(SYSLIBDIR)
+	chmod 777 $(INSTALL_PREFIX)$(SYSLIBDIR)
+	cp -fv $(LIBNAME) $(INSTALL_PREFIX)$(SYSLIBDIR)
 endif
