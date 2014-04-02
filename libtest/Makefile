@@ -31,8 +31,8 @@ DIRS := ../include
 
 INC := $(addprefix  -I, $(DIRS))
 
-CC = g++
-LD = g++
+CC = $(CSTOOL_PREFIX)g++
+LD = $(CSTOOL_PREFIX)g++
 
 CFLAGS = -g -Wall -D__IPC_LINUX__ $(INC)
 LFLAGS = -Wl,-rpath $(LIBPATH) -L"$(LIBPATH)" -lgipcy
