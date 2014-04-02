@@ -89,6 +89,7 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
     int oflags = O_RDWR | O_CREAT | O_EXCL;
     ipc_handle_t h = NULL;
     int res = -1;
+    int flags = 0;
 
     void *ipc_drv_handle = shared_memory_open(name, size);
     if(!ipc_drv_handle) {
@@ -105,26 +106,34 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
     h->ipc_descr.ipc_shm = shm_open(h->ipc_name, oflags, mode);
     if(h->ipc_descr.ipc_shm < 0) {
 
-        if(errno != EEXIST)
+        if(errno != EEXIST) {
+            DEBUG_PRINT("%s(): shm_open(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
             goto do_free_ipc_object;
+        }
 
         h->ipc_descr.ipc_shm = shm_open(h->ipc_name, O_RDWR, mode);
-        if(h->ipc_descr.ipc_shm < 0)
+        if(h->ipc_descr.ipc_shm < 0) {
+            DEBUG_PRINT("%s(): shm_open(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
             goto do_free_ipc_object;
+        }
 
         struct stat st_buf;
         res = fstat(h->ipc_descr.ipc_shm, &st_buf);
-        if(res < 0)
+        if(res < 0) {
+            DEBUG_PRINT("%s(): fstat(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
             goto do_free_ipc_object;
+        }
 
         if(st_buf.st_size > 0) {
-            DEBUG_PRINT("%s(): open shared memory - %s\n", __FUNCTION__, name );
+            DEBUG_PRINT("%s(): shm size %s is %d\n", __FUNCTION__, name, st_buf.st_size );
             goto do_return_ipc_object;
         }
 
         res = ftruncate(h->ipc_descr.ipc_shm, size);
-        if(res < 0)
+        if(res < 0) {
+            DEBUG_PRINT("%s(): 1 ftruncate(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
             goto do_free_ipc_object;
+        }
 
         DEBUG_PRINT("%s(): open and init shared memory - %s\n", __FUNCTION__, name );
 
@@ -132,8 +141,22 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
     }
 
     res = ftruncate(h->ipc_descr.ipc_shm, size);
-    if(res < 0)
+    if(res < 0) {
+        DEBUG_PRINT("%s(): 2 ftruncate(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
         goto do_free_ipc_object;
+    }
+
+    flags = fcntl(h->ipc_descr.ipc_shm, F_GETFD);
+    if (flags == -1) {
+        DEBUG_PRINT("%s(): fcntl(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
+    } else {
+        DEBUG_PRINT("%s(): fcntl(%s) - flags 0x%x\n", __FUNCTION__, name, flags );
+        flags &= ~FD_CLOEXEC;
+        DEBUG_PRINT("%s(): fcntl(%s) - flags 0x%x\n", __FUNCTION__, name, flags );
+    }
+    if (fcntl(h->ipc_descr.ipc_shm, F_SETFD, flags) == -1) {
+        DEBUG_PRINT("%s(): fcntl(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
+    }
 
     DEBUG_PRINT("%s(): create shared memory - %s\n", __FUNCTION__, name);
 
@@ -349,18 +372,21 @@ int IPC_deleteSharedMemory(IPC_handle handle)
     int res = shared_memory_close(h->ipc_user);
     if(res < 0) {
         if(res == -EBUSY) {
+            DEBUG_PRINT("%s(): shared_memory_close(%s) error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno) );
             return IPC_OK;
         } else {
-            DEBUG_PRINT("%s(): Error unregister shared memory name\n", __FUNCTION__ );
+            DEBUG_PRINT("%s(): shared_memory_close(%s) error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno) );
+            DEBUG_PRINT("%s(): Error unregister shared memory name in IPC driver\n", __FUNCTION__ );
             return IPC_GENERAL_ERROR;
         }
     }
 
     res = shm_unlink(h->ipc_name);
     if(res < 0) {
-        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
+        DEBUG_PRINT("%s(): shm_unlink(%s) error - %s\n", __FUNCTION__, strerror(errno));
         return IPC_GENERAL_ERROR;
     }
+    DEBUG_PRINT("%s(): DELETE OK\n", __FUNCTION__);
 
     return IPC_OK;
 }
