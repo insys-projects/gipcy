@@ -429,4 +429,18 @@ int ipc_proc_info(  char *buf,
 
 //--------------------------------------------------------------------
 
+void ipc_register_proc( char *name, void *fptr, void *data )
+{
+    create_proc_read_entry ( name, 0, NULL, fptr, data );
+}
+
+//--------------------------------------------------------------------
+
+void ipc_remove_proc( char *name )
+{
+    remove_proc_entry(name, NULL);
+}
+
+//--------------------------------------------------------------------
+
 #endif //
