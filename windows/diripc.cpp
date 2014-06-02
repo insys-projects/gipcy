@@ -95,7 +95,7 @@ GIPCY_API	void IPC_CloseDir(IPC_handle handle)
 GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 {
 	ipc_handle_t h = (ipc_handle_t)handle;
-	WIN32_FIND_DATA *pFindData = h->ipc_data;
+	WIN32_FIND_DATA *pFindData = (WIN32_FIND_DATA *)h->ipc_data;
 	int isFindFile = 0;
 
 	do
