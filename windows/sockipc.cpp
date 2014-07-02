@@ -15,10 +15,17 @@
 int	IPC_initSocket( )
 {
 	WSADATA WsaData;
-	WORD wVersionRequested = MAKEWORD( 1, 0 );
+	WORD wVersionRequested = MAKEWORD( 2, 2 );
 
 	if(WSAStartup (wVersionRequested, &WsaData) == SOCKET_ERROR)		
-		return 0;
+		return -1;
+
+	return 0;
+}
+
+int IPC_cleanupSocket()
+{
+	WSACleanup(); 
 
 	return 0;
 }
@@ -126,7 +133,7 @@ int IPC_bind( IPC_handle s, IPC_sockaddr* ip )
 		sockaddr_in srcAddr;
 		srcAddr.sin_family = AF_INET;
 		srcAddr.sin_port = htons( ip->port );
-		srcAddr.sin_addr.S_un.S_addr = ( ip->addr.ip );
+		srcAddr.sin_addr.S_un.S_addr = ip->addr.ip;
 
 		if(bind( (SOCKET)h->ipc_descr, (sockaddr*)&srcAddr, sizeof(srcAddr)) == SOCKET_ERROR)
 			return -1;
@@ -331,6 +338,9 @@ int IPC_closeSocket( IPC_handle s )
     if(h->ipc_type != IPC_typeSocket )
         return IPC_INVALID_HANDLE;
 
+	int uMode=0;
+	ioctlsocket((SOCKET)h->ipc_descr, FIONBIO, (u_long*)&uMode);
+		
 	int ret = closesocket( (SOCKET)h->ipc_descr );
 	if( ret == SOCKET_ERROR )
 	    return IPC_GENERAL_ERROR;
@@ -371,4 +381,10 @@ int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int
 
 	return setsockopt((SOCKET)h->ipc_descr, level, optname, optval, optlen);
 }
+
+unsigned int IPC_ntohl(unsigned int netlong)
+{
+	return ntohl(netlong);
+}
+
 #endif

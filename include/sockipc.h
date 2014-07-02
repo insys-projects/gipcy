@@ -33,6 +33,8 @@ extern "C" {
 #define IPC_SD_SEND 1
 #define IPC_SD_BOTH 2
 
+#pragma pack(4)
+
 typedef struct 
 {
         unsigned short port;
@@ -41,7 +43,7 @@ typedef struct
 			unsigned long ip;
 		} addr;
 } IPC_sockaddr;
-	
+
 enum IPC_proto {
 
     IPC_udp,
@@ -49,6 +51,7 @@ enum IPC_proto {
 };
 
 GIPCY_API int	IPC_initSocket( );
+GIPCY_API int   IPC_cleanupSocket();
 
 GIPCY_API IPC_sockaddr IPC_resolve( IPC_str* addr );
 
@@ -78,6 +81,8 @@ GIPCY_API void IPC_FD_CLR(IPC_handle s, fd_set *set);
 GIPCY_API int IPC_shutdown(IPC_handle s, int how);
 
 GIPCY_API int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int optlen);
+
+GIPCY_API unsigned int IPC_ntohl(unsigned int netlong);
 
 #ifdef __cplusplus
 };
