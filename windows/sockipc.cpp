@@ -387,4 +387,13 @@ unsigned int IPC_ntohl(unsigned int netlong)
 	return ntohl(netlong);
 }
 
+char *IPC_inet_ntoa(unsigned long addr)
+{
+	in_addr rAddr;
+
+	rAddr.s_addr = addr;
+
+	return inet_ntoa(rAddr);
+}
+
 #endif
