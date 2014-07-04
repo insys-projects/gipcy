@@ -21,6 +21,7 @@
 #include <netinet/tcp.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #else
 #include <Winsock.h>
 #endif // __linux__
@@ -83,6 +84,8 @@ GIPCY_API int IPC_shutdown(IPC_handle s, int how);
 GIPCY_API int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int optlen);
 
 GIPCY_API unsigned int IPC_ntohl(unsigned int netlong);
+
+GIPCY_API char *IPC_inet_ntoa(unsigned long addr);
 
 #ifdef __cplusplus
 };
