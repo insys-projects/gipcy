@@ -163,7 +163,7 @@ int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout
 	int cnt;
 	
 	struct fd_set WriteSet;
-    struct timeval tval={0, 100};
+    struct timeval tval={1, 0};
 	
 	ipc_handle_t h = (ipc_handle_t)s;
 	
@@ -177,20 +177,18 @@ int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout
 
 		int r = select(1, 0, &WriteSet, 0, &tval);
 		
+		tval.tv_sec = 1;
+		tval.tv_usec = 0;
+
 		if(r == 0)
-		{
-			continue;
-		}
+			return 0;
+		else if(r == -1)
+			return -1;
 
 		cnt = sendto((SOCKET)h->ipc_descr, pbuf, size, 0,(struct sockaddr*)&srcAddr, size_sockaddr );
 
 		if(cnt == SOCKET_ERROR)
-		{
-			//printf("error send \n" );
-			int err = GetLastError();
-
-			continue;
-		}
+			return -1;
 
 		break;
 	}
@@ -202,44 +200,42 @@ int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeo
 {
 	sockaddr_in srcAddr;
 	int size_sockaddr = sizeof(srcAddr);
-	
+
+	srcAddr.sin_family = AF_INET;
+	srcAddr.sin_port = htons( ip->port );
+	srcAddr.sin_addr.S_un.S_addr = ( ip->addr.ip );
+
 	int cnt;
-	
-	struct fd_set WriteSet;
-    struct timeval tval={0, 100};
-	
+
+	struct fd_set ReadSet;
+	struct timeval tval={1, 0};
+
 	ipc_handle_t h = (ipc_handle_t)s;
-	
+
 	char *pbuf = data;
 	char *pend = data + size;	
 
 	while( true )
 	{
-		FD_ZERO(&WriteSet);
-		FD_SET( (SOCKET)h->ipc_descr, &WriteSet);
+		FD_ZERO(&ReadSet);
+		FD_SET( (SOCKET)h->ipc_descr, &ReadSet);
 
-		int r = select(1, 0, &WriteSet, 0, &tval);
-		
+		int r = select(1, &ReadSet, 0, 0, &tval);
+
+		tval.tv_sec = 1;
+		tval.tv_usec = 0;
+
 		if(r == 0)
-		{
-			continue;
-		}
+			return 0;
+		else if(r == -1)
+			return -1;
 
 		cnt = recvfrom((SOCKET)h->ipc_descr, pbuf, size, 0,(struct sockaddr*)&srcAddr, &size_sockaddr );
 
 		if(cnt == SOCKET_ERROR)
-		{
-			//printf("error send \n" );
-			continue;
-		}
+			return -1;
 
 		break;
-	}
-
-	if( ip )
-	{
-		ip->port = ntohs( srcAddr.sin_port ); 
-		ip->addr.ip = ( srcAddr.sin_addr.S_un.S_addr ); 
 	}
 
 	return size;
