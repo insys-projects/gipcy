@@ -170,7 +170,7 @@ int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout
     int cnt;
 
     fd_set WriteSet;
-    struct timeval tval={0, 100};
+    struct timeval tval={1, 0};
 
     ipc_handle_t h = (ipc_handle_t)s;
 
@@ -184,11 +184,14 @@ int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout
 
         int r = select(h->ipc_descr.ipc_sock + 1, 0, &WriteSet, 0, &tval);
 
-        if(r == 0)
-        {
-            return 0;
-        }
+		tval.tv_sec = 1;
+		tval.tv_usec = 0;
 
+		if(r == 0)
+			return 0;
+		else if(r == -1)
+			return -1;
+			
         cnt = sendto(h->ipc_descr.ipc_sock, pbuf, size, 0,(struct sockaddr*)&srcAddr, size_sockaddr );
 
         if(cnt == -1)
@@ -212,7 +215,7 @@ int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeo
     int cnt;
 
     fd_set ReadSet;
-    struct timeval tval={0, 100};
+    struct timeval tval={1, 0};
 
     ipc_handle_t h = (ipc_handle_t)s;
 
@@ -226,10 +229,13 @@ int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeo
 
         int r = select(h->ipc_descr.ipc_sock + 1, &ReadSet, 0, 0, &tval);
 
-        if(r == 0)
-        {
-            return 0;
-        }
+		tval.tv_sec = 1;
+		tval.tv_usec = 0;
+
+		if(r == 0)
+			return 0;
+		else if(r == -1)
+			return -1;
 
         cnt = recvfrom(h->ipc_descr.ipc_sock, pbuf, size, 0,(struct sockaddr*)&srcAddr, &fromlen );
 
