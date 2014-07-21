@@ -38,7 +38,7 @@ IPC_sockaddr IPC_resolve( IPC_str* addr )
 	
 	//FIXME: small?
 	char buffer[256];
-	strcpy( buffer, addr );
+	strcpy( buffer, (const char*)addr );
 
 	char *pp = strstr( buffer, ":" );
 
@@ -91,7 +91,11 @@ SOCKET _IPC_tcp()
 
 IPC_handle	IPC_openSocket( IPC_proto proto )
 {
+#ifdef _WIN64
+	ipc_handle_t h = allocate_ipc_object( L"socket", IPC_typeSocket );
+#else
 	ipc_handle_t h = allocate_ipc_object( "socket", IPC_typeSocket );
+#endif
 
     if(!h)
         return NULL;
@@ -281,7 +285,11 @@ IPC_handle IPC_accept( IPC_handle s, IPC_sockaddr* ip, int timeout )
 		ip->addr.ip = ( anAddr.sin_addr.S_un.S_addr ); 
 	}
 
+#ifdef _WIN64
+	ipc_handle_t _h = allocate_ipc_object( L"socket", IPC_typeSocket );
+#else
 	ipc_handle_t _h = allocate_ipc_object( "socket", IPC_typeSocket );
+#endif
 
 	_h->ipc_descr = (HANDLE)_s;
 
