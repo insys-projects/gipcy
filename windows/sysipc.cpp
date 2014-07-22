@@ -172,6 +172,11 @@ GIPCY_API   int IPC_strlwr(char *str)
 }
 #endif
 
+long IPC_getTickCount()
+{
+	return GetTickCount();
+}
+
 //-----------------------------------------------------------------------------
 
 #endif //__IPC_WIN__

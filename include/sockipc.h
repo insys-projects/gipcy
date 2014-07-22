@@ -21,6 +21,7 @@
 #include <netinet/tcp.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #else
 #include <Winsock.h>
 #endif // __linux__
@@ -33,6 +34,8 @@ extern "C" {
 #define IPC_SD_SEND 1
 #define IPC_SD_BOTH 2
 
+#pragma pack(4)
+
 typedef struct 
 {
         unsigned short port;
@@ -41,7 +44,7 @@ typedef struct
 			unsigned long ip;
 		} addr;
 } IPC_sockaddr;
-	
+
 enum IPC_proto {
 
     IPC_udp,
@@ -49,6 +52,7 @@ enum IPC_proto {
 };
 
 GIPCY_API int	IPC_initSocket( );
+GIPCY_API int   IPC_cleanupSocket();
 
 GIPCY_API IPC_sockaddr IPC_resolve( IPC_str* addr );
 
@@ -78,6 +82,10 @@ GIPCY_API void IPC_FD_CLR(IPC_handle s, fd_set *set);
 GIPCY_API int IPC_shutdown(IPC_handle s, int how);
 
 GIPCY_API int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int optlen);
+
+GIPCY_API unsigned int IPC_ntohl(unsigned int netlong);
+
+GIPCY_API char *IPC_inet_ntoa(unsigned long addr);
 
 #ifdef __cplusplus
 };

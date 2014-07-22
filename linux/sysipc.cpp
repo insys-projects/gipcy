@@ -664,7 +664,7 @@ unsigned int IPC_flushall()
 
 long IPC_getTickCount()
 {
-    return time(NULL);
+    return time(NULL) * 1000;
 }
 
 //-----------------------------------------------------------------------------

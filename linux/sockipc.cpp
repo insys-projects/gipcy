@@ -12,6 +12,11 @@ int	IPC_initSocket( )
     return 0;
 }
 
+int IPC_cleanupSocket()
+{
+    return 0;
+}
+
 int _IPC_udp()
 {
     int s = socket(AF_INET, SOCK_DGRAM, 0 );
@@ -153,6 +158,96 @@ int IPC_recv( IPC_handle s, char *data, int size, int timeout  )
     return recv( h->ipc_descr.ipc_sock, data, size, 0 );
 }
 
+int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout )
+{
+    sockaddr_in srcAddr;
+    int size_sockaddr = sizeof(srcAddr);
+
+    srcAddr.sin_family = AF_INET;
+    srcAddr.sin_port = htons( ip->port );
+    srcAddr.sin_addr.s_addr = ( ip->addr.ip );
+
+    int cnt;
+
+    fd_set WriteSet;
+    struct timeval tval={1, 0};
+
+    ipc_handle_t h = (ipc_handle_t)s;
+
+    char *pbuf = data;
+    char *pend = data + size;
+
+    while( true )
+    {
+        FD_ZERO(&WriteSet);
+        FD_SET( h->ipc_descr.ipc_sock, &WriteSet);
+
+        int r = select(h->ipc_descr.ipc_sock + 1, 0, &WriteSet, 0, &tval);
+
+		tval.tv_sec = 1;
+		tval.tv_usec = 0;
+
+		if(r == 0)
+			return 0;
+		else if(r == -1)
+			return -1;
+			
+        cnt = sendto(h->ipc_descr.ipc_sock, pbuf, size, 0,(struct sockaddr*)&srcAddr, size_sockaddr );
+
+        if(cnt == -1)
+            return -1;
+
+        break;
+    }
+
+    return size;
+}
+
+int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout  )
+{
+    sockaddr_in srcAddr;
+    socklen_t fromlen = sizeof(srcAddr);
+
+    srcAddr.sin_family = AF_INET;
+    srcAddr.sin_port = htons( ip->port );
+    srcAddr.sin_addr.s_addr = ( ip->addr.ip );
+
+    int cnt;
+
+    fd_set ReadSet;
+    struct timeval tval={1, 0};
+
+    ipc_handle_t h = (ipc_handle_t)s;
+
+    char *pbuf = data;
+    char *pend = data + size;
+
+    while( true )
+    {
+        FD_ZERO(&ReadSet);
+        FD_SET( h->ipc_descr.ipc_sock, &ReadSet);
+
+        int r = select(h->ipc_descr.ipc_sock + 1, &ReadSet, 0, 0, &tval);
+
+		tval.tv_sec = 1;
+		tval.tv_usec = 0;
+
+		if(r == 0)
+			return 0;
+		else if(r == -1)
+			return -1;
+
+        cnt = recvfrom(h->ipc_descr.ipc_sock, pbuf, size, 0,(struct sockaddr*)&srcAddr, &fromlen );
+
+        if(cnt == -1)
+            return -1;
+
+        break;
+    }
+
+    return size;
+}
+
 int IPC_closeSocket( IPC_handle s )
 {
     if(!s)
@@ -182,6 +277,13 @@ void IPC_FD_SET(IPC_handle s, fd_set *set)
     FD_SET(h->ipc_descr.ipc_sock, set);
 }
 
+void IPC_FD_CLR(IPC_handle s, fd_set *set)
+{
+    ipc_handle_t h = (ipc_handle_t)s;
+
+    FD_CLR(h->ipc_descr.ipc_sock, set);
+}
+
 int IPC_shutdown(IPC_handle s, int how)
 {
     ipc_handle_t h = (ipc_handle_t)s;
@@ -194,6 +296,20 @@ int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int
     ipc_handle_t h = (ipc_handle_t)s;
 
     return setsockopt(h->ipc_descr.ipc_sock, level, optname, optval, optlen);
+}
+
+unsigned int IPC_ntohl(unsigned int netlong)
+{
+    return ntohl(netlong);
+}
+
+char *IPC_inet_ntoa(unsigned long addr)
+{
+    in_addr rAddr;
+
+    rAddr.s_addr = addr;
+
+    return inet_ntoa(rAddr);
 }
 
 #endif //__IPC_LINUX__
