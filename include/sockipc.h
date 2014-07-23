@@ -34,7 +34,7 @@ extern "C" {
 #define IPC_SD_SEND 1
 #define IPC_SD_BOTH 2
 
-#pragma pack(4)
+#pragma pack(push, 4)
 
 typedef struct 
 {
@@ -44,6 +44,8 @@ typedef struct
 			unsigned long ip;
 		} addr;
 } IPC_sockaddr;
+
+#pragma pack(pop)
 
 enum IPC_proto {
 
