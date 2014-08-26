@@ -73,7 +73,9 @@ GIPCY_API int IPC_send( IPC_handle s, char *data, int size, int timeout );
 GIPCY_API int IPC_recv( IPC_handle s, char *data, int size, int timeout  );
 
 GIPCY_API int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout );
+GIPCY_API int IPC_sendto( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip );
 GIPCY_API int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout  );
+GIPCY_API int IPC_recvfrom( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip );
 
 GIPCY_API int IPC_closeSocket( IPC_handle s );
 
@@ -86,6 +88,7 @@ GIPCY_API int IPC_shutdown(IPC_handle s, int how);
 GIPCY_API int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int optlen);
 
 GIPCY_API unsigned int IPC_ntohl(unsigned int netlong);
+GIPCY_API unsigned int IPC_htonl(unsigned int hostlong);
 
 GIPCY_API char *IPC_inet_ntoa(unsigned long addr);
 

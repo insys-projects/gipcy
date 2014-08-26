@@ -200,6 +200,23 @@ int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout
 	return size;
 }
 
+int IPC_sendto( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip )
+{
+	sockaddr_in srcAddr;
+	int size_sockaddr = sizeof(srcAddr);
+
+	srcAddr.sin_family = AF_INET;
+	srcAddr.sin_port = htons( ip->port );
+	srcAddr.sin_addr.S_un.S_addr = ( ip->addr.ip );
+	int cnt;
+
+	ipc_handle_t h = (ipc_handle_t)s;
+
+	cnt = sendto((SOCKET)h->ipc_descr, data, size, 0,(struct sockaddr*)&srcAddr, size_sockaddr );
+
+	return cnt;
+}
+
 int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout  )
 {
 	sockaddr_in srcAddr;
@@ -243,6 +260,29 @@ int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeo
 	}
 
 	return size;
+}
+
+int IPC_recvfrom( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip )
+{
+	sockaddr_in srcAddr;
+	int size_sockaddr = sizeof(srcAddr);
+
+	srcAddr.sin_family = AF_INET;
+	srcAddr.sin_port = htons( ip->port );
+	srcAddr.sin_addr.S_un.S_addr = ( ip->addr.ip );
+	int cnt;
+
+	ipc_handle_t h = (ipc_handle_t)s;
+
+	cnt = recvfrom((SOCKET)h->ipc_descr, data, size, 0,(struct sockaddr*)&srcAddr, &size_sockaddr );
+
+	if( ip )
+	{
+		ip->port = ntohs( srcAddr.sin_port ); 
+		ip->addr.ip = ( srcAddr.sin_addr.S_un.S_addr ); 
+	}
+
+	return cnt;
 }
 
 int IPC_listen( IPC_handle s, IPC_sockaddr* ip, int backlog )
@@ -343,9 +383,12 @@ int IPC_closeSocket( IPC_handle s )
         return IPC_INVALID_HANDLE;
 
 	int uMode=0;
-	ioctlsocket((SOCKET)h->ipc_descr, FIONBIO, (u_long*)&uMode);
+
+	if(ioctlsocket((SOCKET)h->ipc_descr, FIONBIO, (u_long*)&uMode) == SOCKET_ERROR)
+		return SOCKET_ERROR;
 		
 	int ret = closesocket( (SOCKET)h->ipc_descr );
+	
 	if( ret == SOCKET_ERROR )
 	    return IPC_GENERAL_ERROR;
 	
@@ -389,6 +432,11 @@ int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int
 unsigned int IPC_ntohl(unsigned int netlong)
 {
 	return ntohl(netlong);
+}
+
+unsigned int IPC_htonl(unsigned int hostlong)
+{
+	return htonl(hostlong);
 }
 
 char *IPC_inet_ntoa(unsigned long addr)
