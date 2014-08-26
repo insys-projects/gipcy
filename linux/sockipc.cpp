@@ -144,6 +144,21 @@ int IPC_select( IPC_handle s, fd_set *readfds, fd_set *writefds,
     return select(h->ipc_descr.ipc_sock + 1, readfds, writefds, exceptfds, (timeval*)timeout);
 }
 
+int IPC_connect( IPC_handle s, IPC_sockaddr* ip )
+{
+    sockaddr_in anAddr;
+
+    ipc_handle_t h = (ipc_handle_t)s;
+
+    anAddr.sin_family = AF_INET;                   // Инициализация сокета и параметров сети
+    anAddr.sin_port = htons(ip->port);
+    anAddr.sin_addr.s_addr = ip->addr.ip;
+
+    int err = connect( h->ipc_descr.ipc_sock, (struct sockaddr*)&anAddr, sizeof(struct sockaddr));
+
+    return err;
+}
+
 int IPC_send( IPC_handle s, char *data, int size, int timeout )
 {
     ipc_handle_t h = (ipc_handle_t)s;
@@ -203,6 +218,23 @@ int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout
     return size;
 }
 
+int IPC_sendto( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip )
+{
+    sockaddr_in srcAddr;
+    int size_sockaddr = sizeof(srcAddr);
+
+    srcAddr.sin_family = AF_INET;
+    srcAddr.sin_port = htons( ip->port );
+    srcAddr.sin_addr.s_addr = ( ip->addr.ip );
+    int cnt;
+
+    ipc_handle_t h = (ipc_handle_t)s;
+
+    cnt = sendto(h->ipc_descr.ipc_sock, data, size, 0,(struct sockaddr*)&srcAddr, size_sockaddr );
+
+    return cnt;
+}
+
 int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout  )
 {
     sockaddr_in srcAddr;
@@ -246,6 +278,29 @@ int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeo
     }
 
     return size;
+}
+
+int IPC_recvfrom( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip )
+{
+    sockaddr_in srcAddr;
+    socklen_t size_sockaddr = sizeof(srcAddr);
+
+    srcAddr.sin_family = AF_INET;
+    srcAddr.sin_port = htons( ip->port );
+    srcAddr.sin_addr.s_addr = ( ip->addr.ip );
+    int cnt;
+
+    ipc_handle_t h = (ipc_handle_t)s;
+
+    cnt = recvfrom(h->ipc_descr.ipc_sock, data, size, 0,(struct sockaddr*)&srcAddr, &size_sockaddr );
+
+    if( ip )
+    {
+        ip->port = ntohs( srcAddr.sin_port );
+        ip->addr.ip = ( srcAddr.sin_addr.s_addr );
+    }
+
+    return cnt;
 }
 
 int IPC_closeSocket( IPC_handle s )
@@ -301,6 +356,11 @@ int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int
 unsigned int IPC_ntohl(unsigned int netlong)
 {
     return ntohl(netlong);
+}
+
+unsigned int IPC_htonl(unsigned int hostlong)
+{
+    return htonl(hostlong);
 }
 
 char *IPC_inet_ntoa(unsigned long addr)
