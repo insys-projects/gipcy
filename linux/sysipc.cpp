@@ -137,6 +137,7 @@ int IPC_handleToDevice(IPC_handle handle)
 static int FindSection(const char* src, const char* section)
 {
     int key_size = strlen(section);
+    int name_len, tmp_len;
 
     for(uint i = 0; i < (strlen(src) - key_size); i++)
     {
@@ -150,14 +151,16 @@ static int FindSection(const char* src, const char* section)
         if(psubstr[i] == '[') //begin section
         {
             char name[PATH_MAX] = {0};
-            snprintf(name, key_size+1, "%s\n", &psubstr[i+1] );
+            strcpy(name, &psubstr[i+1]);
             IPC_strlwr(name);
+            name_len = strlen(name) - 1;
 
             char section_tmp[1024];
             strcpy(section_tmp, section);
             IPC_strlwr(section_tmp);
+            tmp_len = strlen(section_tmp);
 
-            if(!strcmp(name, section_tmp))
+            if(strstr(name, section_tmp) && (name_len == tmp_len))
             {
                 //DEBUG_PRINT("Section: < %s > was found in the string < %s >\n", section, src);
                 return 0;
@@ -210,6 +213,7 @@ static int IsOptionName(const char* src)
 static int FindOption(const char* src, const char* option, char *Buffer, int BufferSize, int *set_default)
 {
     int key_size = strlen(option);
+    int option_len;
 
     if(!set_default)
         return -1;
@@ -228,15 +232,16 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
         if(psubstr[i] == '[')
             return -3;
 
-        char name[128] = {0};
-        snprintf(name, key_size+1, "%s\n", &psubstr[i] );
-        IPC_strlwr(name);
-
         char option_tmp[1024];
         strcpy(option_tmp, option);
         IPC_strlwr(option_tmp);
+        option_len = strlen(option_tmp);
 
-        if(!strcmp(name, option_tmp))
+        char name[128] = {0};
+        strcpy(name, &psubstr[i] );
+        IPC_strlwr(name);
+
+        if(strstr(name, option_tmp) && ((name[option_len] == ' ') || (name[option_len] == '=')))
         {
             //DEBUG_PRINT("Option: < %s > was found in the string < %s >\n", option, src);
 
