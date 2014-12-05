@@ -34,7 +34,9 @@ extern "C" {
 #define IPC_SD_SEND 1
 #define IPC_SD_BOTH 2
 
+#ifndef _c6x_
 #pragma pack(push, 4)
+#endif
 
 typedef struct 
 {
@@ -45,7 +47,9 @@ typedef struct
 		} addr;
 } IPC_sockaddr;
 
+#ifndef _c6x_
 #pragma pack(pop)
+#endif
 
 enum IPC_proto {
 
