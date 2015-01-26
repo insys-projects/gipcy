@@ -237,7 +237,7 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
         IPC_strlwr(option_tmp);
         option_len = strlen(option_tmp);
 
-        char name[128] = {0};
+        char name[1024] = {0};
         strcpy(name, &psubstr[i] );
         IPC_strlwr(name);
 
