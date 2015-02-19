@@ -160,7 +160,7 @@ static int FindSection(const char* src, const char* section)
             IPC_strlwr(section_tmp);
             tmp_len = strlen(section_tmp);
 
-            if(strstr(name, section_tmp) && (name_len == tmp_len))
+            if(strstr(name, section_tmp) && (name[tmp_len] == ']'))
             {
                 //DEBUG_PRINT("Section: < %s > was found in the string < %s >\n", section, src);
                 return 0;
