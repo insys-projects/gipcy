@@ -1,6 +1,6 @@
 
 #
-# Detect operation system
+# Detect operation system and kernel version
 #
 
 ifeq "$(findstring QNX, $(shell uname -a))" "QNX"
@@ -11,15 +11,16 @@ else
     DEF_TYPES := __LINUX__
 endif
 
-#
-# Detect kernel version
-#
-ifneq   "$(findstring 2.4.,$(shell uname -a))" ""
-     DZY_VER := -DDZYTOOLS_2_4_X
+ifeq "$(findstring c6x-uclinux-gcc, $(CC))" "c6x-uclinux-gcc"
+    OS := DZYTOOLS_C_6_X
+    DZY_VER := -DDZYTOOLS_C_6_X
+    TARGET := -march=c674x -D_c6x_
+    DEF_TYPES := __LINUX__
 endif
-ifeq   "$(findstring c6x,$(shell echo $CC))" "c6x"
-     DZY_VER := -DDZYTOOLS_C_6_X
-     TARGET := -march=c674x
+
+ifneq   "$(findstring 2.4.,$(shell uname -a))" ""
+    OS := DZY_LINUX
+    DZY_VER := -DDZYTOOLS_2_4_X
 endif
 
 #

@@ -152,55 +152,24 @@ int IPC_select( IPC_handle s, fd_set *readfds, fd_set *writefds,
 	return select(0, readfds, writefds, exceptfds, timeout);
 }
 
-int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout )
+int IPC_sendTo( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip )
 {
 	sockaddr_in srcAddr;
 	int size_sockaddr = sizeof(srcAddr);
 
-	
-
 	srcAddr.sin_family = AF_INET;
 	srcAddr.sin_port = htons( ip->port );
 	srcAddr.sin_addr.S_un.S_addr = ( ip->addr.ip );
-	
-
 	int cnt;
-	
-	struct fd_set WriteSet;
-    struct timeval tval={1, 0};
-	
+
 	ipc_handle_t h = (ipc_handle_t)s;
-	
-	char *pbuf = data;
-	char *pend = data + size;	
 
-	while( true )
-	{
-		FD_ZERO(&WriteSet);
-		FD_SET( (SOCKET)h->ipc_descr, &WriteSet);
+	cnt = sendto((SOCKET)h->ipc_descr, data, size, 0,(struct sockaddr*)&srcAddr, size_sockaddr );
 
-		int r = select(1, 0, &WriteSet, 0, &tval);
-		
-		tval.tv_sec = 1;
-		tval.tv_usec = 0;
-
-		if(r == 0)
-			return 0;
-		else if(r == -1)
-			return -1;
-
-		cnt = sendto((SOCKET)h->ipc_descr, pbuf, size, 0,(struct sockaddr*)&srcAddr, size_sockaddr );
-
-		if(cnt == SOCKET_ERROR)
-			return -1;
-
-		break;
-	}
-
-	return size;
+	return cnt;
 }
 
-int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout  )
+int IPC_recvFrom( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip )
 {
 	sockaddr_in srcAddr;
 	int size_sockaddr = sizeof(srcAddr);
@@ -208,41 +177,19 @@ int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeo
 	srcAddr.sin_family = AF_INET;
 	srcAddr.sin_port = htons( ip->port );
 	srcAddr.sin_addr.S_un.S_addr = ( ip->addr.ip );
-
 	int cnt;
-
-	struct fd_set ReadSet;
-	struct timeval tval={1, 0};
 
 	ipc_handle_t h = (ipc_handle_t)s;
 
-	char *pbuf = data;
-	char *pend = data + size;	
+	cnt = recvfrom((SOCKET)h->ipc_descr, data, size, 0,(struct sockaddr*)&srcAddr, &size_sockaddr );
 
-	while( true )
+	if( ip )
 	{
-		FD_ZERO(&ReadSet);
-		FD_SET( (SOCKET)h->ipc_descr, &ReadSet);
-
-		int r = select(1, &ReadSet, 0, 0, &tval);
-
-		tval.tv_sec = 1;
-		tval.tv_usec = 0;
-
-		if(r == 0)
-			return 0;
-		else if(r == -1)
-			return -1;
-
-		cnt = recvfrom((SOCKET)h->ipc_descr, pbuf, size, 0,(struct sockaddr*)&srcAddr, &size_sockaddr );
-
-		if(cnt == SOCKET_ERROR)
-			return -1;
-
-		break;
+		ip->port = ntohs( srcAddr.sin_port ); 
+		ip->addr.ip = ( srcAddr.sin_addr.S_un.S_addr ); 
 	}
 
-	return size;
+	return cnt;
 }
 
 int IPC_listen( IPC_handle s, IPC_sockaddr* ip, int backlog )
@@ -343,9 +290,12 @@ int IPC_closeSocket( IPC_handle s )
         return IPC_INVALID_HANDLE;
 
 	int uMode=0;
-	ioctlsocket((SOCKET)h->ipc_descr, FIONBIO, (u_long*)&uMode);
+
+	if(ioctlsocket((SOCKET)h->ipc_descr, FIONBIO, (u_long*)&uMode) == SOCKET_ERROR)
+		return SOCKET_ERROR;
 		
 	int ret = closesocket( (SOCKET)h->ipc_descr );
+	
 	if( ret == SOCKET_ERROR )
 	    return IPC_GENERAL_ERROR;
 	
@@ -389,6 +339,11 @@ int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int
 unsigned int IPC_ntohl(unsigned int netlong)
 {
 	return ntohl(netlong);
+}
+
+unsigned int IPC_htonl(unsigned int hostlong)
+{
+	return htonl(hostlong);
 }
 
 char *IPC_inet_ntoa(unsigned long addr)

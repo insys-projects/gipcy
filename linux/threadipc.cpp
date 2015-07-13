@@ -38,7 +38,7 @@ IPC_handle IPC_createThread(const IPC_str *name, thread_func *function, void* pa
     h->ipc_size = 0;
 
     pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
     int res = pthread_create(&h->ipc_descr.ipc_thread,&attr,function,param);
 
@@ -173,9 +173,9 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
     }
 
     if(res != 0) {
-
         if(res == ETIMEDOUT) {
             DEBUG_PRINT("%s(): pthread_join() error. retval = %p, ETIMEDOUT\n", __FUNCTION__, retval);
+
         } else if(res == EBUSY) {
             DEBUG_PRINT("%s(): pthread_join() error. retval = %p, EBUSY\n", __FUNCTION__, retval);
         }

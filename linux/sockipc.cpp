@@ -144,6 +144,21 @@ int IPC_select( IPC_handle s, fd_set *readfds, fd_set *writefds,
     return select(h->ipc_descr.ipc_sock + 1, readfds, writefds, exceptfds, (timeval*)timeout);
 }
 
+int IPC_connect( IPC_handle s, IPC_sockaddr* ip )
+{
+    sockaddr_in anAddr;
+
+    ipc_handle_t h = (ipc_handle_t)s;
+
+    anAddr.sin_family = AF_INET;                   // Инициализация сокета и параметров сети
+    anAddr.sin_port = htons(ip->port);
+    anAddr.sin_addr.s_addr = ip->addr.ip;
+
+    int err = connect( h->ipc_descr.ipc_sock, (struct sockaddr*)&anAddr, sizeof(struct sockaddr));
+
+    return err;
+}
+
 int IPC_send( IPC_handle s, char *data, int size, int timeout )
 {
     ipc_handle_t h = (ipc_handle_t)s;
@@ -158,7 +173,7 @@ int IPC_recv( IPC_handle s, char *data, int size, int timeout  )
     return recv( h->ipc_descr.ipc_sock, data, size, 0 );
 }
 
-int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout )
+int IPC_sendTo( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip )
 {
     sockaddr_in srcAddr;
     int size_sockaddr = sizeof(srcAddr);
@@ -166,86 +181,36 @@ int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout
     srcAddr.sin_family = AF_INET;
     srcAddr.sin_port = htons( ip->port );
     srcAddr.sin_addr.s_addr = ( ip->addr.ip );
-
     int cnt;
-
-    fd_set WriteSet;
-    struct timeval tval={1, 0};
 
     ipc_handle_t h = (ipc_handle_t)s;
 
-    char *pbuf = data;
-    char *pend = data + size;
+    cnt = sendto(h->ipc_descr.ipc_sock, data, size, 0,(struct sockaddr*)&srcAddr, size_sockaddr );
 
-    while( true )
-    {
-        FD_ZERO(&WriteSet);
-        FD_SET( h->ipc_descr.ipc_sock, &WriteSet);
-
-        int r = select(h->ipc_descr.ipc_sock + 1, 0, &WriteSet, 0, &tval);
-
-		tval.tv_sec = 1;
-		tval.tv_usec = 0;
-
-		if(r == 0)
-			return 0;
-		else if(r == -1)
-			return -1;
-			
-        cnt = sendto(h->ipc_descr.ipc_sock, pbuf, size, 0,(struct sockaddr*)&srcAddr, size_sockaddr );
-
-        if(cnt == -1)
-            return -1;
-
-        break;
-    }
-
-    return size;
+    return cnt;
 }
 
-int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout  )
+int IPC_recvFrom( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip )
 {
     sockaddr_in srcAddr;
-    socklen_t fromlen = sizeof(srcAddr);
+    socklen_t size_sockaddr = sizeof(srcAddr);
 
     srcAddr.sin_family = AF_INET;
     srcAddr.sin_port = htons( ip->port );
     srcAddr.sin_addr.s_addr = ( ip->addr.ip );
-
     int cnt;
-
-    fd_set ReadSet;
-    struct timeval tval={1, 0};
 
     ipc_handle_t h = (ipc_handle_t)s;
 
-    char *pbuf = data;
-    char *pend = data + size;
+    cnt = recvfrom(h->ipc_descr.ipc_sock, data, size, 0,(struct sockaddr*)&srcAddr, &size_sockaddr );
 
-    while( true )
+    if( ip )
     {
-        FD_ZERO(&ReadSet);
-        FD_SET( h->ipc_descr.ipc_sock, &ReadSet);
-
-        int r = select(h->ipc_descr.ipc_sock + 1, &ReadSet, 0, 0, &tval);
-
-		tval.tv_sec = 1;
-		tval.tv_usec = 0;
-
-		if(r == 0)
-			return 0;
-		else if(r == -1)
-			return -1;
-
-        cnt = recvfrom(h->ipc_descr.ipc_sock, pbuf, size, 0,(struct sockaddr*)&srcAddr, &fromlen );
-
-        if(cnt == -1)
-            return -1;
-
-        break;
+        ip->port = ntohs( srcAddr.sin_port );
+        ip->addr.ip = ( srcAddr.sin_addr.s_addr );
     }
 
-    return size;
+    return cnt;
 }
 
 int IPC_closeSocket( IPC_handle s )
@@ -301,6 +266,11 @@ int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int
 unsigned int IPC_ntohl(unsigned int netlong)
 {
     return ntohl(netlong);
+}
+
+unsigned int IPC_htonl(unsigned int hostlong)
+{
+    return htonl(hostlong);
 }
 
 char *IPC_inet_ntoa(unsigned long addr)

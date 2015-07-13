@@ -113,6 +113,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <ImportLibrary>$(TargetDir)$(TargetName).lib</ImportLibrary>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -148,6 +149,7 @@
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -157,6 +159,7 @@
     <ClCompile Include="windows\fileipc.cpp" />
     <ClCompile Include="windows\mutexipc.cpp" />
     <ClCompile Include="windows\shmipc.cpp" />
+    <ClCompile Include="windows\sockipc.cpp" />
     <ClCompile Include="windows\sysipc.cpp" />
     <ClCompile Include="windows\threadipc.cpp" />
     <ClCompile Include="windows\winipc.cpp" />

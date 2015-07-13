@@ -34,7 +34,9 @@ extern "C" {
 #define IPC_SD_SEND 1
 #define IPC_SD_BOTH 2
 
-#pragma pack(4)
+#ifndef _c6x_
+#pragma pack(push, 4)
+#endif
 
 typedef struct 
 {
@@ -44,6 +46,10 @@ typedef struct
 			unsigned long ip;
 		} addr;
 } IPC_sockaddr;
+
+#ifndef _c6x_
+#pragma pack(pop)
+#endif
 
 enum IPC_proto {
 
@@ -70,8 +76,8 @@ GIPCY_API int IPC_select( IPC_handle s, fd_set *readfds, fd_set *writefds,
 GIPCY_API int IPC_send( IPC_handle s, char *data, int size, int timeout );
 GIPCY_API int IPC_recv( IPC_handle s, char *data, int size, int timeout  );
 
-GIPCY_API int IPC_sendTo( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout );
-GIPCY_API int IPC_recvFrom( IPC_handle s, IPC_sockaddr* ip,char *data, int size, int timeout  );
+GIPCY_API int IPC_sendTo( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip );
+GIPCY_API int IPC_recvFrom( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* ip );
 
 GIPCY_API int IPC_closeSocket( IPC_handle s );
 
@@ -84,6 +90,7 @@ GIPCY_API int IPC_shutdown(IPC_handle s, int how);
 GIPCY_API int IPC_setsockopt(IPC_handle s, int level, int optname, const char *optval, int optlen);
 
 GIPCY_API unsigned int IPC_ntohl(unsigned int netlong);
+GIPCY_API unsigned int IPC_htonl(unsigned int hostlong);
 
 GIPCY_API char *IPC_inet_ntoa(unsigned long addr);
 

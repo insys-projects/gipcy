@@ -19,7 +19,9 @@ ipc_handle_t allocate_ipc_object(const wchar_t *name, IPC_type type)
 
     memset(h,0,sizeof(struct ipc_t));
 
-    int sizeName = (int)wcslen(name)+1;
+	int sizeName = (int)wcslen(name)+1;
+
+	sizeName *= 2;
 
     h->ipc_name = (wchar_t*)malloc(sizeName);
     if(!h->ipc_name) {
@@ -28,7 +30,7 @@ ipc_handle_t allocate_ipc_object(const wchar_t *name, IPC_type type)
     }
 
     memset(h->ipc_name,0,sizeName);
-    memcpy(h->ipc_name,name,wcslen(name));
+    memcpy(h->ipc_name,name,sizeName);
 
 	h->ipc_type = type;
 
