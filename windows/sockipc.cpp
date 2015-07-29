@@ -192,26 +192,6 @@ int IPC_recvFrom( IPC_handle s, char *data, int size, int flags, IPC_sockaddr* i
 	return cnt;
 }
 
-int IPC_listen( IPC_handle s, IPC_sockaddr* ip, int backlog )
-{
-	 ipc_handle_t h = (ipc_handle_t)s;
-	 
-	 {
-		sockaddr_in srcAddr;
-		srcAddr.sin_family = AF_INET;
-		srcAddr.sin_port = htons( ip->port );
-		srcAddr.sin_addr.S_un.S_addr = ( ip->addr.ip );
-
-		if(bind( (SOCKET)h->ipc_descr, (sockaddr*)&srcAddr, sizeof(srcAddr)) == SOCKET_ERROR)
-			return IPC_GENERAL_ERROR;
-	 }
-
-	 if( listen( (SOCKET)h->ipc_descr, backlog ) == SOCKET_ERROR )
-		return IPC_GENERAL_ERROR;
-
-	 return IPC_OK;
-}
-
 IPC_handle IPC_accept( IPC_handle s, IPC_sockaddr* ip, int timeout )
 {
 	ipc_handle_t h = (ipc_handle_t)s;
