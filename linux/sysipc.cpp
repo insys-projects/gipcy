@@ -563,7 +563,7 @@ int IPC_virtFree(void *ptr)
 
 void* IPC_heapAlloc(int nSize)
 {
-	void *ptr = сalloc(1, nSize);
+	void *ptr = calloc(1, nSize);
     return ptr;
 }
 
