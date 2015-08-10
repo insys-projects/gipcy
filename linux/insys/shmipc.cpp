@@ -130,7 +130,6 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
         }
 
         res = ftruncate(h->ipc_descr.ipc_shm, size);
-        close(h->ipc_descr.ipc_shm);
         if(res < 0) {
             DEBUG_PRINT("%s(): 1 ftruncate(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
             goto do_free_ipc_object;
@@ -142,7 +141,7 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
     }
 
     res = ftruncate(h->ipc_descr.ipc_shm, size);
-    close(h->ipc_descr.ipc_shm);
+
     if(res < 0) {
         DEBUG_PRINT("%s(): 2 ftruncate(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
         goto do_free_ipc_object;
@@ -164,7 +163,6 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
 
 do_return_ipc_object:
     h->ipc_size = size;
-
     return h;
 
 do_free_ipc_object:
@@ -322,6 +320,9 @@ void* IPC_mapSharedMemory(const  IPC_handle handle)
     }
 
     void *mem = mmap(NULL, h->ipc_size, PROT_READ|PROT_WRITE, MAP_SHARED, h->ipc_descr.ipc_shm, 0);
+
+    close(h->ipc_descr.ipc_shm);
+
     if(mem == MAP_FAILED) {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
         return NULL;
