@@ -130,6 +130,7 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
         }
 
         res = ftruncate(h->ipc_descr.ipc_shm, size);
+        close(h->ipc_descr.ipc_shm);
         if(res < 0) {
             DEBUG_PRINT("%s(): 1 ftruncate(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
             goto do_free_ipc_object;
@@ -141,6 +142,7 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
     }
 
     res = ftruncate(h->ipc_descr.ipc_shm, size);
+    close(h->ipc_descr.ipc_shm);
     if(res < 0) {
         DEBUG_PRINT("%s(): 2 ftruncate(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
         goto do_free_ipc_object;
