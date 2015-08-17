@@ -12,12 +12,12 @@
 // Функции для работы с потоками
 //----------------------------------------------------------------------
 
-#define CREATE_THREAD_STARTED   0x0
-#define CREATE_THREAD_PAUSED    0x1
-#define THREAD_START            0x2
-#define THREAD_STOP             0x4
-#define THREAD_RESUME           0x8
-#define THREAD_EXIT             0x10
+#define IPC_CREATE_THREAD_STARTED   0x0
+#define IPC_CREATE_THREAD_PAUSED    0x1
+#define IPC_THREAD_START            0x2
+#define IPC_THREAD_STOP             0x4
+#define IPC_THREAD_RESUME           0x8
+#define IPC_THREAD_EXIT             0x10
 
 #if defined(__linux__) || defined(__QNX__)
 
