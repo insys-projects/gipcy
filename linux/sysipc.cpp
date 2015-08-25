@@ -538,7 +538,7 @@ int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKe
 
 //-----------------------------------------------------------------------------
 
-void* IPC_heapAlloc(int nSize)
+void* IPC_virtAlloc(int nSize)
 {
     void *ptr     = NULL;
     long pageSize = sysconf(_SC_PAGESIZE);
@@ -547,6 +547,23 @@ void* IPC_heapAlloc(int nSize)
     if((res != 0) || !ptr)
         return 0;
 
+    return ptr;
+}
+
+//-----------------------------------------------------------------------------
+
+int IPC_virtFree(void *ptr)
+{
+    free(ptr);
+
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void* IPC_heapAlloc(int nSize)
+{
+	void *ptr = calloc(1, nSize);
     return ptr;
 }
 

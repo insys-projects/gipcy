@@ -68,6 +68,8 @@ GIPCY_API    int IPC_writePrivateProfileString( const IPC_str *lpAppName, const 
 
 GIPCY_API    void* IPC_heapAlloc(int nSize);
 GIPCY_API    int IPC_heapFree(void *ptr);
+GIPCY_API    void* IPC_virtAlloc(int nSize);
+GIPCY_API    int IPC_virtFree(void *ptr);
 
 GIPCY_API    long IPC_interlockedDecrement(volatile long *val );
 GIPCY_API    long IPC_interlockedIncrement(volatile long *val );
