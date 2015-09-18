@@ -78,6 +78,9 @@ int IPC_init(void);
 */
 int IPC_cleanup(void);
 
+//! Функция возвращает дескриптор устройства IPC
+size_t IPC_getDescriptor(IPC_handle handle);
+
 //----------------------------------------------------------------------
 
 #ifdef GIPCY_EXPORTS

@@ -202,5 +202,51 @@ int IPC_cleanup(void)
 
 //-----------------------------------------------------------------------------
 
+size_t IPC_getDescriptor(IPC_handle handle)
+{
+    if(ipc_driver_fd > 0) {
+        return ipc_driver_fd;
+    }
+    return -1;
+
+//  ipc_handle_t h = (ipc_handle_t)handle;
+//	switch(h->ipc_type)
+//	{
+//	case IPC_typeSemaphore:
+//		return (size_t)h->ipc_descr.ipc_sem;
+//		break;
+//	case IPC_typeMutex:
+//		return (size_t)h->ipc_descr.ipc_sem;
+//		break;
+//	case IPC_typeEvent:
+//		return (size_t)h->ipc_descr.ipc_sem;
+//		break;
+//	case IPC_typeThread:
+//		return (size_t)h->ipc_descr.ipc_thread;
+//		break;
+//	case IPC_typeSharedMem:
+//		return (size_t)h->ipc_descr.ipc_shm;
+//		break;
+//	case IPC_typeLibrary:
+//		return (size_t)h->ipc_descr.ipc_lib;
+//		break;
+//	case IPC_typeFile:
+//		return (size_t)h->ipc_descr.ipc_file;
+//		break;
+//	case IPC_typeDevice:
+//		return (size_t)h->ipc_descr.ipc_dev;
+//		break;
+////	case IPC_typeDir:
+////		break;
+//	case IPC_typeSocket:
+//		return (size_t)h->ipc_descr.ipc_sock;
+//		break;
+//	}
+//	return -1;
+
+}
+
+//-----------------------------------------------------------------------------
+
 #endif //_INSYS_IPC_
 #endif //__IPC_LINUX__
