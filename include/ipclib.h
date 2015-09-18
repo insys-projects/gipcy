@@ -61,7 +61,18 @@
 //! IPC_handle - внешний тип данных используемый для работы с объектами IPC
 typedef void* IPC_handle;
 
+#ifdef GIPCY_EXPORTS
+ #define GIPCY_API __declspec(dllexport)
+#else
+ #define GIPCY_API
+// #define GIPCY_API __declspec(dllimport)
+#endif // GIPCY_EXPORTS
+
 //----------------------------------------------------------------------
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 //! Функция инициализации библиотеки IPC
 /*!
@@ -79,15 +90,12 @@ int IPC_init(void);
 int IPC_cleanup(void);
 
 //! Функция возвращает дескриптор устройства IPC
-size_t IPC_getDescriptor(IPC_handle handle);
+GIPCY_API	size_t	IPC_getDescriptor(IPC_handle handle);
+
+#ifdef __cplusplus
+};
+#endif
 
 //----------------------------------------------------------------------
-
-#ifdef GIPCY_EXPORTS
- #define GIPCY_API __declspec(dllexport)
-#else
- #define GIPCY_API
-// #define GIPCY_API __declspec(dllimport)
-#endif // GIPCY_EXPORTS
 
 #endif // __IPCLIB_H__
