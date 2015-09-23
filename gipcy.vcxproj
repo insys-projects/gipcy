@@ -158,6 +158,7 @@
     <ClCompile Include="windows\eventipc.cpp" />
     <ClCompile Include="windows\fileipc.cpp" />
     <ClCompile Include="windows\mutexipc.cpp" />
+    <ClCompile Include="windows\semipc.cpp" />
     <ClCompile Include="windows\shmipc.cpp" />
     <ClCompile Include="windows\sockipc.cpp" />
     <ClCompile Include="windows\sysipc.cpp" />
