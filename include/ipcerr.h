@@ -9,7 +9,7 @@
 //
 //  No Error
 //
-#define	IPC_OK						0x00000000L
+#define	IPC_OK						0x00000000
 
 
 //======================================================================
@@ -20,7 +20,7 @@
 //
 //  Wrong Handle
 //
-#define	IPC_GENERAL_ERROR			0xC0000100L
+#define	IPC_GENERAL_ERROR			0xC0000100
 
 //----------------------------------------------------------------------
 //
@@ -28,7 +28,7 @@
 //
 //  Wrong Handle
 //
-#define	IPC_INVALID_HANDLE			0xC0000101L
+#define	IPC_INVALID_HANDLE			0xC0000101
 
 //----------------------------------------------------------------------
 //
@@ -36,7 +36,7 @@
 //
 //  WaitForXXXObject returned WAIT_TIMEOUT
 //
-#define	IPC_WAIT_TIMEOUT			0xC0000102L
+#define	IPC_WAIT_TIMEOUT			0xC0000102
 
 //----------------------------------------------------------------------
 //
@@ -44,7 +44,7 @@
 //
 //  Not enough storage is available to process this command.
 //
-#define	IPC_NOT_ENOUGH_MEMORY		0xC0000103L
+#define	IPC_NOT_ENOUGH_MEMORY		0xC0000103
 
 //----------------------------------------------------------------------
 //
@@ -52,7 +52,7 @@
 //
 //  Error: Can't open INI file
 //
-#define	IPC_BAD_INI_FILE			0xC0000104L
+#define	IPC_BAD_INI_FILE			0xC0000104
 
 //======================================================================
 // Warnings !
@@ -62,7 +62,7 @@
 //
 //  WaitForXXXObject returned WAIT_ABANDONED
 //
-#define	IPC_WAIT_ABANDONED			0x40000400L
+#define	IPC_WAIT_ABANDONED			0x40000400
 
 //----------------------------------------------------------------------
 
