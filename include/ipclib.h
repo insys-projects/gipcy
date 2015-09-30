@@ -58,8 +58,20 @@
 
 //----------------------------------------------------------------------
 
-//! IPC_handle - внешний тип данных используемый для работы с объектами IPC
+//! IPC_handle - внешний тип данных, используемый для работы с объектами IPC
 typedef void* IPC_handle;
+
+//----------------------------------------------------------------------
+// IPC_TIMEVAL - внешний тип данных, используемый для работы с функциями измерения времени
+#ifdef __IPC_LINUX__
+typedef struct timeval IPC_TIMEVAL;
+#endif
+
+#ifdef __IPC_WIN__
+typedef LARGE_INTEGER IPC_TIMEVAL;
+#endif
+
+//----------------------------------------------------------------------
 
 #ifdef GIPCY_EXPORTS
  #define GIPCY_API __declspec(dllexport)
