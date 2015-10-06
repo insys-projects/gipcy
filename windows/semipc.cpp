@@ -51,15 +51,15 @@ IPC_handle IPC_createSemaphore(const char *name, int value)
 int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
 	int status = WaitForSingleObject(h->ipc_descr, timeout);
 	if(status == WAIT_TIMEOUT) 
-		return IPC_generalError;
+		return IPC_GENERAL_ERROR;
 
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -67,13 +67,13 @@ int IPC_lockSemaphore(const  IPC_handle handle, int timeout)
 int IPC_unlockSemaphore(const  IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
 	long prev_cnt;
 	ReleaseSemaphore(h->ipc_descr, 1, &prev_cnt);
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -81,17 +81,17 @@ int IPC_unlockSemaphore(const  IPC_handle handle)
 int IPC_deleteSemaphore(IPC_handle handle)
 {
     if(!handle)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
     if(h->ipc_type != IPC_typeSemaphore)
-        return IPC_invalidHandle;
+        return IPC_INVALID_HANDLE;
 
 	CloseHandle(h->ipc_descr);
 	
     delete_ipc_object(h);
-    return IPC_ok;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

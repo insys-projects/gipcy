@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <error.h>
-#include <time.h>
+#include <sys/time.h>
 #include <sys/ioctl.h>
 
 //-----------------------------------------------------------------------------
@@ -695,5 +695,28 @@ long IPC_getTickPerSec()
 {
     return CLOCKS_PER_SEC;
 }
+
+//-----------------------------------------------------------------------------
+
+GIPCY_API	int	IPC_getTime(IPC_TIMEVAL* time_val)
+{
+	gettimeofday(time_val, 0);
+	return 0;
+}
+
+GIPCY_API	double IPC_getDiffTime(IPC_TIMEVAL* start, IPC_TIMEVAL* stop)
+{
+	struct timeval dt;
+    dt.tv_sec = stop->tv_sec - start->tv_sec;
+    dt.tv_usec = stop->tv_usec - start->tv_usec;
+    if(dt.tv_usec<0) {
+        dt.tv_sec--;
+        dt.tv_usec += 1000000;
+    }
+    double msTime = dt.tv_sec*1000 + (double)dt.tv_usec/1000;
+	return msTime;
+}
+
+//-----------------------------------------------------------------------------
 
 #endif //__IPC_LINUX__

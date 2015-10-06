@@ -105,6 +105,14 @@ int IPC_cleanup(void)
 
 //-----------------------------------------------------------------------------
 
+size_t IPC_getDescriptor(IPC_handle handle)
+{
+    ipc_handle_t h = (ipc_handle_t)handle;
+	return (size_t)h->ipc_descr;
+}
+
+//-----------------------------------------------------------------------------
+
 int IPC_closeHandle(IPC_handle handle)
 {
     delete_ipc_object((ipc_handle_t)handle);

@@ -217,5 +217,25 @@ long IPC_getTickCount()
 
 //-----------------------------------------------------------------------------
 
+GIPCY_API	int	IPC_getTime(IPC_TIMEVAL* time_val)
+{
+	QueryPerformanceCounter(time_val);
+	//LARGE_INTEGER PerformCount = *time_val;
+	//QueryPerformanceCounter (&PerformCount);
+	return 0;
+}
+
+GIPCY_API	double IPC_getDiffTime(IPC_TIMEVAL* start, IPC_TIMEVAL* stop)
+{
+	LARGE_INTEGER Frequency;
+	int bHighRes = QueryPerformanceFrequency (&Frequency);
+	LARGE_INTEGER StartPerformCount = *start;
+	LARGE_INTEGER StopPerformCount = *stop;
+	double msTime = (double)(StopPerformCount.QuadPart - StartPerformCount.QuadPart) / (double)Frequency.QuadPart * 1.E3;
+	return msTime;
+}
+
+//-----------------------------------------------------------------------------
+
 #endif //__IPC_WIN__
 

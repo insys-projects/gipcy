@@ -8,6 +8,7 @@
 #include <linux/pagemap.h>
 #include <linux/interrupt.h>
 #include <linux/proc_fs.h>
+#include <linux/slab.h>
 #include <asm/io.h>
 
 #include "ipcmodule.h"

@@ -15,7 +15,7 @@
 #include <linux/types.h>
 #include <linux/ioport.h>
 #include <linux/poll.h>
-#include <linux/pci.h>
+#include <linux/slab.h>
 #include <linux/interrupt.h>
 
 #include "ipcmodule.h"
@@ -36,6 +36,11 @@ static LIST_HEAD(ipc_list);
 static struct mutex ipc_mutex;
 int dbg_trace = 0;
 int err_trace = 1;
+
+#ifndef DZYTOOLS_2_4_X
+module_param( dbg_trace, int, S_IRUGO );
+module_param( err_trace, int, S_IRUGO );
+#endif
 
 //-----------------------------------------------------------------------------
 

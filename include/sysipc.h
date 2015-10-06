@@ -88,6 +88,12 @@ GIPCY_API   int IPC_strlwr(IPC_str *str);
 GIPCY_API   unsigned int IPC_flushall();
 GIPCY_API   long IPC_getTickCount();
 GIPCY_API   long IPC_getTickPerSec();
+
+	//! Возвращает в переданном аргументе текущее время в величинах, зависимых от ОС
+GIPCY_API	int	IPC_getTime(IPC_TIMEVAL* time_val);
+	//! Возвращает разницу между двумя переданными временными метками в миллисекундах
+GIPCY_API	double IPC_getDiffTime(IPC_TIMEVAL* start, IPC_TIMEVAL* stop);
+
 }
 
 #endif //__SYSIPC_H__

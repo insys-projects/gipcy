@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\semipc.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\windows\shmipc.cpp"
 				>
 			</File>

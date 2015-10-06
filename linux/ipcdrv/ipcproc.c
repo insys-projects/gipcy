@@ -17,6 +17,24 @@
 
 //--------------------------------------------------------------------
 
+struct log_buf_t {
+#ifdef DZYTOOLS_2_4_X
+    char *param;
+#else
+    struct seq_file *param;
+#endif
+};
+
+//--------------------------------------------------------------------
+
+#ifdef DZYTOOLS_2_4_X
+#define print_info(p, S...) do { p+=sprintf(p,S); } while(0)
+#else
+#define print_info(S...) seq_printf(S)
+#endif
+
+//--------------------------------------------------------------------
+
 #ifndef DZYTOOLS_2_4_X
 
 //--------------------------------------------------------------------
