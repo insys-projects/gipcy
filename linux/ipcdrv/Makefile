@@ -29,6 +29,7 @@ PWD := $(shell pwd)
 
 all:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) EXTRA_CFLAGS="$(EXTRA_CFLAGS)" modules
+	cp *.ko ../../lib
 
 endif
 
