@@ -10,7 +10,9 @@
 // Функции для работы с событиями
 //----------------------------------------------------------------------
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     //! Функция создает событие
     /*!
@@ -49,6 +51,8 @@ GIPCY_API    int IPC_resetEvent(const  IPC_handle handle);
 	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
     */
 GIPCY_API    int IPC_deleteEvent(IPC_handle handle);
+#ifdef __cplusplus
 }
+#endif
 
 #endif //__MUTEXIPC_H__

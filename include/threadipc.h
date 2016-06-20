@@ -43,7 +43,9 @@ struct thread_param {
     thread_value    threadExitValue;     //!< Значение возвращенное функцией потока (output)
 };
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     //! Функция создает поток
     /*!
@@ -106,6 +108,8 @@ GIPCY_API    void* IPC_tlsGetValue(IPC_tls_key key);
 GIPCY_API    int IPC_tlsSetValue(IPC_tls_key key, void *ptr);
 GIPCY_API    int IPC_deleteTlsKey(IPC_tls_key key);
 
-};
+#ifdef __cplusplus
+}
+#endif
 
 #endif //__THREADIPC_H__

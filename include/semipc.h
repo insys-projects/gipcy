@@ -10,7 +10,9 @@
 // Функции для работы с семаформаи
 //----------------------------------------------------------------------
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     //! Функция создает именованный семафор
     /*!
@@ -44,6 +46,9 @@ GIPCY_API    int IPC_unlockSemaphore(const IPC_handle handle);
     \param handle - дескриптор семафора
     */
 GIPCY_API    int IPC_deleteSemaphore(IPC_handle handle);
+
+#ifdef __cplusplus
 }
+#endif
 
 #endif //__SEMIPC_H__

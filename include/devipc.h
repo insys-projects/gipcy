@@ -10,7 +10,9 @@
 // Функции для работы с устройствами
 //----------------------------------------------------------------------
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     //! Функция открывает устройство
     /*!
@@ -86,8 +88,9 @@ GIPCY_API   int IPC_unmapPhysAddr(IPC_handle handle, void* virtAddr, unsigned lo
     } __attribute__((packed));
 #endif
 
+#ifdef __cplusplus
 }
-
+#endif
 
 
 #endif //__DEVIPC_H__
