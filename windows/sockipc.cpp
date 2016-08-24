@@ -30,31 +30,65 @@ int IPC_cleanupSocket()
 	return 0;
 }
 
-IPC_sockaddr IPC_resolve( IPC_str* addr )
+IPC_sockaddr _IPC_resolve(IPC_str* addr)
 {
 	IPC_sockaddr a;
-	
+
 	int port = INADDR_ANY;
-	
+
 	//FIXME: small?
 	char buffer[256];
-	strcpy( buffer, (const char*)addr );
 
-	char *pp = strstr( buffer, ":" );
+#ifdef _WIN64
+	wcstombs(buffer, addr, sizeof(buffer));
+#else
+	strcpy(buffer, (const char*)addr);
+#endif
 
-	if( pp )
+	char *pp = strstr(buffer, ":");
+
+	if (pp)
 	{
-		port = atoi( pp+1 );
-		*pp=0;
+		port = atoi(pp + 1);
+		*pp = 0;
 	}
 
-	unsigned long ip = inet_addr( buffer );
+	unsigned long ip = inet_addr(buffer);
 
-	if( ip == INADDR_NONE )
+	if (ip == INADDR_NONE)
 		ip = INADDR_ANY;
 
 	a.port = port;
 	a.addr.ip = ip;
+
+	return a;
+}
+
+IPC_sockaddr IPC_gethostbyname(IPC_str* addr)
+{
+	IPC_sockaddr a;
+
+	int port = INADDR_ANY;
+	a.addr.ip = INADDR_NONE;
+
+	//FIXME: small?
+	char buffer[256];
+
+#ifdef _WIN64
+	wcstombs(buffer, addr, sizeof(buffer));
+#else
+	strcpy(buffer, (const char*)addr);
+#endif
+
+	struct hostent *remoteHost;
+
+	remoteHost = gethostbyname(buffer);
+
+	if (remoteHost)
+	{
+		if (remoteHost->h_addrtype == AF_INET)
+			a.addr.ip = *(u_long *)(remoteHost->h_addr_list[0]);
+	}
 
 	return a;
 }
