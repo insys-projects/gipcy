@@ -61,6 +61,8 @@ GIPCY_API int	IPC_initSocket( );
 GIPCY_API int   IPC_cleanupSocket();
 
 GIPCY_API IPC_sockaddr IPC_resolve( IPC_str* addr );
+GIPCY_API IPC_sockaddr IPC_gethostbyname(IPC_str* addr);
+
 
 GIPCY_API IPC_handle	IPC_openSocket( IPC_proto proto );
 
@@ -93,6 +95,8 @@ GIPCY_API unsigned int IPC_ntohl(unsigned int netlong);
 GIPCY_API unsigned int IPC_htonl(unsigned int hostlong);
 
 GIPCY_API char *IPC_inet_ntoa(unsigned long addr);
+
+
 
 #ifdef __cplusplus
 };
