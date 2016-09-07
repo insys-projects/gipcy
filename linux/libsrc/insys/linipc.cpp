@@ -152,15 +152,16 @@ int open_ipc_driver(const char *name)
 {
     if(ipc_driver_fd > 0) {
         DEBUG_PRINT("%s(): IPC device driver already was opened\n", __FUNCTION__);
-        return ipc_driver_fd;
+        return IPC_OK;
     }
 
     ipc_driver_fd = open(name, O_RDWR);
     if(ipc_driver_fd < 0) {
         DEBUG_PRINT("%s(): error open IPC device driver - %s\n", __FUNCTION__, name);
+        return IPC_DRIVER_NOT_LOADED;
     }
 
-    return ipc_driver_fd;
+    return IPC_OK;
 }
 
 //-----------------------------------------------------------------------------

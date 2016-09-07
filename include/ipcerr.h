@@ -44,7 +44,7 @@
 //
 //  Not enough storage is available to process this command.
 //
-#define	IPC_NOT_ENOUGH_MEMORY		0xC0000103
+#define	IPC_NOT_ENOUGH_MEMORY			0xC0000103
 
 //----------------------------------------------------------------------
 //
@@ -53,6 +53,14 @@
 //  Error: Can't open INI file
 //
 #define	IPC_BAD_INI_FILE			0xC0000104
+
+//----------------------------------------------------------------------
+//
+//	IPC_DRIVER_NOT_LOADED	
+//
+//  Error: Can't open /dev/ipc_driver file
+//
+#define	IPC_DRIVER_NOT_LOADED			0xC0000105
 
 //======================================================================
 // Warnings !
