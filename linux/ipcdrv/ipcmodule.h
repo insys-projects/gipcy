@@ -2,7 +2,7 @@
 #ifndef __IPCMODULE_H__
 #define __IPCMODULE_H__
 
-#ifndef DZYTOOLS_2_4_X
+#ifndef GIPCY_2_4_X
 #include <linux/cdev.h>
 #include <linux/sched.h>
 #include <linux/version.h>

@@ -2,7 +2,7 @@
 #ifndef __IPCPROC_H__
 #define __IPCPROC_H__
 
-#ifdef DZYTOOLS_2_4_X
+#ifdef GIPCY_2_4_X
 int ipc_proc_info(char *buf,
                   char **start,
                   off_t off,

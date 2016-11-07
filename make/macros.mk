@@ -12,15 +12,12 @@ else
 endif
 
 ifeq "$(findstring c6x-uclinux-gcc, $(CC))" "c6x-uclinux-gcc"
-    OS := DZYTOOLS_C_6_X
-    DZY_VER := -DDZYTOOLS_C_6_X
     TARGET := -march=c674x -D_c6x_
     DEF_TYPES := __LINUX__
 endif
 
 ifneq   "$(findstring 2.4.,$(shell uname -a))" ""
-    OS := GIPCY_LINUX
-    DZY_VER := -DGIPCY_2_4_X
+    KERNEL_VER := -DGIPCY_2_4_X
 endif
 
 #

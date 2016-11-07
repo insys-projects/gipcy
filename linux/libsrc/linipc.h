@@ -6,6 +6,7 @@
     #include "gipcy.h"
 #endif
 
+#include <stdio.h>
 #include <stdint.h>
 #include <dlfcn.h>
 #include <unistd.h>

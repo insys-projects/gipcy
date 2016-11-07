@@ -155,7 +155,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 
     } else {
 
-#if !defined(GIPCY_2_4_X)
+#if !defined(GIPCY_2_4_X) && !defined(_c6x_)
         struct timespec ts;
 
         if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
