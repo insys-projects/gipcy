@@ -66,6 +66,7 @@ struct ipcmutex_t {
     atomic_t                mutex_owner_count;           //!< Счетчик пользователей мьютекса
     atomic_t                mutex_lock_count;            //!< Счетчик блокировок мьютекса
     atomic_t                mutex_unlock_count;          //!< Счетчик разблокировок мьютекса
+    int                     m_lockerid;                  //!< Идентификатор первого потока, захватившего мьютекс
     struct semaphore        mutex;                       //!< Семафор
     u32                     mutex_id;                    //!< Идентификатор мьютекса
 };

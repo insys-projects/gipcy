@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <error.h>
 #include <time.h>
+#include <sys/syscall.h>
 
 //-----------------------------------------------------------------------------
 
@@ -35,7 +36,8 @@ IPC_handle IPC_createMutex(const IPC_str *name, bool value)
     memset(&ipc_param,0,sizeof(ipc_param));
 
     ipc_param.handle = NULL;
-    ipc_param.value = value ? 0 : 1;
+    ipc_param.value = value ? 1 : 0;
+    ipc_param.lockerid = syscall(__NR_gettid);
     snprintf(ipc_param.name, sizeof(ipc_param.name), "%s", name);
 
     int res = ioctl(fd,IOCTL_IPC_MUTEX_OPEN,&ipc_param);
@@ -66,6 +68,7 @@ int IPC_captureMutex(const IPC_handle handle, int timeout)
 
     ipc_param.handle = handle;
     ipc_param.timeout = timeout;
+    ipc_param.lockerid = syscall(__NR_gettid);
 
     int res = ioctl(fd, IOCTL_IPC_MUTEX_LOCK, &ipc_param);
     if(res < 0) {
@@ -91,6 +94,7 @@ int IPC_releaseMutex(const IPC_handle handle)
     memset(&ipc_param,0,sizeof(ipc_param));
 
     ipc_param.handle = handle;
+    ipc_param.lockerid = syscall(__NR_gettid);
 
     int res = ioctl(fd, IOCTL_IPC_MUTEX_UNLOCK, &ipc_param);
     if(res < 0) {

@@ -148,7 +148,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
     void *retval = NULL;
     int res = 0;
 
-    if(timeout <= 0) {
+    if(timeout < 0) {
 
         DEBUG_PRINT("%s(): Start waiting...\n", __FUNCTION__);
         res = pthread_join(h->ipc_descr.ipc_thread, &retval);
