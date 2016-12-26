@@ -242,7 +242,7 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
         strcpy(name, &psubstr[i] );
         IPC_strlwr(name);
 
-        if(strstr(name, option_tmp)/* && ((name[option_len] == ' ') || (name[option_len] == '='))*/)
+        if(strstr(name, option_tmp) && ((name[option_len] == ' ') || (name[option_len] == '=') || (name[option_len] == '\t')))
         {
             //DEBUG_PRINT("Option: < %s > was found in the string < %s >\n", option, src);
 
