@@ -36,8 +36,9 @@ IPC_handle IPC_openLibrary(const IPC_str *name, unsigned param)
 
     h->ipc_descr.ipc_lib = dlopen(name, RTLD_LAZY);
     if(!h->ipc_descr.ipc_lib) {
-        fprintf( stderr, "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());
-        //DEBUG_PRINT( "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());
+        //fprintf( stderr, "%s(): Error - %s\n", __FUNCTION__, dlerror());
+        DEBUG_PRINT( "%s(): Error load library %s. %s\n", __FUNCTION__, name, dlerror());
+        delete_ipc_object(h);
         return NULL;
     }
 

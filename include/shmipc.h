@@ -10,7 +10,9 @@
 // Функции для работы с разделяемой памятью
 //----------------------------------------------------------------------
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     //! Функция создает именованный объект разделяемой памяти
     /*!
@@ -57,6 +59,9 @@ GIPCY_API    int IPC_unmapSharedMemory(const IPC_handle handle);
 	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
     */
 GIPCY_API    int IPC_deleteSharedMemory(IPC_handle handle);
+
+#ifdef __cplusplus
 }
+#endif
 
 #endif //__SHMIPC_H__

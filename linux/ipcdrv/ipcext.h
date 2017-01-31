@@ -7,7 +7,7 @@
 #include <linux/string.h>
 #include <asm/semaphore.h>
 
-#ifdef DZYTOOLS_2_4_X
+#ifdef GIPCY_2_4_X
 struct device;
 #endif
 

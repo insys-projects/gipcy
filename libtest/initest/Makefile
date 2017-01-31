@@ -1,6 +1,6 @@
 
 .PHONY = clean
-TARGET_NAME := shm_test
+TARGET_NAME := ini_test
 
 all: $(TARGET_NAME)
 

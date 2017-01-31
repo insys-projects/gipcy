@@ -59,6 +59,7 @@ struct ipc_create_t {
     char    name[128];
     int     value;
     int     flag;
+    int     lockerid;
     void    *handle;
 };
 
@@ -68,6 +69,7 @@ struct ipc_lock_t {
 
     void    *handle;
     int     timeout;
+    int     lockerid;
 };
 
 //-----------------------------------------------------------------------------
@@ -75,6 +77,7 @@ struct ipc_lock_t {
 struct ipc_unlock_t {
 
     void    *handle;
+    int     lockerid;
 };
 
 //-----------------------------------------------------------------------------

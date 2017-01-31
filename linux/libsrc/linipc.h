@@ -6,12 +6,15 @@
     #include "gipcy.h"
 #endif
 
+#include <stdio.h>
 #include <stdint.h>
 #include <dlfcn.h>
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <stdlib.h>
 #include <sys/times.h>
 #include <sys/types.h>
 #include <sys/ipc.h>

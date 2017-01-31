@@ -23,7 +23,7 @@ static struct termios newt;
 
 //-----------------------------------------------------------------------------
 
-void IPC_initKeyboard(void)
+GIPCY_API void IPC_initKeyboard(void)
 {
     tcgetattr( STDIN_FILENO, &oldt );
     newt = oldt;
@@ -34,7 +34,7 @@ void IPC_initKeyboard(void)
 
 //-----------------------------------------------------------------------------
 
-void IPC_cleanupKeyboard(void)
+GIPCY_API void IPC_cleanupKeyboard(void)
 {
     oldt.c_lflag |= ( ICANON | ECHO | ISIG );
     oldt.c_cc[VMIN]=0;
@@ -43,7 +43,7 @@ void IPC_cleanupKeyboard(void)
 
 //-----------------------------------------------------------------------------
 
-int IPC_getch(void)
+GIPCY_API int IPC_getch(void)
 {
     int ch;
 
@@ -65,14 +65,14 @@ int IPC_getch(void)
 
 //-----------------------------------------------------------------------------
 
-int IPC_getche(void)
+GIPCY_API int IPC_getche(void)
 {
     return IPC_getch();
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_kbhit(void)
+GIPCY_API int IPC_kbhit(void)
 {
     size_t size = 0;
     if (ioctl(STDIN_FILENO, FIONREAD, &size) == -1)
@@ -85,7 +85,7 @@ int IPC_kbhit(void)
 
 //-----------------------------------------------------------------------------
 
-void IPC_delay(int ms)
+GIPCY_API void IPC_delay(int ms)
 {
     struct timeval tv = {0, 0};
     tv.tv_usec = 1000*ms;
@@ -95,13 +95,14 @@ void IPC_delay(int ms)
 
 //-----------------------------------------------------------------------------
 
-int IPC_sysError()
+GIPCY_API int IPC_sysError()
 {
     return errno;
 }
 
 //-----------------------------------------------------------------------------
-int IPC_getFullPath(const IPC_str *name, IPC_str *path)
+
+GIPCY_API int IPC_getFullPath(const IPC_str *name, IPC_str *path)
 {
     char* retpath = realpath(name, path);
     if(!retpath)
@@ -111,7 +112,7 @@ int IPC_getFullPath(const IPC_str *name, IPC_str *path)
 
 //-----------------------------------------------------------------------------
 
-const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size)
+GIPCY_API const IPC_str* IPC_getCurrentDir(IPC_str *buf, int size)
 {
     return getcwd(buf, size);
 }
@@ -241,13 +242,16 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
         strcpy(name, &psubstr[i] );
         IPC_strlwr(name);
 
-        if(strstr(name, option_tmp) && ((name[option_len] == ' ') || (name[option_len] == '=')))
+        if(strstr(name, option_tmp) && ((name[option_len] == ' ') || (name[option_len] == '=') || (name[option_len] == '\t')))
         {
             //DEBUG_PRINT("Option: < %s > was found in the string < %s >\n", option, src);
 
             char *val = (char*)strstr(src, "=");
 
             val++;
+
+            while((val[0] == ' ') || (val[0] == '\t'))
+                val++;
 /*
             if( strstr(val, ".") ) {
                 DEBUG_PRINT(stderr, "Val = %f\n", atof(val));
@@ -297,8 +301,8 @@ static int FindOption(const char* src, const char* option, char *Buffer, int Buf
 using namespace std;
 //-----------------------------------------------------------------------------
 
-int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
-                             IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName )
+GIPCY_API int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpDefault,
+                                           IPC_str *lpReturnedString, int nSize, const IPC_str *lpFileName )
 {
     char str[PATH_MAX];
     ifstream ifs;
@@ -384,7 +388,7 @@ int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyN
 
 //-----------------------------------------------------------------------------
 
-int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName )
+GIPCY_API int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKeyName, const IPC_str *lpString, const IPC_str *lpFileName )
 {
     int nStart, nEnd, nSize;
     int isFindSection = 0;
@@ -538,7 +542,7 @@ int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC_str *lpKe
 
 //-----------------------------------------------------------------------------
 
-void* IPC_virtAlloc(int nSize)
+GIPCY_API void* IPC_virtAlloc(int nSize)
 {
     void *ptr     = NULL;
     long pageSize = sysconf(_SC_PAGESIZE);
@@ -552,7 +556,7 @@ void* IPC_virtAlloc(int nSize)
 
 //-----------------------------------------------------------------------------
 
-int IPC_virtFree(void *ptr)
+GIPCY_API int IPC_virtFree(void *ptr)
 {
     free(ptr);
 
@@ -561,15 +565,15 @@ int IPC_virtFree(void *ptr)
 
 //-----------------------------------------------------------------------------
 
-void* IPC_heapAlloc(int nSize)
+GIPCY_API void* IPC_heapAlloc(int nSize)
 {
-	void *ptr = calloc(1, nSize);
+    void *ptr = calloc(1, nSize);
     return ptr;
 }
 
 //-----------------------------------------------------------------------------
 
-int IPC_heapFree(void *ptr)
+GIPCY_API int IPC_heapFree(void *ptr)
 {
     free(ptr);
 
@@ -578,7 +582,7 @@ int IPC_heapFree(void *ptr)
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedDecrement( volatile long *val )
+GIPCY_API long IPC_interlockedDecrement( volatile long *val )
 {
     long tmp = *val;
     *val = --tmp;
@@ -587,7 +591,7 @@ long IPC_interlockedDecrement( volatile long *val )
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedIncrement( volatile long *val )
+GIPCY_API long IPC_interlockedIncrement( volatile long *val )
 {
     long tmp = *val;
     *val = ++tmp;
@@ -596,7 +600,7 @@ long IPC_interlockedIncrement( volatile long *val )
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedCompareExchange( volatile long *dst, long val, long param )
+GIPCY_API long IPC_interlockedCompareExchange( volatile long *dst, long val, long param )
 {
     long tmp = *dst;
 
@@ -609,7 +613,7 @@ long IPC_interlockedCompareExchange( volatile long *dst, long val, long param )
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedExchange( volatile long *dst, long val )
+GIPCY_API long IPC_interlockedExchange( volatile long *dst, long val )
 {
     long tmp = *dst;
     *dst = val;
@@ -618,7 +622,7 @@ long IPC_interlockedExchange( volatile long *dst, long val )
 
 //-----------------------------------------------------------------------------
 
-long IPC_interlockedExchangeAdd( volatile long *dst, long val )
+GIPCY_API long IPC_interlockedExchangeAdd( volatile long *dst, long val )
 {
     long tmp = *dst;
     *dst += val;
@@ -627,7 +631,7 @@ long IPC_interlockedExchangeAdd( volatile long *dst, long val )
 
 //-----------------------------------------------------------------------------
 
-IPC_str* IPC_itoa(int value, IPC_str* result, int base)
+GIPCY_API IPC_str* IPC_itoa(int value, IPC_str* result, int base)
 {
     if (base < 2 || base > 36) {
         *result = '\0'; return result;
@@ -659,7 +663,7 @@ IPC_str* IPC_itoa(int value, IPC_str* result, int base)
 
 //-----------------------------------------------------------------------------
 
-GIPCY_API   int IPC_strlwr(char *str)
+GIPCY_API int IPC_strlwr(char *str)
 {
     int i;
     int nSize;
@@ -677,36 +681,38 @@ GIPCY_API   int IPC_strlwr(char *str)
 
 //-----------------------------------------------------------------------------
 
-unsigned int IPC_flushall()
+GIPCY_API unsigned int IPC_flushall()
 {
     return  fflush(NULL);
 }
 
 //-----------------------------------------------------------------------------
 
-long IPC_getTickCount()
+GIPCY_API long IPC_getTickCount()
 {
     return time(NULL) * 1000;
 }
 
 //-----------------------------------------------------------------------------
 
-long IPC_getTickPerSec()
+GIPCY_API long IPC_getTickPerSec()
 {
     return CLOCKS_PER_SEC;
 }
 
 //-----------------------------------------------------------------------------
 
-GIPCY_API	int	IPC_getTime(IPC_TIMEVAL* time_val)
+GIPCY_API int IPC_getTime(IPC_TIMEVAL* time_val)
 {
-	gettimeofday(time_val, 0);
-	return 0;
+    gettimeofday(time_val, 0);
+    return 0;
 }
 
-GIPCY_API	double IPC_getDiffTime(IPC_TIMEVAL* start, IPC_TIMEVAL* stop)
+//-----------------------------------------------------------------------------
+
+GIPCY_API double IPC_getDiffTime(IPC_TIMEVAL* start, IPC_TIMEVAL* stop)
 {
-	struct timeval dt;
+    struct timeval dt;
     dt.tv_sec = stop->tv_sec - start->tv_sec;
     dt.tv_usec = stop->tv_usec - start->tv_usec;
     if(dt.tv_usec<0) {
@@ -714,7 +720,7 @@ GIPCY_API	double IPC_getDiffTime(IPC_TIMEVAL* start, IPC_TIMEVAL* stop)
         dt.tv_usec += 1000000;
     }
     double msTime = dt.tv_sec*1000 + (double)dt.tv_usec/1000;
-	return msTime;
+    return msTime;
 }
 
 //-----------------------------------------------------------------------------
