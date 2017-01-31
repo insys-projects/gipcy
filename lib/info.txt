@@ -1,0 +1,2 @@
+libgipcy.so and ipcdrv.ko will be placed here after build.
+Test programs from libtest directory link library from here.
