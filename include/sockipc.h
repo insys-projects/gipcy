@@ -51,16 +51,18 @@ typedef struct
 #pragma pack(pop)
 #endif
 
-enum IPC_proto {
+typedef enum  {
 
     IPC_udp,
     IPC_tcp
-};
+} IPC_proto;
 
 GIPCY_API int	IPC_initSocket( );
 GIPCY_API int   IPC_cleanupSocket();
 
 GIPCY_API IPC_sockaddr IPC_resolve( IPC_str* addr );
+GIPCY_API IPC_sockaddr IPC_gethostbyname(IPC_str* addr);
+
 
 GIPCY_API IPC_handle	IPC_openSocket( IPC_proto proto );
 

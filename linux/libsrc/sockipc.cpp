@@ -7,6 +7,8 @@
     #include "gipcy.h"
 #endif
 
+#include <cstring>
+
 int	IPC_initSocket( )
 {
     return 0;
@@ -15,6 +17,37 @@ int	IPC_initSocket( )
 int IPC_cleanupSocket()
 {
     return 0;
+}
+
+IPC_sockaddr IPC_resolve(IPC_str* addr)
+{
+    IPC_sockaddr a;
+
+    int port = INADDR_ANY;
+
+    //FIXME: small?
+    char buffer[256];
+
+#ifdef _WIN64
+    wcstombs(buffer, addr, sizeof(buffer));
+#else
+    strcpy(buffer, (const char*)addr);
+#endif
+
+    char *pp = strstr(buffer, ":");
+
+    if (pp)
+    {
+        port = atoi(pp + 1);
+        *pp = 0;
+    }
+
+    unsigned long ip = inet_addr(buffer);
+
+    a.port = port;
+    a.addr.ip = ip;
+
+    return a;
 }
 
 int _IPC_udp()

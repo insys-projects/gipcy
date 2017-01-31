@@ -107,7 +107,8 @@ int ipc_event_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
 
     if(exist) {
 
-        dbg_msg( dbg_trace, "%s(): %s - event_owner_count: %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_owner_count) );
+        dbg_msg( dbg_trace, "%s(): %s - owner_count: %d, lock_counter: %d\n", __FUNCTION__, entry->event_name,
+                 atomic_read(&entry->event_owner_count), atomic_read(&entry->event_lock_count) );
 
         if(param->timeout < 0) {
             down(&entry->event);
@@ -157,10 +158,13 @@ int ipc_event_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
 
     if(exist) {
 
-        dbg_msg( dbg_trace, "%s(): %s - event_owner_count: %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_owner_count) );
+        dbg_msg( dbg_trace, "%s(): %s - owner_count: %d, lock_counter: %d\n", __FUNCTION__, entry->event_name,
+                 atomic_read(&entry->event_owner_count), atomic_read(&entry->event_lock_count) );
 
-        up(&entry->event);
-        atomic_dec(&entry->event_lock_count);
+        if(atomic_read(&entry->event_lock_count)) {
+            up(&entry->event);
+            atomic_dec(&entry->event_lock_count);
+        }
         error = 0;
         dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
 
@@ -252,10 +256,13 @@ int ipc_event_reset( struct ipc_driver *drv, struct ipc_reset_t *param )
 
     if(exist) {
 
-        dbg_msg( dbg_trace, "%s(): %s - event_owner_count: %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_owner_count) );
+        dbg_msg( dbg_trace, "%s(): %s - owner_count: %d, lock_counter: %d\n", __FUNCTION__, entry->event_name,
+                 atomic_read(&entry->event_owner_count), atomic_read(&entry->event_lock_count) );
 
-        up(&entry->event);
-        atomic_dec(&entry->event_lock_count);
+        if(atomic_read(&entry->event_lock_count)) {
+            up(&entry->event);
+            atomic_dec(&entry->event_lock_count);
+        }
         error = 0;
         dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->event_name, atomic_read(&entry->event_lock_count) );
 

@@ -38,7 +38,9 @@ enum IPC_Attribute {
 // Функции для работы с системными вызовами
 //----------------------------------------------------------------------
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     //! Функция открывает файл
     /*!
@@ -98,6 +100,8 @@ GIPCY_API	int IPC_setPosFile(IPC_handle handle, int pos, int method);
     */
 GIPCY_API int IPC_getFileSize(IPC_handle handle, long long* size);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif //__SYSIPC_H__

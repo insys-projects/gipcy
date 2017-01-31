@@ -148,14 +148,14 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
     void *retval = NULL;
     int res = 0;
 
-    if(timeout <= 0) {
+    if(timeout < 0) {
 
         DEBUG_PRINT("%s(): Start waiting...\n", __FUNCTION__);
         res = pthread_join(h->ipc_descr.ipc_thread, &retval);
 
     } else {
 
-#if !defined(DZYTOOLS_2_4_X) && !defined(DZYTOOLS_C_6_X)
+#if !defined(GIPCY_2_4_X) && !defined(_c6x_)
         struct timespec ts;
 
         if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {

@@ -18,7 +18,7 @@
 //--------------------------------------------------------------------
 
 struct log_buf_t {
-#ifdef DZYTOOLS_2_4_X
+#ifdef GIPCY_2_4_X
     char *param;
 #else
     struct seq_file *param;
@@ -27,7 +27,7 @@ struct log_buf_t {
 
 //--------------------------------------------------------------------
 
-#ifdef DZYTOOLS_2_4_X
+#ifdef GIPCY_2_4_X
 #define print_info(p, S...) do { p+=sprintf(p,S); } while(0)
 #else
 #define print_info(S...) seq_printf(S)
@@ -35,7 +35,7 @@ struct log_buf_t {
 
 //--------------------------------------------------------------------
 
-#ifndef DZYTOOLS_2_4_X
+#ifndef GIPCY_2_4_X
 
 //--------------------------------------------------------------------
 
@@ -461,4 +461,4 @@ void ipc_remove_proc( char *name )
 
 //--------------------------------------------------------------------
 
-#endif //
+#endif //GIPCY_2_4_X

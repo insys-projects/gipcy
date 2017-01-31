@@ -10,7 +10,9 @@
 // Функции для работы с системными вызовами
 //----------------------------------------------------------------------
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     //! Инициализирует буфер клавиатуры в неканоническое состояние
 GIPCY_API    void IPC_initKeyboard(void);
@@ -94,6 +96,8 @@ GIPCY_API	int	IPC_getTime(IPC_TIMEVAL* time_val);
 	//! Возвращает разницу между двумя переданными временными метками в миллисекундах
 GIPCY_API	double IPC_getDiffTime(IPC_TIMEVAL* start, IPC_TIMEVAL* stop);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif //__SYSIPC_H__

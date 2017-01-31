@@ -57,19 +57,22 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
         }
 
         INIT_LIST_HEAD(&mutex->mutex_list);
-        if(param->value) {
-            sema_init(&mutex->mutex, param->value);
-            dbg_msg( dbg_trace, "%s(): param->value = %d !!!!!!!!!!!!\n", __FUNCTION__, param->value );
-        } else {
-            sema_init(&mutex->mutex, 1);
-            down(&mutex->mutex);
-            dbg_msg( dbg_trace, "%s(): param->value = %d !!!!!!!!!!!!\n", __FUNCTION__, param->value );
-        }
-        snprintf(mutex->mutex_name, sizeof(mutex->mutex_name), "%s", param->name);
         mutex->mutex_handle = mutex;
         mutex->mutex_id = MUTEX_ID;
+        mutex->m_lockerid = 0;
         atomic_set(&mutex->mutex_owner_count, 0);
+        sema_init(&mutex->mutex, 1);
 
+        snprintf(mutex->mutex_name, sizeof(mutex->mutex_name), "%s", param->name);
+
+        if(param->value) {
+            dbg_msg( dbg_trace, "%s(): Create locked mutex %s\n", __FUNCTION__, mutex->mutex_name );
+            down(&mutex->mutex);
+            mutex->m_lockerid = param->lockerid;
+            atomic_inc(&mutex->mutex_lock_count);
+        } else {
+            dbg_msg( dbg_trace, "%s(): Create unlocked mutex %s\n", __FUNCTION__, mutex->mutex_name );
+        }
         list_add_tail(&mutex->mutex_list, &drv->m_mutex_list);
 
     } else {
@@ -84,6 +87,7 @@ void* ipc_mutex_create( struct ipc_driver *drv, struct ipc_create_t *param )
     dbg_msg( dbg_trace, "%s(): %s - mutex_handle = %p\n", __FUNCTION__, param->name, mutex->mutex_handle );
     dbg_msg( dbg_trace, "%s(): %s - user_handle = %p\n", __FUNCTION__, param->name, &mutex->mutex_handle );
     dbg_msg( dbg_trace, "%s(): %s - mutex = %p\n", __FUNCTION__, param->name, &mutex->mutex );
+    dbg_msg( dbg_trace, "%s(): %s - m_lockerid = 0x%x\n", __FUNCTION__, param->name, mutex->m_lockerid );
 
 do_out:
     mutex_unlock(&drv->m_mutex_lock);
@@ -122,6 +126,15 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
         dbg_msg( dbg_trace, "%s(): %s - mutex_handle = %p\n", __FUNCTION__, entry->mutex_name, &entry->mutex_handle );
         dbg_msg( dbg_trace, "%s(): entry = %p\n", __FUNCTION__, entry );
         dbg_msg( dbg_trace, "%s(): entry->mutex_id = 0x%x\n", __FUNCTION__, entry->mutex_id );
+        dbg_msg( dbg_trace, "%s(): entry->m_lockerid = 0x%x\n", __FUNCTION__, entry->m_lockerid );
+        dbg_msg( dbg_trace, "%s(): param->lockerid = 0x%x\n", __FUNCTION__, param->lockerid );
+
+        if(entry->m_lockerid == param->lockerid)
+        {
+            atomic_inc(&entry->mutex_lock_count);
+            error = 0;
+            goto do_out;
+        }
 
         if(param->timeout < 0) {
             down(&entry->mutex);
@@ -133,6 +146,8 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
                 atomic_inc(&entry->mutex_lock_count);
             }
         }
+
+        entry->m_lockerid = param->lockerid;
 
         dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_lock_count) );
 
@@ -170,12 +185,27 @@ int ipc_mutex_unlock( struct ipc_driver *drv, struct ipc_unlock_t *param )
     mutex_unlock(&drv->m_mutex_lock);
 
     if(exist) {
+        if(entry->m_lockerid != param->lockerid)
+        {
+            error = 0;
+            goto do_out;
+        }
+
+        if(atomic_read(&entry->mutex_lock_count) > 1)
+        {
+            atomic_dec(&entry->mutex_lock_count);
+            error = 0;
+            goto do_out;
+        }
 
         dbg_msg( dbg_trace, "%s(): %s - mutex_owner_count: %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_owner_count) );
 
         up(&entry->mutex);
         atomic_dec(&entry->mutex_lock_count);
         error = 0;
+
+        entry->m_lockerid = 0;
+
         dbg_msg( dbg_trace, "%s(): %s - unlocked %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_lock_count) );
 
     } else {

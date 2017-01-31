@@ -10,7 +10,9 @@
 // Функции для работы с мютексами
 //----------------------------------------------------------------------
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     //! Функция создает именованный мютекс
     /*!
@@ -41,6 +43,8 @@ GIPCY_API    int IPC_releaseMutex(const IPC_handle handle);
 	\return в случае ошибки возвращает IPC_INVALID_HANDLE или IPC_GENERAL_ERROR
     */
 GIPCY_API    int IPC_deleteMutex(IPC_handle handle);
+#ifdef __cplusplus
 }
+#endif
 
 #endif //__MUTEXIPC_H__

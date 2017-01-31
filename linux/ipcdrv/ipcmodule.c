@@ -37,7 +37,7 @@ static struct mutex ipc_mutex;
 int dbg_trace = 0;
 int err_trace = 1;
 
-#ifndef DZYTOOLS_2_4_X
+#ifndef GIPCY_2_4_X
 module_param( dbg_trace, int, S_IRUGO );
 module_param( err_trace, int, S_IRUGO );
 #endif
@@ -50,7 +50,7 @@ static struct ipc_driver *file_to_device( struct file *file )
 }
 
 //-----------------------------------------------------------------------------
-#ifdef DZYTOOLS_2_4_X
+#ifdef GIPCY_2_4_X
 static struct ipc_driver *inode_to_device( struct list_head *head, struct inode *inode )
 {
     struct list_head *p;
@@ -100,7 +100,7 @@ static unsigned int ipc_device_poll(struct file *filp, poll_table *wait)
 
 static int ipc_device_open( struct inode *inode, struct file *file )
 {
-#ifdef DZYTOOLS_2_4_X
+#ifdef GIPCY_2_4_X
     struct ipc_driver *pDriver = inode_to_device(&ipc_list, inode);
     if(!pDriver) {
         err_msg(err_trace, "%s(): Open driver failed\n", __FUNCTION__);
@@ -131,7 +131,7 @@ static int ipc_device_open( struct inode *inode, struct file *file )
 
 static int ipc_device_close( struct inode *inode, struct file *file )
 {
-#ifdef DZYTOOLS_2_4_X
+#ifdef GIPCY_2_4_X
     struct ipc_driver *pDriver = inode_to_device(&ipc_list, inode);
     if(!pDriver) {
         err_msg(err_trace, "%s(): Close driver failed\n", __FUNCTION__);
@@ -242,7 +242,7 @@ static int ipc_device_ioctl( struct inode *inode, struct file *file, unsigned in
 
 struct file_operations ipc_fops = {
 
-#ifndef DZYTOOLS_2_4_X
+#ifndef GIPCY_2_4_X
     .owner = THIS_MODULE,
 #endif
     .read = NULL,
@@ -336,7 +336,7 @@ static int  __init ipc_probe(void)
 
     dbg_msg(dbg_trace, "%s(): Create device file for board: %s\n", __FUNCTION__, drv->m_name);
 
-#ifdef DZYTOOLS_2_4_X
+#ifdef GIPCY_2_4_X
     ipc_register_proc(drv->m_name, ipc_proc_info, drv);
 #else
     ipc_register_proc(drv->m_name, NULL, drv);
@@ -415,7 +415,7 @@ static int __init ipc_module_init(void)
         goto do_free_chrdev;
     }
 
-#ifdef DZYTOOLS_2_4_X
+#ifdef GIPCY_2_4_X
     ipc_class->m_fops = &ipc_fops;
 #endif
 
