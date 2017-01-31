@@ -30,6 +30,13 @@ int IPC_cleanupSocket()
 	return 0;
 }
 
+int IPC_cleanupSocket()
+{
+	WSACleanup(); 
+
+	return 0;
+}
+
 IPC_sockaddr _IPC_resolve(IPC_str* addr)
 {
 	IPC_sockaddr a;
@@ -38,6 +45,7 @@ IPC_sockaddr _IPC_resolve(IPC_str* addr)
 
 	//FIXME: small?
 	char buffer[256];
+	strcpy( buffer, (const char*)addr );
 
 #ifdef _WIN64
 	wcstombs(buffer, addr, sizeof(buffer));

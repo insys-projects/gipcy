@@ -96,8 +96,6 @@ GIPCY_API unsigned int IPC_htonl(unsigned int hostlong);
 
 GIPCY_API char *IPC_inet_ntoa(unsigned long addr);
 
-
-
 #ifdef __cplusplus
 };
 #endif
