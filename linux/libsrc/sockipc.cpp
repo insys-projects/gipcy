@@ -28,11 +28,7 @@ IPC_sockaddr IPC_resolve(IPC_str* addr)
     //FIXME: small?
     char buffer[256];
 
-#ifdef _WIN64
-    wcstombs(buffer, addr, sizeof(buffer));
-#else
     strcpy(buffer, (const char*)addr);
-#endif
 
     char *pp = strstr(buffer, ":");
 
