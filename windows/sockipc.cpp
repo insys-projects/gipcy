@@ -39,7 +39,7 @@ IPC_sockaddr _IPC_resolve(IPC_str* addr)
 	//FIXME: small?
 	char buffer[256];
 
-#ifdef _WIN64
+#ifdef _UNICODE
 	wcstombs(buffer, addr, sizeof(buffer));
 #else
 	strcpy(buffer, (const char*)addr);
@@ -74,7 +74,7 @@ IPC_sockaddr IPC_gethostbyname(IPC_str* addr)
 	//FIXME: small?
 	char buffer[256];
 
-#ifdef _WIN64
+#ifdef _UNICODE
 	wcstombs(buffer, addr, sizeof(buffer));
 #else
 	strcpy(buffer, (const char*)addr);
@@ -125,7 +125,7 @@ SOCKET _IPC_tcp()
 
 IPC_handle	IPC_openSocket( IPC_proto proto )
 {
-#ifdef _WIN64
+#ifdef _UNICODE
 	ipc_handle_t h = allocate_ipc_object( L"socket", IPC_typeSocket );
 #else
 	ipc_handle_t h = allocate_ipc_object( "socket", IPC_typeSocket );
@@ -246,7 +246,7 @@ IPC_handle IPC_accept( IPC_handle s, IPC_sockaddr* ip, int timeout )
 		ip->addr.ip = ( anAddr.sin_addr.S_un.S_addr ); 
 	}
 
-#ifdef _WIN64
+#ifdef _UNICODE
 	ipc_handle_t _h = allocate_ipc_object( L"socket", IPC_typeSocket );
 #else
 	ipc_handle_t _h = allocate_ipc_object( "socket", IPC_typeSocket );

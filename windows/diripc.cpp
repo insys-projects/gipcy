@@ -8,7 +8,7 @@
 #endif
 
 // явл€етс€ ли запись символьной ссылкой
-#ifdef _WIN64
+#ifdef _UNICODE
 int IsSymLinks(const IPC_str *sName)
 {
 	IPC_str *p = (IPC_str *)wcsstr(sName, L".lnk"); 
@@ -36,7 +36,7 @@ int IsSymLinks(const IPC_str *sName)
 }
 #endif
 
-#ifdef _WIN64
+#ifdef _UNICODE
 GIPCY_API	IPC_handle IPC_OpenDir(const IPC_str *sNameFilter, const IPC_str *sDirPath)
 {
 	IPC_str sPath[1024];
@@ -91,7 +91,7 @@ GIPCY_API	void IPC_CloseDir(IPC_handle handle)
 	FindClose(h->ipc_descr);
 }
 
-#ifdef _WIN64
+#ifdef _UNICODE
 GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 {
 	ipc_handle_t h = (ipc_handle_t)handle;
@@ -185,7 +185,7 @@ GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 }
 #endif
 
-#ifdef _WIN64
+#ifdef _UNICODE
 GIPCY_API	int IPC_FindFiles(const IPC_str *sNameFilter, const IPC_str *sDirPath, const IPC_str (*asEntries)[256], int nEntrCount, int *pAllCount)
 {
 	int i = 0;

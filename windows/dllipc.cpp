@@ -8,7 +8,7 @@
     #include "dllipc.h"
 #endif
 
-#ifdef _WIN64
+#ifdef _UNICODE
 GIPCY_API IPC_handle IPC_openLibraryEx(const IPC_str *baseName, unsigned param)
 {
     ipc_handle_t h = allocate_ipc_object(baseName, IPC_typeLibrary);

@@ -10,7 +10,7 @@
 
 //-----------------------------------------------------------------------------
 // открыть устройство
-#ifdef _WIN64
+#ifdef _UNICODE
 GIPCY_API IPC_handle IPC_openDevice(wchar_t *devname, const wchar_t *mainname, int devnum)
 {
     if(!mainname) return NULL;

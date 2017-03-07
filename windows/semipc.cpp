@@ -8,7 +8,7 @@
 #endif
 
 //-----------------------------------------------------------------------------
-#ifdef _WIN64
+#ifdef _UNICODE
 IPC_handle IPC_createSemaphore(const wchar_t *name, int value)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeSemaphore);
