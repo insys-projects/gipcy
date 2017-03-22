@@ -542,7 +542,7 @@ GIPCY_API int IPC_writePrivateProfileString( const IPC_str *lpAppName, const IPC
 
 //-----------------------------------------------------------------------------
 
-GIPCY_API void* IPC_virtAlloc(int nSize)
+GIPCY_API void* IPC_virtAlloc(size_t nSize)
 {
     void *ptr     = NULL;
     long pageSize = sysconf(_SC_PAGESIZE);
@@ -565,7 +565,7 @@ GIPCY_API int IPC_virtFree(void *ptr)
 
 //-----------------------------------------------------------------------------
 
-GIPCY_API void* IPC_heapAlloc(int nSize)
+GIPCY_API void* IPC_heapAlloc(size_t nSize)
 {
     void *ptr = calloc(1, nSize);
     return ptr;

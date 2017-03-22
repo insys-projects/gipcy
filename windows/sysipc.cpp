@@ -99,7 +99,7 @@ GIPCY_API int IPC_writePrivateProfileString(const IPC_str *lpAppName, const IPC_
 
 //-----------------------------------------------------------------------------
 
-void* IPC_virtAlloc(int nSize)
+void* IPC_virtAlloc(size_t nSize)
 {
 	void* ptr = VirtualAlloc(NULL, nSize, MEM_COMMIT, PAGE_READWRITE);
 
@@ -117,7 +117,7 @@ int IPC_virtFree(void *ptr)
 
 //-----------------------------------------------------------------------------
 
-void* IPC_heapAlloc(int nSize)
+void* IPC_heapAlloc(size_t nSize)
 {
 	return HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, nSize);
 }
