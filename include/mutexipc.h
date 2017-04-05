@@ -20,7 +20,7 @@ extern "C" {
     \param value - начальное значение мютекса
 	\return в случае ошибки возвращает NULL
     */
-GIPCY_API	IPC_handle IPC_createMutex(const IPC_str *name, bool value);
+GIPCY_API	IPC_handle IPC_createMutex(const IPC_str *name, int value);
 
     //! Функция захватывает мютекс или ждет его освобождения
     /*!

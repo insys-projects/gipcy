@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
+IPC_handle IPC_createEvent(const IPC_str *name, int manual, int value)
 {
     int fd = ipc_driver_handle();
     if(fd < 0) {

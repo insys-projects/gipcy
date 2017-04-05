@@ -23,7 +23,7 @@
 
 //-----------------------------------------------------------------------------
 
-IPC_handle IPC_createMutex(const IPC_str *name, bool value)
+IPC_handle IPC_createMutex(const IPC_str *name, int value)
 {
     int fd = ipc_driver_handle();
     if(fd < 0) {

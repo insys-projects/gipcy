@@ -110,7 +110,7 @@ void* IPC_virtAlloc(size_t nSize)
 
 int IPC_virtFree(void *ptr)
 {
-	BOOL ret = VirtualFree(ptr, 0, MEM_RELEASE);
+	int ret = VirtualFree(ptr, 0, MEM_RELEASE);
 
 	return 0;
 }

@@ -11,7 +11,7 @@
 
 //	manual = TRUE - manual reset, FALSE - autoreset
 //  value = TRUE - начальное состояние Signaled
-GIPCY_API IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value)
+GIPCY_API IPC_handle IPC_createEvent(const IPC_str *name, int manual, int value)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeEvent);
     if(!h)
@@ -56,7 +56,7 @@ GIPCY_API int IPC_setEvent(const  IPC_handle handle)
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
-	BOOL ret = SetEvent(h->ipc_descr);
+	int ret = SetEvent(h->ipc_descr);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
 	return IPC_OK;
@@ -71,7 +71,7 @@ GIPCY_API int IPC_resetEvent(const  IPC_handle handle)
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
-	BOOL ret = ResetEvent(h->ipc_descr);
+	int ret = ResetEvent(h->ipc_descr);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
     return IPC_OK;
@@ -89,7 +89,7 @@ GIPCY_API int IPC_deleteEvent(IPC_handle handle)
     if(h->ipc_type != IPC_typeEvent)
         return IPC_INVALID_HANDLE;
 
-	BOOL ret = CloseHandle(h->ipc_descr);
+	int ret = CloseHandle(h->ipc_descr);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
 	

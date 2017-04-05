@@ -93,7 +93,7 @@ GIPCY_API int IPC_closeLibrary(IPC_handle handle)
         return IPC_INVALID_HANDLE;
 	ipc_handle_t h = (ipc_handle_t)handle;
 
-	BOOL ret = FreeLibrary((HINSTANCE)(h->ipc_descr));
+	int ret = FreeLibrary((HINSTANCE)(h->ipc_descr));
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
 

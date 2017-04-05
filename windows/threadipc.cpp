@@ -70,7 +70,7 @@ GIPCY_API int IPC_stopThread(const IPC_handle handle)
     if(!h || h->ipc_type != IPC_typeThread)
 		return IPC_INVALID_HANDLE;
 
-	BOOL ret = TerminateThread(h->ipc_descr, 0);
+	int ret = TerminateThread(h->ipc_descr, 0);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
 
@@ -104,7 +104,7 @@ GIPCY_API int IPC_deleteThread(IPC_handle handle)
         return IPC_INVALID_HANDLE;
     ipc_handle_t h = (ipc_handle_t)handle;
 
-	BOOL ret = CloseHandle(h->ipc_descr);
+	int ret = CloseHandle(h->ipc_descr);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
 

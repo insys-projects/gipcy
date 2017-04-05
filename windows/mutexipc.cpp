@@ -9,7 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-GIPCY_API IPC_handle IPC_createMutex(const IPC_str *name, bool value)
+GIPCY_API IPC_handle IPC_createMutex(const IPC_str *name, int value)
 {
     ipc_handle_t h = allocate_ipc_object(name, IPC_typeMutex);
     if(!h)
@@ -54,7 +54,7 @@ GIPCY_API int IPC_releaseMutex(const  IPC_handle handle)
 
     ipc_handle_t h = (ipc_handle_t)handle;
 
-	BOOL ret = ReleaseMutex(h->ipc_descr);
+	int ret = ReleaseMutex(h->ipc_descr);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
     return IPC_OK;
@@ -72,7 +72,7 @@ GIPCY_API int IPC_deleteMutex(IPC_handle handle)
     if(h->ipc_type != IPC_typeMutex)
         return IPC_INVALID_HANDLE;
 
-	BOOL ret = CloseHandle(h->ipc_descr);
+	int ret = CloseHandle(h->ipc_descr);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
 	

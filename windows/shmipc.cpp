@@ -90,7 +90,7 @@ GIPCY_API int IPC_unmapSharedMemory(const  IPC_handle handle)
 	if(!h->ipc_data) 
 		return IPC_GENERAL_ERROR;
 
-	BOOL ret = UnmapViewOfFile(h->ipc_data);
+	int ret = UnmapViewOfFile(h->ipc_data);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
 
@@ -106,7 +106,7 @@ GIPCY_API int IPC_deleteSharedMemory(IPC_handle handle)
         return IPC_INVALID_HANDLE;
     ipc_handle_t h = (ipc_handle_t)handle;
 
-	BOOL ret = CloseHandle(h->ipc_descr);
+	int ret = CloseHandle(h->ipc_descr);
 	if(!ret)
 	    return IPC_GENERAL_ERROR;
 

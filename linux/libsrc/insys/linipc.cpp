@@ -70,9 +70,19 @@ ipc_handle_t allocate_ipc_object(const char *name, IPC_type type)
     const char* pname = 0;
     char tmp_name[] = {"IPC_XXXXXX"};
     if(!name) {
-      pname = basename(mktemp(tmp_name));
+      int tmpFd = mkstemp(tmp_name);
+      if(tmpFd < 0) {
+        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
+      } else {
+        pname = basename(tmp_name);
+      }
     } else {
       pname = name;
+    }
+
+    if(!pname) {
+        free(h);
+        return 0;
     }
 
     h->ipc_type = type;
@@ -130,14 +140,14 @@ void delete_ipc_object(ipc_handle_t h)
 
 //-----------------------------------------------------------------------------
 
-bool chechk_handle(ipc_handle_t h, int h_type)
+int chechk_handle(ipc_handle_t h, int h_type)
 {
-    if(!h) return false;
+    if(!h) return 0;
 
     if(h->ipc_type != h_type)
-        return false;
+        return 0;
 
-    return true;
+    return 1;
 }
 
 //-----------------------------------------------------------------------------

@@ -21,7 +21,7 @@ extern "C" {
     \param value - начальное значение события
 	\return в случае ошибки возвращает NULL
     */
-GIPCY_API    IPC_handle IPC_createEvent(const IPC_str *name, bool manual, bool value);
+GIPCY_API    IPC_handle IPC_createEvent(const IPC_str *name, int manual, int value);
 
     //! Функция ожидает перехода события в сигнальное состояние
     /*!

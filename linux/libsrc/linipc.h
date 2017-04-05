@@ -134,14 +134,14 @@ void delete_ipc_object(ipc_handle_t h);
 /*!
     \param h - дескриптор объекта IPC
 */
-bool is_ok_remove(ipc_handle_t h);
+int is_ok_remove(ipc_handle_t h);
 
 //! Функция проверяет правильность дескриптора IPC
 /*!
     \param h - дескриптор объекта IPC
     \param h_type - тип дескриптора объекта IPC
 */
-bool check_handle(ipc_handle_t h, int h_type);
+int check_handle(ipc_handle_t h, int h_type);
 
 //! Функция открывает устройство IPC и возвращает дескриптор устройства
 /*!
