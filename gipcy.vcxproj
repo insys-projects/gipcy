@@ -162,6 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="windows\devipc.cpp" />
+    <ClCompile Include="windows\diripc.cpp" />
     <ClCompile Include="windows\dllipc.cpp" />
     <ClCompile Include="windows\eventipc.cpp" />
     <ClCompile Include="windows\fileipc.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="include\dllipc.h" />
     <ClInclude Include="include\eventipc.h" />
     <ClInclude Include="include\ipcerr.h" />
+    <ClInclude Include="include\ipclib.h" />
     <ClInclude Include="include\mutexipc.h" />
     <ClInclude Include="include\shmipc.h" />
     <ClInclude Include="include\sysipc.h" />
