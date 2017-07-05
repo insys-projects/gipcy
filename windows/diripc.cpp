@@ -7,7 +7,7 @@
 	#include "diripc.h"
 #endif
 
-// ßâëÿåòñÿ ëè çàïèñü ñèìâîëüíîé ññûëêîé
+// Ð¯Ð²Ð»ÑÐµÑ‚ÑÑ Ð»Ð¸ Ð·Ð°Ð¿Ð¸ÑÑŒ ÑÐ¸Ð¼Ð²Ð¾Ð»ÑŒÐ½Ð¾Ð¹ ÑÑÑ‹Ð»ÐºÐ¾Ð¹
 #ifdef _WIN64
 int IsSymLinks(const IPC_str *sName)
 {
@@ -107,14 +107,14 @@ GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 		}
 
 		if(pFindData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			// Çàïèñü íå ÿâëÿåòñÿ ôàéëîì
+			// Ð—Ð°Ð¿Ð¸ÑÑŒ Ð½Ðµ ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ñ„Ð°Ð¹Ð»Ð¾Ð¼
 			continue;
 
 		if(IsSymLinks(pFindData->cFileName))
-			// Èãíîðèðóåì ñèìâîëüíûå ññûëêè
+			// Ð˜Ð³Ð½Ð¾Ñ€Ð¸Ñ€ÑƒÐµÐ¼ ÑÐ¸Ð¼Ð²Ð¾Ð»ÑŒÐ½Ñ‹Ðµ ÑÑÑ‹Ð»ÐºÐ¸
 			continue;
 
-		// Ôàéë íàéäåí
+		// Ð¤Ð°Ð¹Ð» Ð½Ð°Ð¹Ð´ÐµÐ½
 		isFindFile = 1;
 
 		break;
@@ -124,12 +124,12 @@ GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 		h->ipc_data = 0;
 
 	if(!isFindFile)
-	{	// Ôàéë íå íàéäåí	
+	{	// Ð¤Ð°Ð¹Ð» Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½	
 		delete pFindData;
 		return -1;
 	}
 
-	wcscpy(sFindFile, pFindData->cFileName);
+	wcscpy((IPC_str*)sFindFile, pFindData->cFileName);
 
 	delete pFindData;
 
@@ -151,21 +151,21 @@ GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 		}
 
 		if(pFindData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			// Çàïèñü íå ÿâëÿåòñÿ ôàéëîì
+			// Ð—Ð°Ð¿Ð¸ÑÑŒ Ð½Ðµ ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ñ„Ð°Ð¹Ð»Ð¾Ð¼
 			continue;
 
 		if(IsSymLinks(pFindData->cFileName))
-			// Èãíîðèðóåì ñèìâîëüíûå ññûëêè
+			// Ð˜Ð³Ð½Ð¾Ñ€Ð¸Ñ€ÑƒÐµÐ¼ ÑÐ¸Ð¼Ð²Ð¾Ð»ÑŒÐ½Ñ‹Ðµ ÑÑÑ‹Ð»ÐºÐ¸
 			continue;
 
-		// Ôàéë íàéäåí
+		// Ð¤Ð°Ð¹Ð» Ð½Ð°Ð¹Ð´ÐµÐ½
 		isFindFile = 1;
 
 		break;
 	} while(FindNextFile(h->ipc_descr, pFindData));
 
 	if(!isFindFile)
-	{	// Ôàéë íå íàéäåí	
+	{	// Ð¤Ð°Ð¹Ð» Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½	
 		delete pFindData;
 
 		if(h->ipc_data)
@@ -199,7 +199,7 @@ GIPCY_API	int IPC_FindFiles(const IPC_str *sNameFilter, const IPC_str *sDirPath,
 
 	while(!IPC_FindFile(h, sFindFile))
 	{
-		wcscpy(asEntries[i], sFindFile);
+		wcscpy((IPC_str*)asEntries[i], sFindFile);
 		i++;
 	}
 
