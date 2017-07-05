@@ -69,24 +69,26 @@ ipc_handle_t allocate_ipc_object(const char *name, IPC_type type)
 
     const char* pname = 0;
     char tmp_name[] = {"IPC_XXXXXX"};
-    if(!name) {
-      int tmpFd = mkstemp(tmp_name);
-      if(tmpFd < 0) {
-        DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
-      } else {
-        pname = basename(tmp_name);
-      }
-    } else {
-      pname = name;
-    }
+	if (!name) {
+		int tmpFd = mkstemp(tmp_name);
+		if (tmpFd < 0) {
+			DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
+		}
+		else {
+			pname = basename(tmp_name);
+		}
+	}
+	else {
+		pname = name;
+	}
 
-    if(!pname) {
-        free(h);
-        return 0;
-    }
+	if (!pname) {
+		free(h);
+		return 0;
+	}
 
-    h->ipc_type = type;
-    if(h->ipc_type == IPC_typeSharedMem) {
+	h->ipc_type = type;
+	if(h->ipc_type == IPC_typeSharedMem) {
 
         char tmpName[PATH_MAX] = {'\0'};
 

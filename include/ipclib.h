@@ -23,7 +23,7 @@
     typedef char           IPC_str;
     //#define DIR_DELIMITER "/"
 #else
-    #ifdef _WIN64
+    #ifdef _UNICODE
         typedef wchar_t    IPC_str;
         //#define DIR_DELIMITER L"\\"
     #else

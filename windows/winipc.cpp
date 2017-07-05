@@ -9,7 +9,7 @@
     #include "ipclib.h"
 #endif
 //-----------------------------------------------------------------------------
-#ifdef _WIN64
+#ifdef _UNICODE
 ipc_handle_t allocate_ipc_object(const wchar_t *name, IPC_type type)
 {
     ipc_handle_t h = (ipc_handle_t)malloc(sizeof(struct ipc_t));

@@ -7,8 +7,8 @@
 	#include "diripc.h"
 #endif
 
-// Ð¯Ð²Ð»ÑÐµÑ‚ÑÑ Ð»Ð¸ Ð·Ð°Ð¿Ð¸ÑÑŒ ÑÐ¸Ð¼Ð²Ð¾Ð»ÑŒÐ½Ð¾Ð¹ ÑÑÑ‹Ð»ÐºÐ¾Ð¹
-#ifdef _WIN64
+// ßâëÿåòñÿ ëè çàïèñü ñèìâîëüíîé ññûëêîé
+#ifdef _UNICODE
 int IsSymLinks(const IPC_str *sName)
 {
 	IPC_str *p = (IPC_str *)wcsstr(sName, L".lnk"); 
@@ -36,7 +36,7 @@ int IsSymLinks(const IPC_str *sName)
 }
 #endif
 
-#ifdef _WIN64
+#ifdef _UNICODE
 GIPCY_API	IPC_handle IPC_OpenDir(const IPC_str *sNameFilter, const IPC_str *sDirPath)
 {
 	IPC_str sPath[1024];
@@ -91,7 +91,7 @@ GIPCY_API	void IPC_CloseDir(IPC_handle handle)
 	FindClose(h->ipc_descr);
 }
 
-#ifdef _WIN64
+#ifdef _UNICODE
 GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 {
 	ipc_handle_t h = (ipc_handle_t)handle;
@@ -107,14 +107,14 @@ GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 		}
 
 		if(pFindData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			// Ð—Ð°Ð¿Ð¸ÑÑŒ Ð½Ðµ ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ñ„Ð°Ð¹Ð»Ð¾Ð¼
+			// Çàïèñü íå ÿâëÿåòñÿ ôàéëîì
 			continue;
 
 		if(IsSymLinks(pFindData->cFileName))
-			// Ð˜Ð³Ð½Ð¾Ñ€Ð¸Ñ€ÑƒÐµÐ¼ ÑÐ¸Ð¼Ð²Ð¾Ð»ÑŒÐ½Ñ‹Ðµ ÑÑÑ‹Ð»ÐºÐ¸
+			// Èãíîðèðóåì ñèìâîëüíûå ññûëêè
 			continue;
 
-		// Ð¤Ð°Ð¹Ð» Ð½Ð°Ð¹Ð´ÐµÐ½
+		// Ôàéë íàéäåí
 		isFindFile = 1;
 
 		break;
@@ -124,7 +124,7 @@ GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 		h->ipc_data = 0;
 
 	if(!isFindFile)
-	{	// Ð¤Ð°Ð¹Ð» Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½	
+	{	// Ôàéë íå íàéäåí	
 		delete pFindData;
 		return -1;
 	}
@@ -151,21 +151,21 @@ GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 		}
 
 		if(pFindData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			// Ð—Ð°Ð¿Ð¸ÑÑŒ Ð½Ðµ ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ñ„Ð°Ð¹Ð»Ð¾Ð¼
+			// Çàïèñü íå ÿâëÿåòñÿ ôàéëîì
 			continue;
 
 		if(IsSymLinks(pFindData->cFileName))
-			// Ð˜Ð³Ð½Ð¾Ñ€Ð¸Ñ€ÑƒÐµÐ¼ ÑÐ¸Ð¼Ð²Ð¾Ð»ÑŒÐ½Ñ‹Ðµ ÑÑÑ‹Ð»ÐºÐ¸
+			// Èãíîðèðóåì ñèìâîëüíûå ññûëêè
 			continue;
 
-		// Ð¤Ð°Ð¹Ð» Ð½Ð°Ð¹Ð´ÐµÐ½
+		// Ôàéë íàéäåí
 		isFindFile = 1;
 
 		break;
 	} while(FindNextFile(h->ipc_descr, pFindData));
 
 	if(!isFindFile)
-	{	// Ð¤Ð°Ð¹Ð» Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½	
+	{	// Ôàéë íå íàéäåí	
 		delete pFindData;
 
 		if(h->ipc_data)
@@ -185,7 +185,7 @@ GIPCY_API	int IPC_FindFile(IPC_handle handle, const IPC_str *sFindFile)
 }
 #endif
 
-#ifdef _WIN64
+#ifdef _UNICODE
 GIPCY_API	int IPC_FindFiles(const IPC_str *sNameFilter, const IPC_str *sDirPath, const IPC_str (*asEntries)[256], int nEntrCount, int *pAllCount)
 {
 	int i = 0;

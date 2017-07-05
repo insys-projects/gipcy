@@ -168,7 +168,7 @@ GIPCY_API long IPC_interlockedExchangeAdd(volatile long *dst, long val )
 
 //-----------------------------------------------------------------------------
 
-#ifdef _WIN64
+#ifdef _UNICODE
 wchar_t* IPC_itoa(int value, wchar_t* result, int base)
 {
 	_itow(value, result, base);
@@ -184,7 +184,7 @@ char* IPC_itoa(int value, char* result, int base)
 
 //-----------------------------------------------------------------------------
 
-#ifdef _WIN64
+#ifdef _UNICODE
 GIPCY_API   int IPC_strlwr(wchar_t *str)
 {
 
