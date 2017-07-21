@@ -30,7 +30,7 @@ IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum)
 
     h->ipc_size = 0;
 
-    h->ipc_descr.ipc_file = open(devname, S_IROTH | S_IWOTH );
+    h->ipc_descr.ipc_file = open(devname, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH|S_IWOTH);
     if(h->ipc_descr.ipc_file < 0)
 	{
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
@@ -54,7 +54,7 @@ IPC_handle IPC_openDeviceRaw(const IPC_str *devname)
 
     h->ipc_size = 0;
 
-    h->ipc_descr.ipc_file = open(devname, S_IROTH | S_IWOTH );
+    h->ipc_descr.ipc_file = open(devname, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH|S_IWOTH);
     if(h->ipc_descr.ipc_file < 0)
 	{
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
