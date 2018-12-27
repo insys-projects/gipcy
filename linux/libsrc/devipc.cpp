@@ -30,11 +30,11 @@ IPC_handle IPC_openDevice(IPC_str *devname, const IPC_str *mainname, int devnum)
 
     h->ipc_size = 0;
 
-    h->ipc_descr.ipc_file = open(devname, S_IROTH | S_IWOTH );
+    h->ipc_descr.ipc_file = open(devname, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH|S_IWOTH);
     if(h->ipc_descr.ipc_file < 0)
-	{
+    {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
-		delete_ipc_object(h);
+        delete_ipc_object(h);
         return NULL;
     }
 
@@ -54,11 +54,11 @@ IPC_handle IPC_openDeviceRaw(const IPC_str *devname)
 
     h->ipc_size = 0;
 
-    h->ipc_descr.ipc_file = open(devname, S_IROTH | S_IWOTH );
+    h->ipc_descr.ipc_file = open(devname, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH|S_IWOTH);
     if(h->ipc_descr.ipc_file < 0)
-	{
+    {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
-		delete_ipc_object(h);
+        delete_ipc_object(h);
         return NULL;
     }
 
@@ -135,7 +135,7 @@ int IPC_ioctlDevice(IPC_handle handle, unsigned long cmd, void *srcBuf, int srcS
 
     int res = ioctl(h->ipc_descr.ipc_file,cmd,&param);
     if(res < 0) {
-        DEBUG_PRINT("%s(%d): %s\n", __FUNCTION__, cmd & 0xff, strerror(errno) );
+        DEBUG_PRINT("%s(%d): %s\n", __FUNCTION__, int(cmd & 0xff), strerror(errno) );
         return IPC_GENERAL_ERROR;
     }
 
@@ -158,13 +158,23 @@ GIPCY_API int IPC_mapPhysAddr(IPC_handle handle, void** virtAddr, size_t physAdd
 
     void* vAddress = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_SHARED, h->ipc_descr.ipc_file, (off_t)physAddr);
     if(vAddress == MAP_FAILED )
-	{
+    {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
         virtAddr = NULL;
         return IPC_GENERAL_ERROR;
-	}
+    }
     DEBUG_PRINT("%s(): Physical Address 0x%x -> Virtual Address %p\n", __FUNCTION__, physAddr, vAddress);
     *virtAddr = vAddress;
+
+    // Debug On Zynq we can have only 16 shared memory objects per process !!!!
+/*
+    uint32_t *pmem = (uint32_t*)vAddress;
+    uint32_t dummy_read = pmem[0];
+    dummy_read = dummy_read;
+    DEBUG_PRINT("%s(): Dummy read address - %p [0x%lx] - DONE\n", __FUNCTION__, vAddress, size);
+    pmem[0] = dummy_read;
+    DEBUG_PRINT("%s(): Dummy write address - %p [0x%lx] - DONE\n", __FUNCTION__, vAddress, size);
+*/
 
     return IPC_OK;
 }
@@ -177,10 +187,10 @@ GIPCY_API int IPC_unmapPhysAddr(IPC_handle handle, void* virtAddr, unsigned long
     if(!h) return IPC_INVALID_HANDLE;
 
     if(munmap( virtAddr, size ) < 0 )
-	{
+    {
         DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno) );
         return IPC_GENERAL_ERROR;
-	}
+    }
 
     return IPC_OK;
 }

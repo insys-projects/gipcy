@@ -83,9 +83,9 @@ static int shared_memory_close(void* handle)
 
 IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
 {
-    DEBUG_PRINT("%s( %s, 0x%x )\n", __FUNCTION__, name, size );
+    DEBUG_PRINT("%s( %s, [0x%x])\n", __FUNCTION__, name, size);
 
-    int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+    int mode = S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP | S_IROTH|S_IWOTH;
     int oflags = O_RDWR | O_CREAT | O_EXCL;
     ipc_handle_t h = NULL;
     int res = -1;
@@ -125,7 +125,7 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
         }
 
         if(st_buf.st_size > 0) {
-            DEBUG_PRINT("%s(): shm size %s is %d\n", __FUNCTION__, name, st_buf.st_size );
+            DEBUG_PRINT("%s(): shm size %s is %ld\n", __FUNCTION__, name, st_buf.st_size );
             goto do_return_ipc_object;
         }
 
@@ -135,7 +135,7 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
             goto do_free_ipc_object;
         }
 
-        DEBUG_PRINT("%s(): open and init shared memory - %s\n", __FUNCTION__, name );
+        DEBUG_PRINT("%s( %s, 0x%x) - OPEN & INIT\n", __FUNCTION__, name, size);
 
         goto do_return_ipc_object;
     }
@@ -159,7 +159,7 @@ IPC_handle IPC_createSharedMemory(const IPC_str *name, int size)
         DEBUG_PRINT("%s(): fcntl(%s) error - %s\n", __FUNCTION__, name, strerror(errno) );
     }
 
-    DEBUG_PRINT("%s(): create shared memory - %s\n", __FUNCTION__, name);
+    DEBUG_PRINT("%s( %s, 0x%x) - CREATE\n", __FUNCTION__, name, size);
 
 do_return_ipc_object:
     h->ipc_size = size;
@@ -179,9 +179,7 @@ do_exit:
 
 IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyCreated)
 {
-    DEBUG_PRINT("%s( %s, 0x%x )\n", __FUNCTION__, name, size );
-
-    int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+    int mode = S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP | S_IROTH|S_IWOTH;
     int oflags = O_RDWR | O_CREAT | O_EXCL;
     ipc_handle_t h = NULL;
     int res = -1;
@@ -194,7 +192,6 @@ IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyC
     h = allocate_ipc_object(name, IPC_typeSharedMem);
     if(!h) {
         goto do_unregister_shm;
-        return NULL;
     }
 
     h->ipc_user = ipc_drv_handle;
@@ -215,7 +212,7 @@ IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyC
 
         if(st_buf.st_size > 0) {
             if(alreadyCreated) *alreadyCreated = 1;
-            DEBUG_PRINT("%s(): open shared memory - %s\n", __FUNCTION__, name );
+            DEBUG_PRINT("%s( %s, 0x%x) - OPEN\n", __FUNCTION__, name, size);
             goto do_return_ipc_object;
         }
 
@@ -225,7 +222,7 @@ IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyC
 
         if(alreadyCreated) *alreadyCreated = 1;
 
-        DEBUG_PRINT("%s(): open and init shared memory - %s\n", __FUNCTION__, name );
+        DEBUG_PRINT("%s( %s, 0x%x) - OPEN & INIT\n", __FUNCTION__, name, size);
 
         goto do_return_ipc_object;
     }
@@ -236,7 +233,7 @@ IPC_handle IPC_createSharedMemoryEx(const IPC_str *name, int size, int *alreadyC
     if(res < 0)
         goto do_free_ipc_object;
 
-    DEBUG_PRINT("%s(): create shared memory - %s\n", __FUNCTION__, name);
+    DEBUG_PRINT("%s( %s, 0x%x) - CREATE\n", __FUNCTION__, name, size);
 
 do_return_ipc_object:
     h->ipc_size = size;
@@ -257,7 +254,7 @@ do_exit:
 
 IPC_handle IPC_openSharedMemory(const IPC_str *name)
 {
-    DEBUG_PRINT("%s( %s )\n", __FUNCTION__, name );
+    DEBUG_PRINT("%s( %s )\n", __FUNCTION__, name);
 
     int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     int oflags = O_RDWR;
@@ -305,6 +302,7 @@ do_exit:
     return NULL;
 }
 
+
 //-----------------------------------------------------------------------------
 
 void* IPC_mapSharedMemory(const  IPC_handle handle)
@@ -329,6 +327,18 @@ void* IPC_mapSharedMemory(const  IPC_handle handle)
     }
 
     h->ipc_data = mem;
+
+    DEBUG_PRINT("%s(%s): mapped address - %p [0x%x]\n", __FUNCTION__, h->ipc_name, mem, h->ipc_size);
+
+    // On Zynq (kernel 4.9) we can have only 16 shared memory objects !!!!
+/*
+    uint32_t *pmem = (uint32_t*)mem;
+    uint32_t dummy_read = pmem[0];
+    dummy_read = dummy_read;
+    DEBUG_PRINT("%s(%s): Dummy read address - %p [0x%x] - DONE\n", __FUNCTION__, h->ipc_name, mem, h->ipc_size);
+    pmem[0] = dummy_read;
+    DEBUG_PRINT("%s(%s): Dummy write address - %p [0x%x] - DONE\n", __FUNCTION__, h->ipc_name, mem, h->ipc_size);
+*/
 
     return mem;
 }
@@ -386,7 +396,7 @@ int IPC_deleteSharedMemory(IPC_handle handle)
 
     res = shm_unlink(h->ipc_name);
     if(res < 0) {
-        DEBUG_PRINT("%s(): shm_unlink(%s) error - %s\n", __FUNCTION__, strerror(errno));
+        DEBUG_PRINT("%s(): shm_unlink(%s) error - %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
         return IPC_GENERAL_ERROR;
     }
     DEBUG_PRINT("%s(): DELETE OK\n", __FUNCTION__);

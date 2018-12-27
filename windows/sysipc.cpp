@@ -24,13 +24,22 @@ void IPC_cleanupKeyboard(void)
 // для совместимости с LINUX
 int IPC_getch(void)
 {
-    return _getch();
+#ifdef _UNICODE
+	return _getwch();
+#else
+	return _getch();
+#endif
 }
 
 //-----------------------------------------------------------------------------
 // для совместимости с LINUX
 int IPC_getche(void)
 {
+#ifdef _UNICODE
+	return _getwche();
+#else
+	return _getche();
+#endif
 	return _getche();
 }
 

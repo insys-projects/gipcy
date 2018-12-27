@@ -11,7 +11,7 @@
 #
 
 LIBS += -lc -lrt -ldl -lpthread
-LDOPTIONS := -Wl,-rpath $(LIBDIR) -L"$(GIPCYDIR)" $(LIBS)
+LDOPTIONS := -Wl,-rpath $(LIBDIR) -L"$(GIPCYLIB)" $(LIBS)
 
 # OS dependent flags
 RDYNAMIC := -rdynamic
