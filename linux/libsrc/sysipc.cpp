@@ -370,11 +370,12 @@ GIPCY_API int IPC_getPrivateProfileString( const IPC_str *lpAppName, const IPC_s
                 }
             }
 
-            if(set_default) {
-                if(lpDefault) {
-                    memcpy(lpReturnedString, lpDefault, strlen(lpDefault)+1);
-                }
-            }
+        }
+    }
+
+    if(set_default) {
+        if(lpDefault) {
+            memcpy(lpReturnedString, lpDefault, strlen(lpDefault)+1);
         }
     }
 
