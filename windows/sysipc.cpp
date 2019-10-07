@@ -51,7 +51,7 @@ int IPC_kbhit(void)
 }
 
 //-----------------------------------------------------------------------------
-// выполнить задержку при выполнении программы
+// приостанавливает выполнение программы на указанные миллисекунды
 GIPCY_API void IPC_delay(int ms)
 {
     Sleep(ms);
@@ -64,6 +64,20 @@ GIPCY_API void IPC_delay(int ms)
 	//	QueryPerformanceCounter(&cur_time);
 	//	wait_time = (unsigned int)((cur_time.QuadPart - zero_time.QuadPart) * 1.E6 / Frequency.QuadPart);
 	//} while(wait_time < mctime_out);
+}
+
+//-----------------------------------------------------------------------------
+// приостанавливает выполнение программы на указанные микросекунды
+GIPCY_API void IPC_pause(unsigned int mcsec)
+{
+	static LARGE_INTEGER Frequency, zero_time, cur_time;
+	int bHighRes = QueryPerformanceFrequency(&Frequency);
+	QueryPerformanceCounter(&zero_time);
+	unsigned int wait_time;
+	do {
+		QueryPerformanceCounter(&cur_time);
+		wait_time = (unsigned int)((cur_time.QuadPart - zero_time.QuadPart) * 1.E6 / Frequency.QuadPart);
+	} while (wait_time < mcsec);
 }
 
 //-----------------------------------------------------------------------------

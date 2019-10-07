@@ -95,6 +95,25 @@ GIPCY_API void IPC_delay(int ms)
 
 //-----------------------------------------------------------------------------
 
+GIPCY_API void IPC_pause(unsigned int mcsec)
+{
+	usleep(mcsec);
+	//struct timeval dt, zero_time, cur_time;
+	//gettimeofday(zero_time, 0);
+	//unsigned int wait_time;
+	//do {
+	//	gettimeofday(cur_time, 0);
+	//	dt.tv_sec = cur_time->tv_sec - zero_time->tv_sec;
+	//	dt.tv_usec = cur_time->tv_usec - zero_time->tv_usec;
+	//	if (dt.tv_usec < 0) {
+	//		dt.tv_sec--;
+	//		dt.tv_usec += 1000000;
+	//	}
+	//} while (wait_time < mcsec);
+}
+
+//-----------------------------------------------------------------------------
+
 GIPCY_API int IPC_sysError()
 {
     return errno;
