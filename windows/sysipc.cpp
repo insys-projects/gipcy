@@ -200,7 +200,7 @@ wchar_t* IPC_itoa(int value, wchar_t* result, int base)
 #else
 char* IPC_itoa(int value, char* result, int base)
 {
-	itoa(value, result, base);
+	_itoa(value, result, base);
     return result;
 }
 #endif
