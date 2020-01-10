@@ -99,7 +99,7 @@ GIPCY_API void IPC_delay(int ms)
 GIPCY_API void IPC_pause(unsigned int mcsec)
 {
     std::this_thread::sleep_for(std::chrono::microseconds(mcsec));
-    //usleep(mcsec);
+/*
     struct timeval dt, zero_time, cur_time;
     gettimeofday(&zero_time, 0);
     unsigned int wait_time = 0;
@@ -113,6 +113,7 @@ GIPCY_API void IPC_pause(unsigned int mcsec)
             wait_time = dt.tv_usec;
         }
     } while (wait_time < mcsec);
+*/
 }
 
 //-----------------------------------------------------------------------------
