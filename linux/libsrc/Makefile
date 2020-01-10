@@ -31,6 +31,7 @@ OBJ_FILES := $(notdir $(SOURCE:.cpp=.o))
 
 CFLAGS += $(INC)
 CFLAGS += -fPIC
+CFLAGS += -std=c++11
 
 all: $(LIBNAME)
 

@@ -1,8 +1,6 @@
 #ifdef __IPC_LINUX__
 
-#ifndef __LINIPC_H__
-	#include "linipc.h"
-#endif
+#include "linipc.h"
 
 #include <diripc.h>
 #include <fnmatch.h>

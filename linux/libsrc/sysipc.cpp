@@ -1,9 +1,7 @@
 
 #ifdef __IPC_LINUX__
 
-#ifndef __LINIPC_H__
-    #include "linipc.h"
-#endif
+#include "linipc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -84,32 +82,37 @@ GIPCY_API int IPC_kbhit(void)
 }
 
 //-----------------------------------------------------------------------------
+#include <chrono>
+#include <thread>
+//-----------------------------------------------------------------------------
 
 GIPCY_API void IPC_delay(int ms)
 {
-    struct timeval tv = {0, 0};
-    tv.tv_usec = 1000*ms;
-
-    select(0,NULL,NULL,NULL,&tv);
+    //struct timeval tv = {0, 0};
+    //tv.tv_usec = 1000*ms;
+    //select(0,NULL,NULL,NULL,&tv);
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
 //-----------------------------------------------------------------------------
 
 GIPCY_API void IPC_pause(unsigned int mcsec)
 {
-	usleep(mcsec);
-	//struct timeval dt, zero_time, cur_time;
-	//gettimeofday(zero_time, 0);
-	//unsigned int wait_time;
-	//do {
-	//	gettimeofday(cur_time, 0);
-	//	dt.tv_sec = cur_time->tv_sec - zero_time->tv_sec;
-	//	dt.tv_usec = cur_time->tv_usec - zero_time->tv_usec;
-	//	if (dt.tv_usec < 0) {
-	//		dt.tv_sec--;
-	//		dt.tv_usec += 1000000;
-	//	}
-	//} while (wait_time < mcsec);
+    std::this_thread::sleep_for(std::chrono::microseconds(mcsec));
+    //usleep(mcsec);
+    struct timeval dt, zero_time, cur_time;
+    gettimeofday(&zero_time, 0);
+    unsigned int wait_time = 0;
+    do {
+        gettimeofday(&cur_time, 0);
+        dt.tv_sec = cur_time.tv_sec - zero_time.tv_sec;
+        dt.tv_usec = cur_time.tv_usec - zero_time.tv_usec;
+        if (dt.tv_usec < 0) {
+            dt.tv_sec--;
+            dt.tv_usec += 1000000;
+            wait_time = dt.tv_usec;
+        }
+    } while (wait_time < mcsec);
 }
 
 //-----------------------------------------------------------------------------
@@ -157,7 +160,7 @@ int IPC_handleToDevice(IPC_handle handle)
 static int FindSection(const char* src, const char* section)
 {
     int key_size = strlen(section);
-    int name_len, tmp_len;
+    int tmp_len;
 
     for(uint i = 0; i < (strlen(src) - key_size); i++)
     {
@@ -173,7 +176,6 @@ static int FindSection(const char* src, const char* section)
             char name[PATH_MAX] = {0};
             strcpy(name, &psubstr[i+1]);
             IPC_strlwr(name);
-            name_len = strlen(name) - 1;
 
             char section_tmp[1024];
             strcpy(section_tmp, section);

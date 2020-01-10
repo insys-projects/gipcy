@@ -1,12 +1,8 @@
 
 #ifdef __IPC_LINUX__
 
-#ifndef __LINIPC_H__
 #include "linipc.h"
-#endif
-#ifndef __IPCIOCTL_H__
 #include "ipcioctl.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -201,7 +197,9 @@ int close_ipc_driver(int fd)
 
 int IPC_init(void)
 {
-    return open_ipc_driver("/dev/"IPC_DRIVER_NAME);
+    char devname[64];
+    snprintf(devname, 64, "%s%s", "/dev/", IPC_DRIVER_NAME);
+    return open_ipc_driver(devname);
 }
 
 //-----------------------------------------------------------------------------

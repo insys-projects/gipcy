@@ -2,9 +2,7 @@
 #ifndef __LINIPC_H__
 #define __LINIPC_H__
 
-#ifndef __GIPCY_H__
-    #include "gipcy.h"
-#endif
+#include "gipcy.h"
 
 #include <stdio.h>
 #include <stdint.h>
