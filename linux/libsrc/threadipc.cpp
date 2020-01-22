@@ -34,12 +34,13 @@ IPC_handle IPC_createThread(const IPC_str *name, thread_func *function, void* pa
 
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+    //pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
     int res = pthread_create(&h->ipc_descr.ipc_thread,&attr,function,param);
 
     pthread_attr_destroy(&attr);
 
-    if(res < 0) {
+    if(res != 0) {
         DEBUG_PRINT("%s(): error create thread. %s\n", __FUNCTION__, strerror(errno));
         delete_ipc_object(h);
         return NULL;
@@ -72,7 +73,7 @@ IPC_handle IPC_createThreadEx(const IPC_str *name, struct thread_param *tp, int 
     }
 
     int res = pthread_create(&h->ipc_descr.ipc_thread,NULL,tp->threadFunction,tp);
-    if(res < 0) {
+    if(res != 0) {
         DEBUG_PRINT("%s(): error create thread. %s\n", __FUNCTION__, strerror(errno));
         delete_ipc_object(h);
         return NULL;
@@ -113,7 +114,7 @@ int IPC_stopThread(const IPC_handle handle)
         return IPC_INVALID_HANDLE;
 
     int res = pthread_cancel(h->ipc_descr.ipc_thread);
-    if(res < 0) {
+    if(res != 0) {
         DEBUG_PRINT("%s(): thread %s was error %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
         return IPC_GENERAL_ERROR;
     }
@@ -129,7 +130,7 @@ int IPC_waitThread(const IPC_handle handle, int timeout)
 {
     if(!handle) {
         int res = pthread_join(0,NULL);
-        if(res > 0) {
+        if(res != 0) {
             DEBUG_PRINT("%s(): %s\n", __FUNCTION__, strerror(errno));
             return IPC_GENERAL_ERROR;
         }
@@ -231,7 +232,7 @@ int IPC_deleteThread(IPC_handle handle)
     void *ret = 0;
 
     int res = pthread_join(h->ipc_descr.ipc_thread, &ret);
-    if(res > 0) {
+    if(res != 0) {
         if(res != ESRCH) {
             DEBUG_PRINT("%s(): thread %s was error %s\n", __FUNCTION__, h->ipc_name, strerror(errno));
             return IPC_GENERAL_ERROR;
