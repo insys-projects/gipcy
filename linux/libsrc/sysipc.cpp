@@ -82,24 +82,30 @@ GIPCY_API int IPC_kbhit(void)
 }
 
 //-----------------------------------------------------------------------------
+#if GCC_VERSION > 40500
 #include <chrono>
 #include <thread>
+#endif
 //-----------------------------------------------------------------------------
 
 GIPCY_API void IPC_delay(int ms)
 {
-    //struct timeval tv = {0, 0};
-    //tv.tv_usec = 1000*ms;
-    //select(0,NULL,NULL,NULL,&tv);
+#if GCC_VERSION > 40500
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+#else
+    struct timeval tv = {0, 0};
+    tv.tv_usec = 1000*ms;
+    select(0,NULL,NULL,NULL,&tv);
+#endif
 }
 
 //-----------------------------------------------------------------------------
 
 GIPCY_API void IPC_pause(unsigned int mcsec)
 {
+#if GCC_VERSION > 40500
     std::this_thread::sleep_for(std::chrono::microseconds(mcsec));
-/*
+#else
     struct timeval dt, zero_time, cur_time;
     gettimeofday(&zero_time, 0);
     unsigned int wait_time = 0;
@@ -113,7 +119,7 @@ GIPCY_API void IPC_pause(unsigned int mcsec)
             wait_time = dt.tv_usec;
         }
     } while (wait_time < mcsec);
-*/
+#endif
 }
 
 //-----------------------------------------------------------------------------
