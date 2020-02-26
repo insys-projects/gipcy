@@ -48,7 +48,7 @@ GIPCY_API int IPC_getch(void)
     while(1)
     {
         size_t size = 0;
-	if (ioctl(STDIN_FILENO, FIONREAD, &size) == -1)
+    if (ioctl(STDIN_FILENO, FIONREAD, &size) == -1)
     	    size = 0;
         if(size)
 	{
@@ -82,7 +82,7 @@ GIPCY_API int IPC_kbhit(void)
 }
 
 //-----------------------------------------------------------------------------
-#if GCC_VERSION > 40500
+#if __GNUC__ > 4
 #include <chrono>
 #include <thread>
 #endif
@@ -103,7 +103,7 @@ GIPCY_API void IPC_delay(int ms)
 
 GIPCY_API void IPC_pause(unsigned int mcsec)
 {
-#if GCC_VERSION > 40500
+#if __GNUC__ > 4
     std::this_thread::sleep_for(std::chrono::microseconds(mcsec));
 #else
     struct timeval dt, zero_time, cur_time;
@@ -113,6 +113,7 @@ GIPCY_API void IPC_pause(unsigned int mcsec)
         gettimeofday(&cur_time, 0);
         dt.tv_sec = cur_time.tv_sec - zero_time.tv_sec;
         dt.tv_usec = cur_time.tv_usec - zero_time.tv_usec;
+        wait_time = dt.tv_usec;
         if (dt.tv_usec < 0) {
             dt.tv_sec--;
             dt.tv_usec += 1000000;
