@@ -147,13 +147,14 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
             }
         }
 
-        entry->m_lockerid = param->lockerid;
-
-        dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_lock_count) );
+        if(error == 0) {
+            entry->m_lockerid = param->lockerid;
+            dbg_msg( dbg_trace, "%s(): %s - locked %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_lock_count) );
+        }
 
     } else {
 
-        dbg_msg( dbg_trace, "%s(): Invalid handle\n", __FUNCTION__ );
+        dbg_msg( err_trace, "%s(): Invalid handle\n", __FUNCTION__ );
     }
 
 do_out:

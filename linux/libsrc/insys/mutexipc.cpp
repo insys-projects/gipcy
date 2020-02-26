@@ -66,7 +66,7 @@ int IPC_captureMutex(const IPC_handle handle, int timeout)
     int res = ioctl(fd, IOCTL_IPC_MUTEX_LOCK, &ipc_param);
     if(res < 0) {
         DEBUG_PRINT("%s(): Error lock mutex\n", __FUNCTION__);
-        return -1;
+        return IPC_WAIT_TIMEOUT;
     }
 
     return IPC_OK;
