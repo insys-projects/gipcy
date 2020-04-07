@@ -14,6 +14,7 @@ else
 
 KERNELVER := $(shell uname -r)
 EXTRA_CFLAGS += -O2
+EXTRA_CFLAGS += -fno-stack-protector
 EXTRA_CFLAGS += -I../../include
 
 ifneq ($(KERNELRELEASE),)
