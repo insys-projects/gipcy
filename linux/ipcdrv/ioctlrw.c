@@ -180,9 +180,11 @@ int ioctl_mutex_close(struct ipc_driver *drv, unsigned long arg)
     }
 
     error = ipc_mutex_close( drv, &ipc_param );
-    if(error < 0) {
+    if((error < 0) && (error != -EBUSY)) {
         err_msg(err_trace, "%s(): Error in ipc_mutex_close()\n", __FUNCTION__);
         goto do_exit;
+    } else {
+        error =0;
     }
 
 do_exit:
