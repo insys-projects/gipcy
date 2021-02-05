@@ -226,7 +226,7 @@ static int ipcdrv_proc_release(struct inode *inode, struct file *file)
 
 //--------------------------------------------------------------------
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,5,0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
 static const struct proc_ops ipcdrv_proc_fops = {
     .proc_open           = ipcdrv_proc_open,
     .proc_read           = seq_read,
