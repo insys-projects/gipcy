@@ -124,9 +124,9 @@ int ipc_mutex_lock( struct ipc_driver *drv, struct ipc_lock_t *param )
 
         dbg_msg( dbg_trace, "%s(%s): owner_count: %d, lock_count: %d\n", __FUNCTION__, entry->mutex_name, atomic_read(&entry->mutex_owner_count), atomic_read(&entry->mutex_lock_count) );
         dbg_msg( dbg_trace, "%s(%s): handle = %p\n", __FUNCTION__, entry->mutex_name, &entry->mutex_handle );
-        dbg_msg( dbg_trace, "%s(%s): entry = %p\n", __FUNCTION__, entry );
-        dbg_msg( dbg_trace, "%s(%s): mutex_id = 0x%x\n", __FUNCTION__, entry->mutex_id );
-        dbg_msg( dbg_trace, "%s(%s): lockerid = 0x%x\n", __FUNCTION__, entry->m_lockerid );
+        dbg_msg( dbg_trace, "%s(%s): entry = %p\n", __FUNCTION__, entry->mutex_name, entry );
+        dbg_msg( dbg_trace, "%s(%s): mutex_id = 0x%x\n", __FUNCTION__, entry->mutex_name, entry->mutex_id );
+        dbg_msg( dbg_trace, "%s(%s): lockerid = 0x%x\n", __FUNCTION__, entry->mutex_name, entry->m_lockerid );
 
         if(entry->m_lockerid == param->lockerid) {
             //atomic_inc(&entry->mutex_lock_count);
