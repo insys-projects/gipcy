@@ -1,4 +1,4 @@
-
+ï»¿
 #ifdef __IPC_WIN__
 
 #ifndef __WINIPC_H__
@@ -9,10 +9,10 @@
 #endif
 
 //-----------------------------------------------------------------------------
-// îòêðûòü ôàéë
+// Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚ÑŒ Ñ„Ð°Ð¹Ð»
 // amode (access_mode) = GENERIC_READ, GENERIC_WRITE
-// smode (share_mode) = 0 (çàïðåò), FILE_SHARE_READ, FILE_SHARE_WRITE
-//                   ìîæíî âñåãäà óñòàíàâëèâàòü FILE_SHARE_WRITE | FILE_SHARE_READ (_SH_DENYNO)
+// smode (share_mode) = 0 (Ð·Ð°Ð¿Ñ€ÐµÑ‚), FILE_SHARE_READ, FILE_SHARE_WRITE
+//                   Ð¼Ð¾Ð¶Ð½Ð¾ Ð²ÑÐµÐ³Ð´Ð° ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°Ñ‚ÑŒ FILE_SHARE_WRITE | FILE_SHARE_READ (_SH_DENYNO)
 // cmode (exist_mode) = CREATE_ALWAYS, OPEN_EXISTING
 // flag = FILE_ATTRIBUTE_NORMAL, FILE_FLAG_NO_BUFFERING
 GIPCY_API IPC_handle IPC_openFile(const IPC_str *name, int flags)
@@ -98,7 +98,7 @@ GIPCY_API IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
    	return h;
 }
 /*
-	// îòêðûòèå ôàéëà äëÿ ïðÿìîé çàïèñè íà äèñê
+	// Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ð¸Ðµ Ñ„Ð°Ð¹Ð»Ð° Ð´Ð»Ñ Ð¿Ñ€ÑÐ¼Ð¾Ð¹ Ð·Ð°Ð¿Ð¸ÑÐ¸ Ð½Ð° Ð´Ð¸ÑÐº
 	HANDLE hfile = CreateFile(	fileName,
 								GENERIC_WRITE,
 //								FILE_SHARE_WRITE | FILE_SHARE_READ,
@@ -110,7 +110,7 @@ GIPCY_API IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
 								NULL);
 	if(hfile == INVALID_HANDLE_VALUE)
 		
-	// îòêðûòèå ôàéëà äëÿ çàïèñè ñîáðàííûõ äàííûõ
+	// Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ð¸Ðµ Ñ„Ð°Ð¹Ð»Ð° Ð´Ð»Ñ Ð·Ð°Ð¿Ð¸ÑÐ¸ ÑÐ¾Ð±Ñ€Ð°Ð½Ð½Ñ‹Ñ… Ð´Ð°Ð½Ð½Ñ‹Ñ…
 	HANDLE hfile = CreateFile(	fileName,
 								GENERIC_WRITE,
 								FILE_SHARE_WRITE | FILE_SHARE_READ,
@@ -120,7 +120,7 @@ GIPCY_API IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
 								NULL);
 	if(hfile == INVALID_HANDLE_VALUE)
 
-	// îòêðûòèå ôàéëà äëÿ äîçàïèñè ñîáðàííûõ äàííûõ â êîíåö ôàéëà
+	// Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ð¸Ðµ Ñ„Ð°Ð¹Ð»Ð° Ð´Ð»Ñ Ð´Ð¾Ð·Ð°Ð¿Ð¸ÑÐ¸ ÑÐ¾Ð±Ñ€Ð°Ð½Ð½Ñ‹Ñ… Ð´Ð°Ð½Ð½Ñ‹Ñ… Ð² ÐºÐ¾Ð½ÐµÑ† Ñ„Ð°Ð¹Ð»Ð°
 		hfile = CreateFile(	fileName,
 								GENERIC_WRITE,
 								FILE_SHARE_WRITE | FILE_SHARE_READ,
@@ -131,7 +131,7 @@ GIPCY_API IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
 		LONG HiPart = 0;
 		SetFilePointer(hfile, 0, &HiPart, FILE_END);
 
-	// äîçàïèñü õâîñòà â êîíåö ôàéëà ñ äàííûìè
+	// Ð´Ð¾Ð·Ð°Ð¿Ð¸ÑÑŒ Ñ…Ð²Ð¾ÑÑ‚Ð° Ð² ÐºÐ¾Ð½ÐµÑ† Ñ„Ð°Ð¹Ð»Ð° Ñ Ð´Ð°Ð½Ð½Ñ‹Ð¼Ð¸
 	HANDLE hfile = CreateFile(	fileName,
 								GENERIC_READ | GENERIC_WRITE,
 								FILE_SHARE_WRITE | FILE_SHARE_READ,
@@ -149,17 +149,17 @@ GIPCY_API IPC_handle IPC_openFileEx(const IPC_str *name, int flags, int attr)
 	ULONG BytesNum = SetFilePointer(hfile, lDistanceToMoveLow, &lDistanceToMoveHigh, FILE_END);
 
 ////////////////////////////////////////////
-	// ýòè ôóíêöèè åñòü â LINUX, îíè âõîäÿò â ñòàíäàðò ÿçûêà
+	// ÑÑ‚Ð¸ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ ÐµÑÑ‚ÑŒ Ð² LINUX, Ð¾Ð½Ð¸ Ð²Ñ…Ð¾Ð´ÑÑ‚ Ð² ÑÑ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚ ÑÐ·Ñ‹ÐºÐ°
 	// fopen(), fclose(), fputs(), fgets()
-	// îòêðûòèå ëîã-ôàéëà â brdshell
+	// Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ð¸Ðµ Ð»Ð¾Ð³-Ñ„Ð°Ð¹Ð»Ð° Ð² brdshell
 	flog = BRDC_fopen( logFile, _BRDC("wt") );	
-	// îòêðûòèå ini-ôàéëà â brdshell
+	// Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ð¸Ðµ ini-Ñ„Ð°Ð¹Ð»Ð° Ð² brdshell
 	fin = BRDC_fopen( REG_FILENAME, _BRDC("rt") );
 ////////////////////////////////////////////
 
-	// çàïèñü ôëàãîâîãî ôàéëà
+	// Ð·Ð°Ð¿Ð¸ÑÑŒ Ñ„Ð»Ð°Ð³Ð¾Ð²Ð¾Ð³Ð¾ Ñ„Ð°Ð¹Ð»Ð°
 	fs = BRDC_sopen(fileName, _O_WRONLY|_O_BINARY|_O_CREAT|_O_TRUNC, _SH_DENYNO, _S_IWRITE);
-	// ÷òåíèå ôëàãîâîãî ôàéëà
+	// Ñ‡Ñ‚ÐµÐ½Ð¸Ðµ Ñ„Ð»Ð°Ð³Ð¾Ð²Ð¾Ð³Ð¾ Ñ„Ð°Ð¹Ð»Ð°
     fs = BRDC_sopen(fileName, _O_RDONLY|_O_BINARY, _SH_DENYNO, _S_IREAD);
 
 }
@@ -216,8 +216,9 @@ GIPCY_API int IPC_setPosFile(IPC_handle handle, int pos, int method)
     if(!h) return IPC_INVALID_HANDLE;
 
 	LONG HiPart = 0;
-	int ret = SetFilePointer(h->ipc_descr, pos, &HiPart, method);
-	if(!ret)
+    unsigned ret = SetFilePointer(h->ipc_descr, pos, &HiPart, method); // << Ð½Ðµ int, Ð° unsigned
+//    if(!ret)                              // <<< Ñ‚ÑƒÑ‚ Ð¸Ð½Ð´Ð¸ÐºÐ°Ñ‚Ð¾Ñ€ Ð¾ÑˆÐ¸Ð±ÐºÐ¸ Ð¢ÐžÐ›Ð¬ÐšÐž
+    if( ret == INVALID_SET_FILE_POINTER )   // <<< INVALID_SET_FILE_POINTER
 	    return IPC_GENERAL_ERROR;
     return IPC_OK;
 }
