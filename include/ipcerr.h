@@ -9,7 +9,7 @@
 //
 //  No Error
 //
-#define	IPC_OK						0x00000000
+#define	IPC_OK					0x00000000UL
 
 
 //======================================================================
@@ -20,7 +20,7 @@
 //
 //  Wrong Handle
 //
-#define	IPC_GENERAL_ERROR			0xC0000100
+#define	IPC_GENERAL_ERROR			0xC0000100UL
 
 //----------------------------------------------------------------------
 //
@@ -28,7 +28,7 @@
 //
 //  Wrong Handle
 //
-#define	IPC_INVALID_HANDLE			0xC0000101
+#define	IPC_INVALID_HANDLE			0xC0000101UL
 
 //----------------------------------------------------------------------
 //
@@ -36,7 +36,7 @@
 //
 //  WaitForXXXObject returned WAIT_TIMEOUT
 //
-#define	IPC_WAIT_TIMEOUT			0xC0000102
+#define	IPC_WAIT_TIMEOUT			0xC0000102UL
 
 //----------------------------------------------------------------------
 //
@@ -44,7 +44,7 @@
 //
 //  Not enough storage is available to process this command.
 //
-#define	IPC_NOT_ENOUGH_MEMORY			0xC0000103
+#define	IPC_NOT_ENOUGH_MEMORY			0xC0000103UL
 
 //----------------------------------------------------------------------
 //
@@ -52,7 +52,7 @@
 //
 //  Error: Can't open INI file
 //
-#define	IPC_BAD_INI_FILE			0xC0000104
+#define	IPC_BAD_INI_FILE			0xC0000104UL
 
 //----------------------------------------------------------------------
 //
@@ -60,7 +60,7 @@
 //
 //  Error: Can't open /dev/ipc_driver file
 //
-#define	IPC_DRIVER_NOT_LOADED			0xC0000105
+#define	IPC_DRIVER_NOT_LOADED			0xC0000105UL
 
 //======================================================================
 // Warnings !
@@ -70,7 +70,7 @@
 //
 //  WaitForXXXObject returned WAIT_ABANDONED
 //
-#define	IPC_WAIT_ABANDONED			0x40000400
+#define	IPC_WAIT_ABANDONED			0x40000400UL
 
 //----------------------------------------------------------------------
 
