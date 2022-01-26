@@ -28,7 +28,7 @@ GIPCY_API IPC_handle IPC_openFile(const IPC_str *name, int flags)
 	if(IPC_CREATE_FILE & (flags & 0xf))
 		cmode = CREATE_ALWAYS;
 	if(IPC_OPEN_FILE & (flags & 0xf))
-		cmode = OPEN_ALWAYS;
+		cmode = OPEN_EXISTING;
 
 	if(IPC_FILE_RDONLY & (flags & 0xf0))
 		amode = GENERIC_READ;
@@ -216,8 +216,8 @@ GIPCY_API int IPC_setPosFile(IPC_handle handle, int pos, int method)
     if(!h) return IPC_INVALID_HANDLE;
 
 	LONG HiPart = 0;
-	int ret = SetFilePointer(h->ipc_descr, pos, &HiPart, method);
-	if(!ret)
+	DWORD ret = SetFilePointer(h->ipc_descr, pos, &HiPart, method);
+	if(ret == 0xFFFFFFFF)
 	    return IPC_GENERAL_ERROR;
     return IPC_OK;
 }
