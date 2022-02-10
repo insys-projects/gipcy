@@ -2,7 +2,7 @@
 ifeq ($(ARCH),)
 LIBNAME  := libgipcy.so
 else
-LIBNAME  := libgipcy-$(ARCH).so
+LIBNAME  := libgipcy.so
 endif
 SONAME   := $(LIBNAME).0
 LIBDIR   := ../../lib
