@@ -13,7 +13,7 @@ using namespace std;
 
 //------------------------------------------------------------------
 
-void show_error(int err)
+void show_error(unsigned err)
 {
     switch(err) {
     case IPC_OK:

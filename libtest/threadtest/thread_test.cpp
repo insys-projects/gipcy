@@ -27,11 +27,11 @@ void sighandler(int sig)
 thread_value thread_function(void *param)
 {
     unsigned int* exit_flag = (unsigned int*)param;
-    fprintf(stderr, "start thread: 0x%x\n", IPC_threadID());
+    fprintf(stderr, "start thread: 0x%lx\n", IPC_threadID());
     while(!exit_flag[0]) {
       IPC_delay(20);
     }
-    fprintf(stderr, "stop thread: 0x%x\n", IPC_threadID());
+    fprintf(stderr, "stop thread: 0x%lx\n", IPC_threadID());
     return (thread_value)IPC_threadID();
 }
 
